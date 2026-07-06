@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Advanced Tetris HTML Game</title>
+  <title>Michael's NTRIS</title>
   <meta charset="UTF-8">
   <style>
   html, body {
@@ -123,7 +123,7 @@ function hideControls() {
 var settings;
 
 function resetSettings() { 
-  settings = {gr: 0, boardWidth: 10, boardHeight: 20, mystery: 2032, fallingSpeed: 35, fa: 1.01, nextPieces: 1, closeEnough: 0, heldPieces: 0, wrapAround: false, rgr: false, sd: false, dual: false, flipping: false};
+  settings = {gr: 0, boardWidth: 10, boardHeight: 20, mystery: 4064, fallingSpeed: 35, fa: 1.01, nextPieces: 1, closeEnough: 0, heldPieces: 0, wrapAround: false, rgr: false, sd: false, dual: false, flipping: false};
 }
 
 resetSettings();
@@ -172,7 +172,7 @@ function saveSettings() {
   document.getElementById("settingsDialog").close();
 }
 
-var allpieces = ['.', 'i', 'l', '|', 'I', 'T', 'O', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'D', 'X2', 'FYold', 'W'];
+var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'D', 'X2', 'FYold', 'W'];
 
 var chiralPairs = {
   'I': 'I',
@@ -199,7 +199,8 @@ var chiralPairs = {
   'V': 'V',
   'D': 'D',
   'random': 'madnor',
-  'madnor': 'random'
+  'madnor': 'random',
+  'd': 'd'
 }
 
 function randomizeSettings() {
@@ -356,9 +357,13 @@ const tetrominos = {
     [getRandomInt(0,1),getRandomInt(0,1),getRandomInt(0,1)],
     [getRandomInt(0,1),getRandomInt(0,1),getRandomInt(0,1)],
     [getRandomInt(0,1),getRandomInt(0,1),getRandomInt(0,1)]
+  ],
+  'd': [
+    [0,1],
+    [1,0]
   ]
 };
-tetrominos['madnor'] = tetrominos['random'].map(cell => cell.reverse()); // there's like no way this worked first try
+tetrominos['madnor'] = tetrominos['random'].map(cell => cell.toReversed()); // there's like no way this worked first try
 
 // color of each tetromino
 const colors = {
@@ -372,7 +377,7 @@ const colors = {
   'FY': 'white',
   '|': 'cyan',
   'II': 'cyan',
-  'F': 'brown',
+  'F': 'darkred',
   'D': 'gray',
   'W': 'silver',
   'l': 'pink',
@@ -388,7 +393,8 @@ const colors = {
   'FYold': 'white',
   'V': 'skyblue',
   'random': '#' + getRandomInt(100000,999999),
-  'madnor': '#' + getRandomInt(100000,999999)
+  'madnor': '#' + getRandomInt(100000,999999),
+  'd': 'deeppink'
 };
 
 
