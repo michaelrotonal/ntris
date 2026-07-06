@@ -788,9 +788,18 @@ function loop() {
   // draw the score
   context.fillStyle = 'white';
   context.font = '36px monospace';
-  context.textAlign = 'center';
+  context.textAlign = 'right';
   context.textBaseline = 'middle';
-  context.fillText(score, 50 + settings.boardWidth * grid + gridsmall * 5.5, 20);
+  context.fillText(score, settings.boardWidth * grid + gridsmall * 11, 20);
+
+  context.font = '36px monospace';
+  context.textAlign = 'left';
+  if(settings.closeEnough > 0) {
+    context.fillText("AH: " + settings.closeEnough, 0, 20);
+  }
+  if(settings.flipping) {
+    context.fillText("Flip", 0, 56);
+  }
 }
 
 // listen to keyboard events to move the active tetromino
