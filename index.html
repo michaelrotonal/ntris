@@ -71,6 +71,9 @@
       <tr><td>Social Distancing</td><td><input type="checkbox" id="settingSD"></td></tr>
       <tr><td>Dual Mode</td><td><input type="checkbox" id="settingDual"></td></tr>
       <tr><td>Flipping</td><td><input type="checkbox" id="settingFlipping"></td></tr>
+      <tr><td>Dual Inverts Left/Right</td><td><input type="checkbox" id="settingbLRDual"></td></tr>
+      <tr><td>Dual Inverts Up/Down</td><td><input type="checkbox" id="settingbUDDual"></td></tr>
+      <tr><td>Dual Inverts Rotation</td><td><input type="checkbox" id="settingbRotateDual"></td></tr>
     </table>
     <button onclick="randomizeSettings();">Shuffle</button>
     <button onclick="resetSettings();showSettings();">Reset</button>
@@ -122,9 +125,13 @@ function hideControls() {
 
 var settings;
 
+var settingsb;
+
 function resetSettings() { 
   settings = {gr: 0, boardWidth: 10, boardHeight: 20, mystery: 4064, fallingSpeed: 35, fa: 1.01, nextPieces: 1, closeEnough: 0, heldPieces: 0, wrapAround: false, rgr: false, sd: false, dual: false, flipping: false};
 }
+
+settingsb = {udDual: false, lrDual: false, rotateDual: false};
 
 resetSettings();
 
@@ -144,6 +151,9 @@ function showSettings() {
   document.getElementById("settingSD").checked = settings["sd"];
   document.getElementById("settingDual").checked = settings["dual"];
   document.getElementById("settingFlipping").checked = settings["flipping"];
+  document.getElementById("settingbLRDual").checked = settingsb["lrDual"];
+  document.getElementById("settingbUDDual").checked = settingsb["udDual"];
+  document.getElementById("settingbRotateDual").checked = settingsb["rotateDual"];
   document.getElementById("settingsDialog").showModal();
   document.getElementById("settingsButton").blur();
 }
@@ -168,6 +178,9 @@ function saveSettings() {
   settings["sd"] = document.getElementById("settingSD").checked;
   settings["dual"] = document.getElementById("settingDual").checked;
   settings["flipping"] = document.getElementById("settingFlipping").checked;
+  settingsb["lrDual"] = document.getElementById("settingbLRDual").checked;
+  settingsb["udDual"] = document.getElementById("settingbUDDual").checked;
+  settingsb["rotateDual"] = document.getElementById("settingbRotateDual").checked;
   restartGame();
   document.getElementById("settingsDialog").close();
 }
@@ -808,7 +821,7 @@ document.addEventListener('keydown', function(e) {
 
   // left and right arrow keys (move)
   if (e.which === 37 || e.which === 39 || e.which === 65 || e.which === 68 || e.which === 97 || e.which === 100) {
-    const col = (e.which === 37 || e.which === 65 || e.which === 97)
+    const col = ((e.which === 37 || e.which === 65 || e.which === 97) ^ (FlipIfDual(false) && settingsb.lrDual))
       ? tetromino.col - 1
       : tetromino.col + 1;
 
@@ -818,25 +831,22 @@ document.addEventListener('keydown', function(e) {
   }
 
   // up arrow key (rotate)
-  if (e.which === 38 || e.which === 87 || e.which === 119) {
-    const matrix = FlipIfDual(false) ? rotate(rotate(rotate(tetromino.matrix))) : rotate(tetromino.matrix);
-    if (isValidMove(matrix, tetromino.row, tetromino.col)) {
-      tetromino.matrix = matrix;
+  if (e.which === 38 || e.which === 87 || e.which === 119 || e.which === 40 || e.which === 83 || e.which === 115) {
+    if((e.which === 38 || e.which === 87 || e.which === 119) ^ (FlipIfDual(false) && settingsb.udDual)) {
+      const matrix = (FlipIfDual(false) && !settingsb.roateDual) ? rotate(rotate(rotate(tetromino.matrix))) : rotate(tetromino.matrix);
+      if (isValidMove(matrix, tetromino.row, tetromino.col)) {
+        tetromino.matrix = matrix;
+      }
+    } else {
+      const row = tetromino.row + 1;
+      if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
+        tetromino.row = row - 1;
+
+        placeTetromino();
+        return;
+      }
+      tetromino.row = row;
     }
-  }
-
-  // down arrow key (drop)
-  if(e.which === 40 || e.which === 83 || e.which === 115) {
-    const row = tetromino.row + 1;
-
-    if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
-      tetromino.row = row - 1;
-
-      placeTetromino();
-      return;
-    }
-
-    tetromino.row = row;
   }
 
   if (e.which === 32 || e.which === 81 || e.which === 113) {
