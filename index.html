@@ -185,7 +185,7 @@ function saveSettings() {
   document.getElementById("settingsDialog").close();
 }
 
-var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'D', 'X2', 'FYold', 'W'];
+var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'D', 'X2', 'FYold', 'W'];
 
 var chiralPairs = {
   'I': 'I',
@@ -213,6 +213,8 @@ var chiralPairs = {
   'D': 'D',
   'random': 'madnor',
   'madnor': 'random',
+  'random2': 'madnor2',
+  'madnor2': 'random2',
   'd': 'd'
 }
 
@@ -371,12 +373,19 @@ const tetrominos = {
     [getRandomInt(0,1),getRandomInt(0,1),getRandomInt(0,1)],
     [getRandomInt(0,1),getRandomInt(0,1),getRandomInt(0,1)]
   ],
+  'random2': [
+    [0, getRandomInt(0,1), getRandomInt(0,1), 0],
+    [getRandomInt(0,1), getRandomInt(0,1), getRandomInt(0,1), getRandomInt(0,1)],
+    [getRandomInt(0,1), getRandomInt(0,1), getRandomInt(0,1), getRandomInt(0,1)],
+    [0, getRandomInt(0,1), getRandomInt(0,1),0]
+  ],
   'd': [
     [0,1],
     [1,0]
   ]
 };
 tetrominos['madnor'] = tetrominos['random'].map(cell => cell.toReversed()); // there's like no way this worked first try
+tetrominos['madnor2'] = tetrominos['random2'].map(cell => cell.toReversed());
 
 // color of each tetromino
 const colors = {
@@ -407,6 +416,8 @@ const colors = {
   'V': 'skyblue',
   'random': '#' + getRandomInt(100000,999999),
   'madnor': '#' + getRandomInt(100000,999999),
+  'random2': '#' + getRandomInt(100000,999999),
+  'madnor2': '#' + getRandomInt(100000,999999),
   'd': 'deeppink'
 };
 
