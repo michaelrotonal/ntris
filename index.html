@@ -67,6 +67,7 @@
       <tr><td>Allowed Holes</td><td><input id="settingCloseEnough" size="1"></td></tr>
       <tr><td>Held Pieces</td><td><input id="settingHeldPieces" size="1"></td></tr>      
       <tr><td>Garbage Percentage</td><td><input id="settingGarbagePercentage" size="1"></td></tr>
+      <tr><td>Score Acceleration</td><td><input id="settingScoreAcceleration" size="1"></td></tr>
       <tr><td>Wrap Around</td><td><input type="checkbox" id="settingWrapAround"></td></tr>
       <tr><td>Replenishing Garbage</td><td><input type="checkbox" id="settingRGR"></td></tr>
       <tr><td>Social Distancing</td><td><input type="checkbox" id="settingSD"></td></tr>
@@ -130,7 +131,7 @@ var settings;
 var settingsb;
 
 function resetSettings() { 
-  settings = {gr: 0, boardWidth: 10, boardHeight: 20, mystery: 4064, fallingSpeed: 35, fa: 1.01, nextPieces: 1, closeEnough: 0, heldPieces: 0, garbagePercentage: 50, wrapAround: false, rgr: false, sd: false, dual: false, flipping: false};
+  settings = {gr: 0, boardWidth: 10, boardHeight: 20, mystery: 4064, fallingSpeed: 35, fa: 1.01, nextPieces: 1, closeEnough: 0, heldPieces: 0, garbagePercentage: 50, scoreAcceleration: 1, wrapAround: false, rgr: false, sd: false, dual: false, flipping: false};
 }
 
 settingsb = {udDual: false, lrDual: false, rotateDual: false, wadc: false};
@@ -148,7 +149,8 @@ function showSettings() {
   document.getElementById("settingNextPieces").value = settings["nextPieces"];
   document.getElementById("settingCloseEnough").value = settings["closeEnough"];
   document.getElementById("settingHeldPieces").value = settings["heldPieces"];
-  document.getElementById("settingGarbagePercentage").value = settings["garbagePercentage"]
+  document.getElementById("settingGarbagePercentage").value = settings["garbagePercentage"];
+  document.getElementById("settingScoreAcceleration").value = settings["scoreAcceleration"];
   document.getElementById("settingWrapAround").checked = settings["wrapAround"];
   document.getElementById("settingRGR").checked = settings["rgr"];
   document.getElementById("settingSD").checked = settings["sd"];
@@ -178,6 +180,7 @@ function saveSettings() {
   settings["closeEnough"] = document.getElementById("settingCloseEnough").value * 1;
   settings["heldPieces"] = document.getElementById("settingHeldPieces").value * 1;
   settings["garbagePercentage"] = document.getElementById("settingGarbagePercentage").value * 1;
+  settings["scoreAcceleration"] = document.getElementById("settingScoreAcceleration").value * 1;
   settings["wrapAround"] = document.getElementById("settingWrapAround").checked;
   settings["rgr"] = document.getElementById("settingRGR").checked;
   settings["sd"] = document.getElementById("settingSD").checked;
@@ -239,6 +242,7 @@ function randomizeSettings() {
   settings["closeEnough"] = Math.floor(-Math.log(Math.random()));
   settings["heldPieces"] = Math.floor(-2*Math.log(Math.random()));
   settings["garbagePercentage"] = getRandomInt(1, 99);
+  settings["scoreAcceleration"] = getRandomInt(0, 2);
   settings["wrapAround"] = (Math.random() > 0.8);
   settings["rgr"] = (Math.random() > 0.8);
   settings["sd"] = (Math.random() > 0.8);
@@ -626,6 +630,12 @@ function nexttetromino() {
   nextpieces.splice(0, 1);
 }
 
+let scoreincrease = 1;
+function increasescore() {
+  score += scoreincrease;
+  scoreincrease = scoreincrease + settings.scoreAcceleration;
+}
+
 function droprowsaboverow(row) {
   for (let r = row; r >= 0; r--) {
     for (let c = 0; c < playfield[r].length; c++) {
@@ -644,12 +654,6 @@ function raiserowsbelowrow(row) {
   increasescore();
 }
 
-let scoreincrease = 0;
-function increasescore() {
-  scoreincrease = scoreincrease + 1;
-  score += scoreincrease;
-}
-
 // place the tetromino on the playfield
 function placeTetromino() {
   for (let row = 0; row < tetromino.matrix.length; row++) {
@@ -666,7 +670,7 @@ function placeTetromino() {
     }
   }
   if (settings.sd) {noTouchy();}
-  scoreincrease = 0;
+  scoreincrease = 1;
   // check for line clears starting from the bottom and working our way up
   if (!settings.dual) {
     for (let row = settings.boardHeight - 1; row >= 0; ) {
