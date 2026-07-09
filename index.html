@@ -74,6 +74,7 @@
       <tr><td>Dual Inverts Left/Right</td><td><input type="checkbox" id="settingbLRDual"></td></tr>
       <tr><td>Dual Inverts Up/Down</td><td><input type="checkbox" id="settingbUDDual"></td></tr>
       <tr><td>Dual Inverts Rotation</td><td><input type="checkbox" id="settingbRotateDual"></td></tr>
+      <tr><td>Wrap Around Display Change</td><td><input type="checkbox" id="settingbWADC"></td></tr>
     </table>
     <button onclick="randomizeSettings();">Shuffle</button>
     <button onclick="resetSettings();showSettings();">Reset</button>
@@ -131,7 +132,7 @@ function resetSettings() {
   settings = {gr: 0, boardWidth: 10, boardHeight: 20, mystery: 4064, fallingSpeed: 35, fa: 1.01, nextPieces: 1, closeEnough: 0, heldPieces: 0, wrapAround: false, rgr: false, sd: false, dual: false, flipping: false};
 }
 
-settingsb = {udDual: false, lrDual: false, rotateDual: false};
+settingsb = {udDual: false, lrDual: false, rotateDual: false, wadc: false};
 
 resetSettings();
 
@@ -154,6 +155,7 @@ function showSettings() {
   document.getElementById("settingbLRDual").checked = settingsb["lrDual"];
   document.getElementById("settingbUDDual").checked = settingsb["udDual"];
   document.getElementById("settingbRotateDual").checked = settingsb["rotateDual"];
+  document.getElementById("settingbWADC").checked = settingsb["wadc"];
   document.getElementById("settingsDialog").showModal();
   document.getElementById("settingsButton").blur();
 }
@@ -181,6 +183,7 @@ function saveSettings() {
   settingsb["lrDual"] = document.getElementById("settingbLRDual").checked;
   settingsb["udDual"] = document.getElementById("settingbUDDual").checked;
   settingsb["rotateDual"] = document.getElementById("settingbRotateDual").checked;
+  settingsb["wadc"] = document.getElementById("settingbWADC").checked;
   restartGame();
   document.getElementById("settingsDialog").close();
 }
@@ -436,6 +439,7 @@ var piececount = 0;
 
 var box = [];
 var nextpieces = [];
+var wadcmult = 1;
 
 function restartGame() {
   box = [];
@@ -444,10 +448,11 @@ function restartGame() {
       box.push(allpieces[i]);
     }
   }
-  grid = Math.round(Math.sqrt(204800 / (settings.boardWidth * settings.boardHeight)));
+  if (settingsb.wadc && settings.wrapAround) {wadcmult = 2} else {wadcmult = 1}
+  grid = Math.round(Math.sqrt(204800 / (settings.boardWidth * settings.boardHeight * wadcmult)));
   gridsmall = Math.round(grid * 0.625);
 
-  canvas.width = settings["boardWidth"]*grid + gridsmall * 11;
+  canvas.width = settings["boardWidth"]*grid*wadcmult + gridsmall * 11;
   canvas.height = settings["boardHeight"]*grid;
   canvas = document.getElementById('game');
   context = canvas.getContext('2d');
@@ -558,7 +563,7 @@ function name2tetromino(s) {
   let matrix = tetrominos[s];
 
   let col = spawningCol(s);
-  if (settings.wrapAround) {col = col + tetromino.col - spawningCol(tetromino.name);}
+  if (settings.wrapAround && !settingsb.wadc) {col = col + tetromino.col - spawningCol(tetromino.name);}
   
   let row = spawningRow(s);
 
@@ -724,7 +729,7 @@ function loop() {
 
   context.strokeStyle = "white";
   context.strokeWidth = 2;
-  context.strokeRect(gridsmall * 5.5,0,settings.boardWidth*grid,settings.boardHeight*grid);
+  context.strokeRect(gridsmall * 5.5,0,settings.boardWidth*grid*wadcmult,settings.boardHeight*grid);
 
   // draw the playfield
   for (let row = 0; row < settings.boardHeight; row++) {
@@ -734,7 +739,12 @@ function loop() {
         context.fillStyle = colors[name];
         // drawing 1 px smaller than the grid creates a grid effect
         if (settings.wrapAround) {
-          context.fillRect(modulo(col - tetromino.col + spawningCol(tetromino.name),settings.boardWidth) * grid + gridsmall * 5.5, row * grid, grid-1, grid-1);
+          if (settingsb.wadc) {
+            context.fillRect(col * grid + gridsmall * 5.5, row * grid, grid-1, grid-1);
+            context.fillRect((col + settings.boardWidth) * grid + gridsmall * 5.5, row * grid, grid-1, grid-1);
+          } else {
+            context.fillRect(modulo(col - tetromino.col + spawningCol(tetromino.name),settings.boardWidth) * grid + gridsmall * 5.5, row * grid, grid-1, grid-1);
+          }
         } else {
           context.fillRect(col * grid + gridsmall * 5.5, row * grid, grid-1, grid-1);
         }
@@ -765,8 +775,13 @@ function loop() {
 
           // drawing 1 px smaller than the grid creates a grid effect
           if (settings.wrapAround) {
-          // I am aware that if the tetromino is wider than the grid, it renders out of bounds. I don't care
-            context.fillRect((col + spawningCol(tetromino.name)) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
+            if (settingsb.wadc) {
+              context.fillRect((modulo(col + tetromino.col,settings.boardWidth)) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
+              context.fillRect((modulo(col + tetromino.col,settings.boardWidth) + settings.boardWidth) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
+            } else {
+            // I am aware that if the tetromino is wider than the grid, it renders out of bounds. I don't care
+              context.fillRect((col + spawningCol(tetromino.name)) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
+            }
           } else {
             context.fillRect((col + tetromino.col) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
           }
@@ -784,7 +799,7 @@ function loop() {
         if (tetrominos[nextpieces[i]][row][col]) {
 
           // drawing it smaller to indicate that it isn't right now
-          context.fillRect((spawningCol(nextpieces[i]) + col + 8.5 - settings.boardWidth / 2) * gridsmall + settings.boardWidth * grid, (spawningRow(nextpieces[i]) + row + 8.5 + i*4 - tetrominos[nextpieces[i]].length / 2) * gridsmall, gridsmall-1, gridsmall-1);
+          context.fillRect((spawningCol(nextpieces[i]) + col + 8.5 - settings.boardWidth / 2) * gridsmall + settings.boardWidth * grid * wadcmult, (spawningRow(nextpieces[i]) + row + 8.5 + i*4 - tetrominos[nextpieces[i]].length / 2) * gridsmall, gridsmall-1, gridsmall-1);
         }
       }
     }
@@ -814,7 +829,7 @@ function loop() {
   context.font = '36px monospace';
   context.textAlign = 'right';
   context.textBaseline = 'middle';
-  context.fillText(score, settings.boardWidth * grid + gridsmall * 11, 20);
+  context.fillText(score, settings.boardWidth * grid * wadcmult + gridsmall * 11, 20);
 
   context.font = '36px monospace';
   context.textAlign = 'left';
