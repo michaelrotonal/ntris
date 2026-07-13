@@ -31,12 +31,7 @@
     background: black;
     border: 2px solid gray;
   }
-  #settingsDialog div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
+
   #settingsDialog td {
     padding: 3px;
   }
@@ -45,44 +40,78 @@
     background: black;
     border: 2px solid gray;
   }
-  #helpDialog div {
+  .settingsColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;x
+    padding: 20px;
+    margin: 10px;
+  }
+
+  .settingsColumns {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .settingsRows {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
   }
+
   </style>
 </head>
 <body>
   <dialog id="settingsDialog">
-    <div>
-    <h2>Settings</h2>
-    <table><tr><td>Garbage Rows</td><td><input id="settingGR" size="3"></td></tr>
-      <tr><td>Board Width</td><td><input id="settingBoardWidth" size="2"></td></tr>
-      <tr><td>Board Height</td><td><input id="settingBoardHeight" size="2"></td></tr>
-      <tr><td>Mystery</td><td><input id="settingMystery" size="6"></td></tr>
-      <tr><td>Falling Delay</td><td><input id="settingFallingSpeed" size="2"></td></tr>
-      <tr><td>Falling Acceleration</td><td><input id="settingFA" size="3"></td></tr>
-      <tr><td>Next Pieces</td><td><input id="settingNextPieces" size="1"></td></tr>
-      <tr><td>Allowed Holes</td><td><input id="settingCloseEnough" size="1"></td></tr>
-      <tr><td>Held Pieces</td><td><input id="settingHeldPieces" size="1"></td></tr>      
-      <tr><td>Garbage Percentage</td><td><input id="settingGarbagePercentage" size="1"></td></tr>
-      <tr><td>Score Acceleration</td><td><input id="settingScoreAcceleration" size="1"></td></tr>
-      <tr><td>Wrap Around</td><td><input type="checkbox" id="settingWrapAround"></td></tr>
-      <tr><td>Replenishing Garbage</td><td><input type="checkbox" id="settingRGR"></td></tr>
-      <tr><td>Social Distancing</td><td><input type="checkbox" id="settingSD"></td></tr>
-      <tr><td>Dual Mode</td><td><input type="checkbox" id="settingDual"></td></tr>
-      <tr><td>Flipping</td><td><input type="checkbox" id="settingFlipping"></td></tr>
-      <tr><td>Dual Inverts Left/Right</td><td><input type="checkbox" id="settingbLRDual"></td></tr>
-      <tr><td>Dual Inverts Up/Down</td><td><input type="checkbox" id="settingbUDDual"></td></tr>
-      <tr><td>Dual Inverts Rotation</td><td><input type="checkbox" id="settingbRotateDual"></td></tr>
-      <tr><td>Wrap Around Display Change</td><td><input type="checkbox" id="settingbWADC"></td></tr>
-    </table>
-    <button onclick="randomizeSettings();">Shuffle</button>
-    <button onclick="resetSettings();showSettings();">Reset</button>
-    <button onclick="hideSettings();">Close</button>
-    <button onclick="saveSettings();">Save</button>
-    </div>
+      <div class="settingsRows">
+
+        <h2>Settings</h2>
+
+        <div class="settingsColumns">
+          <div class="settingsColumn">
+          <table><tr><td>Garbage Rows</td><td><input id="settingGR" size="3"></td></tr>
+            <tr><td>Board Width</td><td><input id="settingBoardWidth" size="2"></td></tr>
+            <tr><td>Board Height</td><td><input id="settingBoardHeight" size="2"></td></tr>
+            <tr><td>Mystery</td><td><input id="settingMystery" size="6"></td></tr>
+            <tr><td>Falling Delay</td><td><input id="settingFallingSpeed" size="2"></td></tr>
+            <tr><td>Falling Acceleration</td><td><input id="settingFA" size="3"></td></tr>
+            <tr><td>Next Pieces</td><td><input id="settingNextPieces" size="1"></td></tr>
+            <tr><td>Allowed Holes</td><td><input id="settingCloseEnough" size="1"></td></tr>
+            <tr><td>Held Pieces</td><td><input id="settingHeldPieces" size="1"></td></tr>      
+            <tr><td>Garbage Percentage</td><td><input id="settingGarbagePercentage" size="1"></td></tr>
+            <tr><td>Score Acceleration</td><td><input id="settingScoreAcceleration" size="1"></td></tr>
+            <tr><td>Wrap Around</td><td><input type="checkbox" id="settingWrapAround"></td></tr>
+            <tr><td>Replenishing Garbage</td><td><input type="checkbox" id="settingRGR"></td></tr>
+            <tr><td>Social Distancing</td><td><input type="checkbox" id="settingSD"></td></tr>
+            <tr><td>Dual Mode</td><td><input type="checkbox" id="settingDual"></td></tr>
+            <tr><td>Flipping</td><td><input type="checkbox" id="settingFlipping"></td></tr>
+          </table>
+
+          </div>
+
+          <div class="settingsColumn">
+            <table>
+              <tr><td>Dual Inverts Left/Right</td><td><input type="checkbox" id="settingbLRDual"></td></tr>
+              <tr><td>Dual Inverts Up/Down</td><td><input type="checkbox" id="settingbUDDual"></td></tr>
+              <tr><td>Dual Inverts Rotation</td><td><input type="checkbox" id="settingbRotateDual"></td></tr>
+              <tr><td>Wrap Around Display Change</td><td><input type="checkbox" id="settingbWADC"></td></tr>
+              <tr><td>Piece Randomization Difficulty Bias</td><td><input id="settingbPRDB" size="3"></td></tr>
+              <tr><td>Piece Randomization Same Color Bias</td><td><input id="settingbPRSCB" size="3"></td></tr>
+              <tr><td>Piece Randomization Symmetry Bias</td><td><input id="settingbPRSB" size="3"></td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div style="display: block; margin-top: 20px;">
+          <button onclick="randomizeSettings();">Shuffle</button>
+          <button onclick="resetSettings();showSettings();">Reset</button>
+          <button onclick="hideSettings();">Close</button>
+          <button onclick="saveSettings();">Save</button>
+        </div>
+      </div>
   </dialog>
   <dialog id="helpDialog">
     <div>
@@ -134,7 +163,7 @@ function resetSettings() {
   settings = {gr: 0, boardWidth: 10, boardHeight: 20, mystery: 15584, fallingSpeed: 35, fa: 1.01, nextPieces: 1, closeEnough: 0, heldPieces: 0, garbagePercentage: 50, scoreAcceleration: 1, wrapAround: false, rgr: false, sd: false, dual: false, flipping: false};
 }
 
-settingsb = {udDual: false, lrDual: false, rotateDual: false, wadc: false};
+settingsb = {udDual: false, lrDual: false, rotateDual: false, wadc: false, prdb: 0, prscb: 0, prsb: 0};
 
 resetSettings();
 
@@ -160,6 +189,9 @@ function showSettings() {
   document.getElementById("settingbUDDual").checked = settingsb["udDual"];
   document.getElementById("settingbRotateDual").checked = settingsb["rotateDual"];
   document.getElementById("settingbWADC").checked = settingsb["wadc"];
+  document.getElementById("settingbPRDB").value = settingsb["prdb"];
+  document.getElementById("settingbPRSB").value = settingsb["prsb"];
+  document.getElementById("settingbPRSCB").value = settingsb["prscb"];
   document.getElementById("settingsDialog").showModal();
   document.getElementById("settingsButton").blur();
 }
@@ -190,6 +222,9 @@ function saveSettings() {
   settingsb["udDual"] = document.getElementById("settingbUDDual").checked;
   settingsb["rotateDual"] = document.getElementById("settingbRotateDual").checked;
   settingsb["wadc"] = document.getElementById("settingbWADC").checked;
+  settingsb["prdb"] = document.getElementById("settingbPRDB").value * 1;
+  settingsb["prscb"] = document.getElementById("settingbPRSCB").value * 1;
+  settingsb["prsb"] = document.getElementById("settingbPRSB").value * 1;
   restartGame();
   document.getElementById("settingsDialog").close();
 }
@@ -229,6 +264,13 @@ var chiralPairs = {
   'unbanana': 'banana'
 }
 
+function colorDistance(a, b) {
+  return Math.sqrt(
+    (parseInt(a[1] + a[2], 16) - parseInt(b[1] + b[2], 16))**2 * 2.5 + 
+    (parseInt(a[3] + a[4], 16) - parseInt(b[3] + b[4], 16))**2 * 5 + 
+    (parseInt(a[5] + a[6], 16) - parseInt(b[5] + b[6], 16))**2 * 1.5);
+}
+
 function randomizeSettings() {
   settings["boardHeight"] = getRandomInt(10,30);
   settings["boardWidth"] = getRandomInt(Math.round(settings["boardHeight"]/3), Math.round(settings["boardHeight"]*2/3));
@@ -236,9 +278,16 @@ function randomizeSettings() {
   settings["fallingSpeed"] = getRandomInt(20, 50);
   settings["fa"] = 1 + 0.02 * Math.random();
   settings["mystery"] = 0;
-  let j = getRandomInt(1,allpieces.length);
+  let randomColor = '#' + getRandomInt(1048576, 16777215).toString(16);
+  let j = Math.ceil(Math.random()**Math.exp(- settingsb.prdb / 3) * allpieces.length);
   for (let i = 1 + Math.floor(-6*Math.log(Math.random()));i>0;i--) {
-    settings["mystery"] += 2**getRandomInt(1,j);
+    let k = getRandomInt(0,j);
+    while (((chiralPairs[allpieces[k]] == allpieces[k] ^ (Math.random() < 1 / (Math.exp(-settingsb.prsb) + 1))) ||
+      (colorDistance(colors[allpieces[k]], randomColor) > 255 * 3 / Math.exp(settingsb.prscb)) && Math.random() > 0.0003) || !(settings["mystery"] % 2**(k+1) < 2**k) ) {
+
+      k = (Math.random() > 0.003) ? getRandomInt(0,j) : getRandomInt(0, allpieces.length - 1);
+    }
+    settings["mystery"] += 2**k;
   }
   settings["nextPieces"] = Math.floor(-2*Math.log(Math.random()));
   settings["closeEnough"] = Math.floor(-Math.log(Math.random()));
@@ -484,7 +533,7 @@ function restartGame() {
 
   playfield = [];
   // populate the empty state
-  for (let row = -2; row < settings.boardHeight + 2; row++) {
+  for (let row = -4; row < settings.boardHeight + 4; row++) {
     playfield[row] = [];
     if (row >= 0 && row < settings.boardHeight) {
       for (let col = 0; col < settings.boardWidth; col++) {
@@ -556,7 +605,7 @@ function spawningCol(piece) {
 }
 function spawningRow(piece) {
   // I starts on row 21 (-1), all others start on row 22 (-2)
-  return Math.floor(tetrominos[piece][0].length / 2) - 3;
+  return -1-tetrominos[piece].map(row => row.reduce((a, b) => 1 - (1-a) * (1-b))).lastIndexOf(1);
 }
 
 // generate a new tetromino sequence
