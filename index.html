@@ -88,6 +88,7 @@
             <tr><td>Social Distancing</td><td><input type="checkbox" id="settingSD"></td></tr>
             <tr><td>Dual Mode</td><td><input type="checkbox" id="settingDual"></td></tr>
             <tr><td>Flipping</td><td><input type="checkbox" id="settingFlipping"></td></tr>
+            <tr><td>Stairs Mode</td><td><input type="checkbox" id="settingStairs"></td></tr>
           </table>
 
           </div>
@@ -160,7 +161,7 @@ var settings;
 var settingsb;
 
 function resetSettings() { 
-  settings = {gr: 0, boardWidth: 10, boardHeight: 20, mystery: 15584, fallingSpeed: 35, fa: 1.01, nextPieces: 1, closeEnough: 0, heldPieces: 0, garbagePercentage: 50, scoreAcceleration: 1, wrapAround: false, rgr: false, sd: false, dual: false, flipping: false};
+  settings = {gr: 0, boardWidth: 10, boardHeight: 20, mystery: 15584, fallingSpeed: 35, fa: 1.01, nextPieces: 1, closeEnough: 0, heldPieces: 0, garbagePercentage: 50, scoreAcceleration: 1, wrapAround: false, rgr: false, sd: false, dual: false, flipping: false, stairs: false};
 }
 
 settingsb = {udDual: false, lrDual: false, rotateDual: false, wadc: false, prdb: 0, prscb: 0, prsb: 0};
@@ -185,6 +186,7 @@ function showSettings() {
   document.getElementById("settingSD").checked = settings["sd"];
   document.getElementById("settingDual").checked = settings["dual"];
   document.getElementById("settingFlipping").checked = settings["flipping"];
+  document.getElementById("settingStairs").checked = settings["stairs"];
   document.getElementById("settingbLRDual").checked = settingsb["lrDual"];
   document.getElementById("settingbUDDual").checked = settingsb["udDual"];
   document.getElementById("settingbRotateDual").checked = settingsb["rotateDual"];
@@ -218,6 +220,7 @@ function saveSettings() {
   settings["sd"] = document.getElementById("settingSD").checked;
   settings["dual"] = document.getElementById("settingDual").checked;
   settings["flipping"] = document.getElementById("settingFlipping").checked;
+  settings["stairs"] = document.getElementById("settingStairs").checked;
   settingsb["lrDual"] = document.getElementById("settingbLRDual").checked;
   settingsb["udDual"] = document.getElementById("settingbUDDual").checked;
   settingsb["rotateDual"] = document.getElementById("settingbRotateDual").checked;
@@ -294,11 +297,12 @@ function randomizeSettings() {
   settings["heldPieces"] = Math.floor(-2*Math.log(Math.random()));
   settings["garbagePercentage"] = getRandomInt(1, 99);
   settings["scoreAcceleration"] = getRandomInt(0, 2);
-  settings["wrapAround"] = (Math.random() > 0.8);
-  settings["rgr"] = (Math.random() > 0.8);
-  settings["sd"] = (Math.random() > 0.8);
-  settings["dual"] = (Math.random() > 0.8);
-  settings["flipping"] = (Math.random() > 0.8);
+  settings["wrapAround"] = (Math.random() > 5/6);
+  settings["rgr"] = (Math.random() > 5/6);
+  settings["sd"] = (Math.random() > 5/6);
+  settings["dual"] = (Math.random() > 5/6);
+  settings["flipping"] = (Math.random() > 5/6);
+  settings["stairs"] = (Math.random() > 5/6);
   showSettings();
 }
 
@@ -524,7 +528,7 @@ function restartGame() {
   gridsmall = Math.round(grid * 0.625);
 
   canvas.width = settings["boardWidth"]*grid*wadcmult + gridsmall * 11;
-  canvas.height = settings["boardHeight"]*grid;
+  canvas.height = (settings["boardHeight"] + (settings.stairs ? settings["boardWidth"]*wadcmult : 0))*grid;
   canvas = document.getElementById('game');
   context = canvas.getContext('2d');
   
@@ -533,7 +537,7 @@ function restartGame() {
 
   playfield = [];
   // populate the empty state
-  for (let row = -4; row < settings.boardHeight + 4; row++) {
+  for (let row = -4-settings.boardWidth; row < settings.boardHeight + settings.boardWidth + 4; row++) {
     playfield[row] = [];
     if (row >= 0 && row < settings.boardHeight) {
       for (let col = 0; col < settings.boardWidth; col++) {
@@ -605,7 +609,7 @@ function spawningCol(piece) {
 }
 function spawningRow(piece) {
   // I starts on row 21 (-1), all others start on row 22 (-2)
-  return -1-tetrominos[piece].map(row => row.reduce((a, b) => 1 - (1-a) * (1-b))).lastIndexOf(1);
+  return -1-tetrominos[piece].map(row => row.reduce((a, b) => 1 - (1-a) * (1-b))).lastIndexOf(1) + (settings.stairs ? (FlipIfDual(false) ? -spawningCol(piece) : spawningCol(piece)) : 0);
 }
 
 // generate a new tetromino sequence
@@ -636,7 +640,7 @@ function name2tetromino(s) {
   let col = spawningCol(s);
   if (settings.wrapAround && !settingsb.wadc) {col = col + tetromino.col - spawningCol(tetromino.name);}
   
-  let row = spawningRow(s);
+  let row = spawningRow(s) - (settings.stairs && settings.wrapAround && !settingsb.wadc ? (spawningCol(tetromino.name) - tetromino.col) * (FlipIfDual(false) ? -1 : 1) : 0);
 
   return {
     name: s,      // name of the piece (L, O, etc.)
@@ -665,9 +669,9 @@ function isValidMove(matrix, cellRow, cellCol) {
           // outside the game bounds
           ((cellCol + col < 0 ||
           cellCol + col >= settings.boardWidth) && !settings.wrapAround) ||
-          (cellRow + row) >= settings.boardHeight ||
+          (cellRow + row - (settings.stairs ? (cellCol + col) : 0)) >= settings.boardHeight ||
           // collides with another piece
-          isCollidable(playfield[FlipIfDual(cellRow + row)][modulo(cellCol + col, settings.boardWidth)]))
+          isCollidable(playfield[FlipIfDual(cellRow + row) - (settings.stairs ? (cellCol + col) : 0)][modulo(cellCol + col, settings.boardWidth)]))
         ) {
         return false;
       }
@@ -724,11 +728,12 @@ function placeTetromino() {
       if (tetromino.matrix[row][col]) {
 
         // game over if piece has any part offscreen
-        if (tetromino.row + row < 0) {
+        let playrow = FlipIfDual(tetromino.row + row) - (settings.stairs ? tetromino.col + col : 0);
+        if (playrow < 0 || playrow >= settings.boardHeight) {
           return showGameOver();
         }
 
-        playfield[FlipIfDual(tetromino.row + row)][modulo((tetromino.col + col),settings.boardWidth)] = FlipIfDual(false) ? 0 : tetromino.name;
+        playfield[playrow][modulo((tetromino.col + col),settings.boardWidth)] = FlipIfDual(false) ? 0 : tetromino.name;
       }
     }
   }
@@ -800,8 +805,24 @@ function loop() {
 
   context.strokeStyle = "white";
   context.strokeWidth = 2;
-  context.strokeRect(gridsmall * 5.5,0,settings.boardWidth*grid*wadcmult,settings.boardHeight*grid);
-
+  let drawnWidth = settings.boardWidth*wadcmult;
+  if (settings.stairs) {
+    context.beginPath();
+    context.moveTo(gridsmall * 5.5, 0);
+    for (i = 0; i < drawnWidth; i++) {
+      context.lineTo(gridsmall * 5.5 + grid * (i+1), grid * i);
+      context.lineTo(gridsmall * 5.5 + grid * (i+1), grid * (i + 1));
+    }
+    context.lineTo(gridsmall * 5.5 + grid * drawnWidth, grid * (drawnWidth + settings.boardHeight - 1));
+    for (i = 0; i < drawnWidth; i++) {
+      context.lineTo(gridsmall * 5.5 + grid * (drawnWidth - (i+1)), grid * (drawnWidth + settings.boardHeight - (i+1)));
+      context.lineTo(gridsmall * 5.5 + grid * (drawnWidth - (i+1)), grid * (drawnWidth + settings.boardHeight - (i+2)));
+    }
+    context.closePath();
+    context.stroke();
+  } else {
+    context.strokeRect(gridsmall * 5.5,0,drawnWidth*grid,settings.boardHeight*grid);
+  }
   // draw the playfield
   for (let row = 0; row < settings.boardHeight; row++) {
     for (let col = 0; col < settings.boardWidth; col++) {
@@ -811,13 +832,13 @@ function loop() {
         // drawing 1 px smaller than the grid creates a grid effect
         if (settings.wrapAround) {
           if (settingsb.wadc) {
-            context.fillRect(col * grid + gridsmall * 5.5, row * grid, grid-1, grid-1);
-            context.fillRect((col + settings.boardWidth) * grid + gridsmall * 5.5, row * grid, grid-1, grid-1);
+            context.fillRect(col * grid + gridsmall * 5.5, row * grid + (settings.stairs ? (col * grid) : 0), grid-1, grid-1);
+            context.fillRect((col + settings.boardWidth) * grid + gridsmall * 5.5, row * grid + (settings.stairs ? ((col + settings.boardWidth) * grid) : 0), grid-1, grid-1);
           } else {
-            context.fillRect(modulo(col - tetromino.col + spawningCol(tetromino.name),settings.boardWidth) * grid + gridsmall * 5.5, row * grid, grid-1, grid-1);
+            context.fillRect(modulo(col - tetromino.col + spawningCol(tetromino.name),settings.boardWidth) * grid + gridsmall * 5.5, row * grid + (settings.stairs ? (modulo(col - tetromino.col + spawningCol(tetromino.name),settings.boardWidth) * grid) : 0), grid-1, grid-1);
           }
         } else {
-          context.fillRect(col * grid + gridsmall * 5.5, row * grid, grid-1, grid-1);
+          context.fillRect(col * grid + gridsmall * 5.5, row * grid + (settings.stairs ? (col * grid) : 0), grid-1, grid-1);
         }
       }
     }
@@ -851,7 +872,7 @@ function loop() {
               context.fillRect((modulo(col + tetromino.col,settings.boardWidth) + settings.boardWidth) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
             } else {
             // I am aware that if the tetromino is wider than the grid, it renders out of bounds. I don't care
-              context.fillRect((col + spawningCol(tetromino.name)) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
+              context.fillRect((col + spawningCol(tetromino.name)) * grid + gridsmall*5.5, (FlipIfDual(tetromino.row + row + (settings.stairs ? spawningRow(tetromino.name) + 2 : 0)) - (settings.stairs ? tetromino.col : 0)) * grid, grid-1, grid-1);
             }
           } else {
             context.fillRect((col + tetromino.col) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
@@ -870,7 +891,7 @@ function loop() {
         if (tetrominos[nextpieces[i]][row][col]) {
 
           // drawing it smaller to indicate that it isn't right now
-          context.fillRect((spawningCol(nextpieces[i]) + col + 8.5 - settings.boardWidth / 2) * gridsmall + settings.boardWidth * grid * wadcmult, (spawningRow(nextpieces[i]) + row + 8.5 + i*4 - tetrominos[nextpieces[i]].length / 2) * gridsmall, gridsmall-1, gridsmall-1);
+          context.fillRect((spawningCol(nextpieces[i]) + col + 8.5 - settings.boardWidth / 2) * gridsmall + settings.boardWidth * grid * wadcmult, (row + 8.5 + i*4 - tetrominos[nextpieces[i]].length / 2) * gridsmall, gridsmall-1, gridsmall-1);
         }
       }
     }
