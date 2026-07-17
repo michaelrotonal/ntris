@@ -232,7 +232,7 @@ function saveSettings() {
   document.getElementById("settingsDialog").close();
 }
 
-var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'banana', 'unbanana', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'D', 'X2', 'FYold', 'W'];
+var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'banana', 'unbanana', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'D', 'F2', 'R2', 'X2', 'FYold', '[', 'W'];
 
 var chiralPairs = {
   'I': 'I',
@@ -264,7 +264,10 @@ var chiralPairs = {
   'madnor2': 'random2',
   'd': 'd',
   'banana': 'unbanana',
-  'unbanana': 'banana'
+  'unbanana': 'banana',
+  '[': '[',
+  'F2': 'R2',
+  'R2': 'F2'
 }
 
 function colorDistance(a, b) {
@@ -458,6 +461,25 @@ const tetrominos = {
     [1,0,0],
     [0,1,1],
     [0,0,0]
+  ],
+  '[': [
+    [0,0,0,0,0],
+    [1,0,0,0,1],
+    [1,1,1,1,1],
+    [0,0,0,0,0],
+    [0,0,0,0,0]
+  ],
+  'R2': [
+    [0,1,1,1],
+    [1,1,0,0],
+    [0,1,0,0],
+    [0,1,0,0]
+  ],
+  'F2': [
+    [1,1,1,0],
+    [0,0,1,1],
+    [0,0,1,0],
+    [0,0,1,0]
   ]
 };
 tetrominos['madnor'] = tetrominos['random'].map(cell => cell.toReversed()); // there's like no way this worked first try
@@ -496,7 +518,10 @@ const colors = {
   'madnor2': '#' + getRandomInt(100000,999999),
   'd': '#FF1493',
   'banana': '#F5F5DC',
-  'unbanana': '#FFFFE0'
+  'unbanana': '#FFFFE0',
+  '[': '#C701FF',
+  'F2': '#440000',
+  'R2': '#003500'
 };
 
 
