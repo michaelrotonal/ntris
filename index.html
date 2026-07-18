@@ -400,40 +400,8 @@ tetrominos['madnor2'] = tetrominos['random2'].map(cell => cell.toReversed());
 
 var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'banana', 'unbanana', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'D', 'F2', 'R2', 'X2', 'FYold', '[', 'W'].map(x => tetrominos[x]); // i could do the effort of properly removing this, but i'm pretty sure we'll usurp the need for this list soon
 
-var chiralPairs = {
-  'I': 'I',
-  'J': 'L',
-  'L': 'J',
-  'O': 'O',
-  'S': 'Z',
-  'Z': 'S',
-  'T': 'T',
-  'i': 'i',
-  'l': 'l',
-  '|': '|',
-  'F': 'R',
-  'R': 'F',
-  'II': 'II',
-  '.': '.',
-  'X': 'X',
-  'FY': 'FY',
-  'FYold': 'FYold',
-  'theBrick': 'theBrick',
-  'brick2': 'brick2',
-  'X2': 'X2',
-  'W': 'W',
-  'V': 'V',
-  'D': 'D',
-  'random': 'madnor',
-  'madnor': 'random',
-  'random2': 'madnor2',
-  'madnor2': 'random2',
-  'd': 'd',
-  'banana': 'unbanana',
-  'unbanana': 'banana',
-  '[': '[',
-  'F2': 'R2',
-  'R2': 'F2'
+function allorientations(matrix) {
+  return [matrix,rotate(matrix),rotate(rotate(matrix)),rotate(rotate(rotate(matrix))), matrix.toReversed(), rotate(matrix.toReversed()), rotate(rotate(matrix.toReversed())), rotate(rotate(rotate(matrix.toReversed())))];
 }
 
 function padwithzeros(string) {
@@ -462,7 +430,7 @@ function randomizeSettings() {
   let j = Math.ceil(Math.random()**Math.exp(- settingsb.prdb / 3) * allpieces.length);
   for (let i = 1 + Math.floor(-6*Math.log(Math.random()));i>0;i--) {
     let k = getRandomInt(0,j);
-    while (((chiralPairs[allpieces[k]] == allpieces[k] ^ (Math.random() < 1 / (Math.exp(-settingsb.prsb) + 1))) ||
+    while (((allorientations(allpieces[k]).lastIndexOf(allpieces[k]) > 3 ^ (Math.random() < 1 / (Math.exp(-settingsb.prsb) + 1))) ||
       (colorDistance(matrix2color(allpieces[k]), randomColor) > 255 * 3 / Math.exp(settingsb.prscb)) && Math.random() > 0.0003) || !(settings["mystery"] % 2**(k+1) < 2**k) ) {
 
       k = (Math.random() > 0.003) ? getRandomInt(0,j) : getRandomInt(0, allpieces.length - 1);
