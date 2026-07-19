@@ -5,10 +5,12 @@ import * as settings from './settings.js';
 import * as controls from './controls.js'; 
 import * as ts from './tetrominos.js'; 
 import * as color from './color.js'; 
-
+import * as gc from './GridCell.js'; 
 
 // defunct
-var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'banana', 'unbanana', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'D', 'F2', 'R2', 'X2', 'FYold', '[', 'W'].map(x => ts.tetrominos[x]); // i could do the effort of properly removing this, but i'm pretty sure we'll usurp the need for this list soon
+var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'banana', 'unbanana', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 
+'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'D', 'F2', 'R2', 'X2', 
+'FYold', '[', 'W']; //.map(x => ts.tetrominos[x]); // i could do the effort of properly removing this, but i'm pretty sure we'll usurp the need for this list soon
 
 
 
@@ -69,25 +71,27 @@ function restartGame() {
       for (let col = 0; col < settings.game.boardWidth; col++) {
         if (settings.game.dual) {
           if (Math.abs(settings.game.boardHeight - row * 2 - 1/2) > settings.game.gr) {
-            playfield[row][col] = (row > settings.game.boardHeight / 2) ? 'garbage' : 0; 
+            playfield[row][col] = (row > settings.game.boardHeight / 2) ? new gc.GridCell(gc.GARBAGE) : new gc.GridCell(); 
           } else {
-            playfield[row][col] = [0, 'garbage'][(Math.random() < settings.game.garbagePercentage / 100) * 1];
+            playfield[row][col] = new gc.GridCell([gc.EMPTY, gc.GARBAGE][(Math.random() < settings.game.garbagePercentage / 100) * 1]);
           }
 
         } else {
           if (settings.game.boardHeight - row > settings.game.gr) {
-            playfield[row][col] = 0;
+            playfield[row][col] = new gc.GridCell();
           } else {
-            playfield[row][col] = [0, 'garbage'][(Math.random() < settings.game.garbagePercentage / 100) * 1];
+            playfield[row][col] = new gc.GridCell([gc.GARBAGE, gc.EMPTY][(Math.random() < settings.game.garbagePercentage / 100) * 1]);
           }
         }
       }
     } else {
       for (let col = 0; col < settings.game.boardWidth; col++) {
-        playfield[row][col] = (row > settings.game.boardHeight / 2) ? 'garbage' : 0; 
+        playfield[row][col] = (row > settings.game.boardHeight / 2) ? new gc.GridCell(gc.GARBAGE) : new gc.GridCell(); 
       }
     }
   }
+
+  if(settings.game.sd) { noTouchy(); }
 
   count = 0;
   tetromino = matrix2tetromino(getNextTetromino());
@@ -113,8 +117,8 @@ function noTouchy() {
     for (let col = 0; col < settings.game.boardWidth; col++) {
       if (!isSocialDistancer(row,col)) {
         if ((isSocialDistancer(row,col+1) || isSocialDistancer(row,col-1) || isSocialDistancer(row+1,col) || isSocialDistancer(row-1,col))) {
-          playfield[row][col] = 'nonsolid';
-        } else {playfield[row][col] = FlipIfDual(false) ? 'garbage' : 0;}
+          playfield[row][col] = new gc.GridCell(gc.SOCDIST);
+        } else {playfield[row][col] = FlipIfDual(false) ? new gc.GridCell(gc.GARBAGE) : new gc.GridCell();}
       }
     }
   }
@@ -124,7 +128,12 @@ function noTouchy() {
 function isSocialDistancer(row,col) {
   if (-2 <= row && row < settings.game.boardHeight) {
     if (0 <= col && col < settings.game.boardWidth) {
-      return FlipIfDual(!!playfield[row][col]) && (playfield[row][col] != 'nonsolid')
+      let cell = playfield[row][col]; 
+
+      // Saved because I'm not sure I've properly replicated the logic
+      //return FlipIfDual(!!playfield[row][col]) && (playfield[row][col] != 'nonsolid')
+
+      return FlipIfDual(!cell.isEmpty()) && ! cell.isSD(); 
     } else {
       if (settings.game.wrapAround) {return isSocialDistancer(row, mu.modulo(col,settings.game.boardWidth));}
     }
@@ -150,8 +159,8 @@ function generateSequence() {
 
   while (sequence.length) {
     const rand = mu.getRandomInt(0, sequence.length - 1);
-    const matrix = sequence.splice(rand, 1)[0];
-    tetrominoSequence.push(matrix);
+    const name = sequence.splice(rand, 1)[0];
+    tetrominoSequence.push({'matrix': ts.tetrominos[name], 'name': name});
   }
 }
 
@@ -163,22 +172,23 @@ function getNextTetromino() {
     generateSequence();
   }
 
-  const matrix = tetrominoSequence.pop();
-  return matrix;
+  const tet = tetrominoSequence.pop();
+  return tet;
 }
 
 // Tetrominofactory
 function matrix2tetromino(s) {
 
-  let col = spawningCol(s);
+  let col = spawningCol(s.matrix);
   if (settings.game.wrapAround && !settings.user.wadc) {col = col + tetromino.col - spawningCol(tetromino.matrix);}
   
-  let row = spawningRow(s) - (settings.game.stairs && settings.game.wrapAround && !settings.user.wadc ? (spawningCol(tetromino.matrix) - tetromino.col) * (FlipIfDual(false) ? -1 : 1) : 0);
+  let row = spawningRow(s.matrix) - (settings.game.stairs && settings.game.wrapAround && !settings.user.wadc ? (spawningCol(tetromino.matrix) - tetromino.col) * (FlipIfDual(false) ? -1 : 1) : 0);
 
   return {
-    matrix: s,  // the piece shape, rotated
+    matrix: s.matrix,  // the piece shape, rotated
     row: row,        // row (starts offscreen)
-    col: col         // column
+    col: col,         // column
+    name: s.name
   };
 }
 
@@ -218,9 +228,9 @@ function isValidMove(matrix, cellRow, cellCol) {
 // game
 function isCollidable(cell) {
   if (FlipIfDual(false)) {
-    return cell == 'nonsolid' || !cell; 
+    return cell.isSD() || cell.isEmpty(); 
   } else {
-    return !!cell
+    return ! cell.isEmpty(); 
   }
 }
 
@@ -252,7 +262,7 @@ function droprowsaboverow(row) {
 
 // game.grid?
 function raiserowsbelowrow(row) {
-  for (let r = row; r < settings.boardHeight - 1; r++) {
+  for (let r = row; r < settings.game.boardHeight - 1; r++) {
     for (let c = 0; c < playfield[r].length; c++) {
       playfield[r][c] = playfield[r+1][c];
     }
@@ -273,7 +283,9 @@ function placeTetromino() {
           return showGameOver();
         }
 
-        playfield[playrow][mu.modulo((tetromino.col + col),settings.game.boardWidth)] = FlipIfDual(false) ? 0 : tetromino.matrix;
+        let cell = new gc.GridCell();
+        if(! FlipIfDual(false)) { cell.makePlacedPiece(tetromino.matrix, tetromino.name); }
+        playfield[playrow][mu.modulo((tetromino.col + col),settings.game.boardWidth)] = cell;
       }
     }
   }
@@ -282,11 +294,12 @@ function placeTetromino() {
   // check for line clears starting from the bottom and working our way up
   if (!settings.game.dual) {
     for (let row = settings.game.boardHeight - 1; row >= 0; ) {
-      if (playfield[row].filter(cell => !cell).length <= settings.game.closeEnough) {
-        if (settings.game.rgr && playfield[row].filter(cell => cell == 'garbage').length > 0) {
+      if (playfield[row].filter(cell => cell.isEmpty()).length <= settings.game.closeEnough) {
+        if (settings.game.rgr && playfield[row].filter(cell => cell.isGarbage()).length > 0) {
           // raise every row below this one
           raiserowsbelowrow(row);
-          playfield[settings.game.boardHeight - 1] = playfield[settings.game.boardHeight - 1].map(cell => (Math.random() * 100 > settings.game.garbagePercentage ? 0 : 'garbage'));
+
+          playfield[settings.game.boardHeight - 1].map(cell => (Math.random() * 100 > settings.game.garbagePercentage ? new gc.GridCell() : new gc.GridCell(gc.GARBAGE)));
         } else {
           // drop every row above this one
           droprowsaboverow(row);
@@ -371,8 +384,9 @@ function loop() {
   for (let row = 0; row < settings.game.boardHeight; row++) {
     for (let col = 0; col < settings.game.boardWidth; col++) {
       if (playfield[row][col]) {
-        const name = playfield[row][col];
-        context.fillStyle = (name == 0 || name == 'garbage' || name == 'nonsolid') ? (ts.colors[name]) : color.matrix2color(name); // 'name' is a misnomer here -- it's the matrix
+        let cell = playfield[row][col];
+        if(cell.isEmpty()) { continue; }
+        context.fillStyle = cell.getColor();
         // drawing 1 px smaller than the grid creates a grid effect
         if (settings.game.wrapAround) {
           if (settings.user.wadc) {
@@ -403,7 +417,7 @@ function loop() {
       }
     }
 
-    context.fillStyle = FlipIfDual(false) ? 'black' : color.matrix2color(tetromino.matrix);
+    context.fillStyle = FlipIfDual(false) ? 'black' : color.tetromino2color(tetromino.matrix, tetromino.name);
 
     for (let row = 0; row < tetromino.matrix.length; row++) {
       for (let col = 0; col < tetromino.matrix[row].length; col++) {
@@ -428,13 +442,13 @@ function loop() {
   // draw the next tetrominoes
   for (let i=0;i<settings.game.nextPieces;i++) {
 
-    context.fillStyle = color.matrix2color(nextpieces[i]);
-    for (let row = 0; row < nextpieces[i].length; row++) {
-      for (let col = 0; col < nextpieces[i][row].length; col++) {
-        if (nextpieces[i][row][col]) {
+    context.fillStyle = color.tetromino2color(nextpieces[i].matrix, nextpieces[i].name);
+    for (let row = 0; row < nextpieces[i].matrix.length; row++) {
+      for (let col = 0; col < nextpieces[i].matrix[row].length; col++) {
+        if (nextpieces[i].matrix[row][col]) {
 
           // drawing it smaller to indicate that it isn't right now
-          context.fillRect((spawningCol(nextpieces[i]) + col + 8.5 - settings.game.boardWidth / 2) * gridsmall + settings.game.boardWidth * grid * wadcmult, (row + 8.5 + i*4 - nextpieces[i].length / 2) * gridsmall, gridsmall-1, gridsmall-1);
+          context.fillRect((spawningCol(nextpieces[i].matrix) + col + 8.5 - settings.game.boardWidth / 2) * gridsmall + settings.game.boardWidth * grid * wadcmult, (row + 8.5 + i*4 - nextpieces[i].matrix.length / 2) * gridsmall, gridsmall-1, gridsmall-1);
         }
       }
     }
@@ -446,14 +460,14 @@ function loop() {
   // draw the held tetrominoes
   for (let i=0;i<settings.game.heldPieces;i++) {
     if (held[i]) {
-      context.fillStyle = color.matrix2color(held[i]);
+      context.fillStyle = color.tetromino2color(held[i].matrix, held[i].name); 
 
-      for (let row = 0; row < held[i].length; row++) {
-        for (let col = 0; col < held[i][row].length; col++) {
-          if (held[i][row][col]) {
+      for (let row = 0; row < held[i].matrix.length; row++) {
+        for (let col = 0; col < held[i].matrix[row].length; col++) {
+          if (held[i].matrix[row][col]) {
 
           // drawing it smaller to indicate that it isn't right now
-            context.fillRect((spawningCol(held[i]) + col + 3 - settings.game.boardWidth / 2) * gridsmall, (spawningRow(held[i]) + row + 8.5 + (settings.game.heldPieces-1-i)*4 - held[i].length / 2) * gridsmall, gridsmall-1, gridsmall-1);
+            context.fillRect((spawningCol(held[i].matrix) + col + 3 - settings.game.boardWidth / 2) * gridsmall, (spawningRow(held[i].matrix) + row + 8.5 + (settings.game.heldPieces-1-i)*4 - held[i].matrix.length / 2) * gridsmall, gridsmall-1, gridsmall-1);
           }
         }
       }
@@ -535,7 +549,7 @@ export function pieceFlip() {
 export function pieceHold() {
   document.getElementById("settingsButton").blur(); // this one is necessary
   if (settings.game.heldPieces > 0 && holdcycleattempts < settings.game.heldPieces) {
-    held.splice(0, 0, tetromino.matrix);
+    held.splice(0, 0, tetromino);
     holdcycleattempts++;
     if (held.length > settings.game.heldPieces) {
       tetromino = matrix2tetromino(held.pop());

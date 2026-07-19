@@ -1,5 +1,6 @@
 import {default as mu} from './mathutil.js';  
-import * as settings from './settings.js'; 
+import * as settings from './settings.js';  
+import * as ts from './tetrominos.js'; 
 
 
 function removeEdgeInf(array) {
@@ -99,4 +100,10 @@ export function matrix2color(matrix) {
     Math.round(channels[mu.modulo(Math.round(settings.user['blueColor']),4)])).toString(16));
 }
 
-
+export function tetromino2color(matrix, name) {
+	if(ts.colors[name] && settings.user.useStaticColor) {
+		return ts.colors[name];
+	} else {
+		return matrix2color(matrix);
+	}
+}

@@ -1,39 +1,72 @@
-class GridCell {
-	constructor() {
-		this.type = 'empty'; 
+import * as color from './color.js';
+import * as ts from './tetrominos.js';  
+
+export const EMPTY = 'empty';
+export const GARBAGE = 'garbage';
+export const PLACED = 'placed';
+export const SOCDIST = 'sd'; 
+
+export class GridCell {
+	constructor(type=EMPTY) {
+		this.type = type; 
 	}
 
 	makeEmpty() {
-		this.type = 'empty'; 
+		this.type = EMPTY; 
 	}
 
 	isEmpty() {
-		return this.type == 'empty'; 
+		return this.type == EMPTY; 
 	}
 
 	makeGarbage() {
-		this.type = 'garbage';
+		this.type = GARBAGE;
 	}
 
 	isGarbage() {
-		return this.type == 'garbage'; 
+		return this.type == GARBAGE; 
 	}
 
-	makePlacedPiece(matrix) {
-		this.type = 'placed';
+	makePlacedPiece(matrix, name) {
+		this.type = PLACED;
 		this.matrix = matrix.map(r => r.slice()); // Deep local copy
+		this.name = name;
 	}
 
 	isPlaced() {
-		return this.type == 'placed'; 
+		return this.type == PLACED; 
 	}
 
 	makeSD() {
-		this.type = 'sd';
+		this.type = SOCDIST;
 	}
 
 	isSD() {
-		return this.type == 'sd'; 
+		return this.type == SOCDIST; 
+	}
+
+	getColor() {
+		if(this.isEmpty()) {
+			return 'black';
+		}
+
+		if(this.isGarbage()) {
+			return '#DCDCDC';
+		}
+
+		if(this.isSD()) {
+			return '#1F1F1F';
+		}
+
+		if(this.isPlaced()) {
+			//if(ts.colors[this.name]) {
+			//	return ts.colors[this.name]; 
+			//} else {
+				return color.tetromino2color(this.matrix, this.name); 
+			//}
+		}
+
+		return '#FF0000'; // ERROR ERROR ERROR 
 	}
 
 

@@ -1,5 +1,6 @@
 import {default as mu} from './mathutil.js'; 
 import * as color from './color.js'; 
+import * as ts from './tetrominos.js';  
 
 let gameDefault = {
 	gr: 0, 
@@ -33,7 +34,8 @@ export let user = {
 	prsb: 0,
   redColor: 0,
   greenColor: 1,
-  blueColor: 2
+  blueColor: 2,
+  useStaticColor: 1 // No UI -- just to demonstrate power of new interfaces
 };
 
 export function resetSettings() { 
@@ -120,19 +122,47 @@ export function randomizeSettings(allpieces) {
   game["fa"] = 1 + 0.02 * Math.random();
   game["mystery"] = 0;
 
-  // Here there be dragons =====================
   let randomColor = '#' + color.padwithzeros(mu.getRandomInt(0, 16777215).toString(16));
-  let j = Math.ceil(Math.random()**Math.exp(- user.prdb / 3) * allpieces.length); // ISSUE
+  let j = Math.ceil(Math.random()**Math.exp(- user.prdb / 3) * allpieces.length); 
+
+  // Here there be dragons =====================
+  // I have attempted to make the dragons more readable below
+  // I do not claim to understand the dragons 
+  /*
   for (let i = 1 + Math.floor(-6*Math.log(Math.random()));i>0;i--) {
     let k = mu.getRandomInt(0,j);
-    while (((mu.allorientations(allpieces[k]).lastIndexOf(allpieces[k]) > 3 ^ (Math.random() < 1 / (Math.exp(-user.prsb) + 1))) ||
-      (color.colorDistance(color.matrix2color(allpieces[k]), randomColor) > 255 * 3 / Math.exp(user.prscb)) && Math.random() > 0.0003) || !(game["mystery"] % 2**(k+1) < 2**k) ) {
+    while (((mu.allorientations(ts.tetrominos[allpieces[k]]).lastIndexOf(ts.tetrominos[allpieces[k]]) > 3 ^ (Math.random() < 1 / (Math.exp(-user.prsb) + 1))) ||
+      (color.colorDistance(color.matrix2color(ts.tetrominos[allpieces[k]]), randomColor) > 255 * 3 / Math.exp(user.prscb)) && Math.random() > 0.0003) || !(game["mystery"] % 2**(k+1) < 2**k) ) {
 
       k = (Math.random() > 0.003) ? mu.getRandomInt(0,j) : mu.getRandomInt(0, allpieces.length - 1);
     }
     game["mystery"] += 2**k;
   }
+  */
   // End dragons ===============================
+
+  for (let i = 1 + Math.floor(-6*Math.log(Math.random()));i>0;i--) {
+    let k = mu.getRandomInt(0,j);
+
+    let watcond, colorcond, randcond, mystcond;
+    watcond = true; 
+    while (watcond || (colorcond && randcond) || mystcond) {
+
+      k = (Math.random() > 0.003) ? mu.getRandomInt(0,j) : mu.getRandomInt(0, allpieces.length - 1);
+
+      let kname  = allpieces[k];
+      let kmatrix = ts.tetrominos[kname];
+      let kcolor  = color.tetromino2color(kmatrix, kname); 
+
+      watcond   = mu.allorientations(kmatrix).lastIndexOf(kmatrix) > 3 ^ (Math.random() < 1 / (Math.exp(-user.prsb) + 1));
+      colorcond = color.colorDistance(kcolor, randomColor) > 255 * 3 / Math.exp(user.prscb);
+      randcond  = Math.random() > 0.0003;
+      mystcond  = !(game["mystery"] % 2**(k+1) < 2**k); 
+    }
+    game["mystery"] += 2**k;
+  }
+
+  // End readable(?) dragons =================
 
   game["nextPieces"] = Math.floor(-2*Math.log(Math.random()));
   game["closeEnough"] = Math.floor(-Math.log(Math.random()));
