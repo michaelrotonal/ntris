@@ -1,271 +1,14 @@
 // https://tetris.fandom.com/wiki/Tetris_Guideline
 
-// get a random integer between the range of [min,max]
-// @see https://stackoverflow.com/a/1527820/2124254
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function modulo(a, b) {
-  return ((a % b) + b) % b;
-}
-
-function showControls() {
-  pause = true;
-  document.getElementById("helpDialog").showModal();
-}
-
-function hideControls() {
-  document.getElementById("helpDialog").close();
-  pause = false;
-}
-
-var settings;
-
-var settingsb;
-
-function resetSettings() { 
-  settings = {gr: 0, boardWidth: 10, boardHeight: 20, mystery: 15584, fallingSpeed: 35, fa: 1.01, nextPieces: 1, closeEnough: 0, heldPieces: 0, garbagePercentage: 50, scoreAcceleration: 1, wrapAround: false, rgr: false, sd: false, dual: false, flipping: false, stairs: false};
-}
-
-settingsb = {udDual: false, lrDual: false, rotateDual: false, wadc: false, prdb: 0, prscb: 0, prsb: 0};
-
-resetSettings();
-
-function showSettings() {
-  pause = true; 
-  document.getElementById("settingGR").value = settings["gr"];
-  document.getElementById("settingBoardWidth").value = settings["boardWidth"];
-  document.getElementById("settingBoardHeight").value = settings["boardHeight"];
-  document.getElementById("settingMystery").value = settings["mystery"];
-  document.getElementById("settingFallingSpeed").value = settings["fallingSpeed"];
-  document.getElementById("settingFA").value = settings["fa"];
-  document.getElementById("settingNextPieces").value = settings["nextPieces"];
-  document.getElementById("settingCloseEnough").value = settings["closeEnough"];
-  document.getElementById("settingHeldPieces").value = settings["heldPieces"];
-  document.getElementById("settingGarbagePercentage").value = settings["garbagePercentage"];
-  document.getElementById("settingScoreAcceleration").value = settings["scoreAcceleration"];
-  document.getElementById("settingWrapAround").checked = settings["wrapAround"];
-  document.getElementById("settingRGR").checked = settings["rgr"];
-  document.getElementById("settingSD").checked = settings["sd"];
-  document.getElementById("settingDual").checked = settings["dual"];
-  document.getElementById("settingFlipping").checked = settings["flipping"];
-  document.getElementById("settingStairs").checked = settings["stairs"];
-  document.getElementById("settingbLRDual").checked = settingsb["lrDual"];
-  document.getElementById("settingbUDDual").checked = settingsb["udDual"];
-  document.getElementById("settingbRotateDual").checked = settingsb["rotateDual"];
-  document.getElementById("settingbWADC").checked = settingsb["wadc"];
-  document.getElementById("settingbPRDB").value = settingsb["prdb"];
-  document.getElementById("settingbPRSB").value = settingsb["prsb"];
-  document.getElementById("settingbPRSCB").value = settingsb["prscb"];
-  document.getElementById("settingsDialog").showModal();
-  document.getElementById("settingsButton").blur();
-}
-
-function hideSettings() {
-  document.getElementById("settingsDialog").close();
-  pause = false;
-}
-
-function saveSettings() {
-  settings["gr"] = document.getElementById("settingGR").value * 1;
-  settings["boardWidth"] = document.getElementById("settingBoardWidth").value * 1;
-  settings["boardHeight"] = document.getElementById("settingBoardHeight").value * 1;
-  settings["mystery"] = document.getElementById("settingMystery").value * 1;
-  settings["fallingSpeed"] = document.getElementById("settingFallingSpeed").value * 1;
-  settings["fa"] = document.getElementById("settingFA").value * 1;
-  settings["nextPieces"] = document.getElementById("settingNextPieces").value * 1;
-  settings["closeEnough"] = document.getElementById("settingCloseEnough").value * 1;
-  settings["heldPieces"] = document.getElementById("settingHeldPieces").value * 1;
-  settings["garbagePercentage"] = document.getElementById("settingGarbagePercentage").value * 1;
-  settings["scoreAcceleration"] = document.getElementById("settingScoreAcceleration").value * 1;
-  settings["wrapAround"] = document.getElementById("settingWrapAround").checked;
-  settings["rgr"] = document.getElementById("settingRGR").checked;
-  settings["sd"] = document.getElementById("settingSD").checked;
-  settings["dual"] = document.getElementById("settingDual").checked;
-  settings["flipping"] = document.getElementById("settingFlipping").checked;
-  settings["stairs"] = document.getElementById("settingStairs").checked;
-  settingsb["lrDual"] = document.getElementById("settingbLRDual").checked;
-  settingsb["udDual"] = document.getElementById("settingbUDDual").checked;
-  settingsb["rotateDual"] = document.getElementById("settingbRotateDual").checked;
-  settingsb["wadc"] = document.getElementById("settingbWADC").checked;
-  settingsb["prdb"] = document.getElementById("settingbPRDB").value * 1;
-  settingsb["prscb"] = document.getElementById("settingbPRSCB").value * 1;
-  settingsb["prsb"] = document.getElementById("settingbPRSB").value * 1;
-  restartGame();
-  document.getElementById("settingsDialog").close();
-}
-const tetrominos = {
-  'I': [
-    [0,0,0,0],
-    [1,1,1,1],
-    [0,0,0,0],
-    [0,0,0,0]
-  ],
-  'J': [
-    [1,0,0],
-    [1,1,1],
-    [0,0,0],
-  ],
-  'L': [
-    [0,0,1],
-    [1,1,1],
-    [0,0,0],
-  ],
-  'O': [
-    [1,1],
-    [1,1],
-  ],
-  'S': [
-    [0,1,1],
-    [1,1,0],
-    [0,0,0],
-  ],
-  'Z': [
-    [1,1,0],
-    [0,1,1],
-    [0,0,0],
-  ],
-  'T': [
-    [0,1,0],
-    [1,1,1],
-    [0,0,0],
-  ],
-  'FY': [
-    [1,1,1],
-    [1,0,1],
-    [1,1,0]
-  ],
-  '|': [
-    [0,0,0],
-    [1,1,1],
-    [0,0,0]
-  ],
-  'II': [
-    [0,0,0,0,0],
-    [0,0,0,0,0],
-    [1,1,1,1,1],
-    [0,0,0,0,0],
-    [0,0,0,0,0]
-  ],
-  'F': [
-    [1,1,0],
-    [0,1,1],
-    [0,1,0]
-  ],
-  'D': [
-    [0,0,1],
-    [0,1,0],
-    [1,0,0]
-  ],
-  'W': [
-    [0,0,1,1],
-    [0,1,1,0],
-    [1,1,0,0],
-    [1,0,0,0]
-  ],
-  'l': [
-    [1,1],
-    [1,0]
-  ],
-  'X': [
-    [0,0,0,0,0],
-    [0,0,1,0,0],
-    [0,1,1,1,1],
-    [0,0,1,0,0],
-    [0,0,0,0,0]
-  ],
-  'R': [
-    [0,1,1],
-    [1,1,0],
-    [0,1,0]
-  ],
-  'theBrick': [
-    [1,1,1],
-    [1,1,1],
-    [0,0,0]
-  ],
-  '.': [
-    [1]
-  ],
-  "i": [
-    [1,1],
-    [0,0]
-  ],
-  'X2': [
-    [0,1,0,0],
-    [1,1,1,1],
-    [0,1,0,0],
-    [0,1,0,0]
-  ],
-  'brick2': [
-    [1,1,1],
-    [1,1,1],
-    [1,1,1]
-  ],
-  'FYold': [
-    [1,1,1],
-    [1,0,1],
-    [1,1,1]
-  ],
-  'V': [
-    [0,0,1],
-    [0,0,1],
-    [1,1,0]
-  ],
-  'random': [
-    [getRandomInt(0,1),getRandomInt(0,1),getRandomInt(0,1)],
-    [getRandomInt(0,1),getRandomInt(0,1),getRandomInt(0,1)],
-    [getRandomInt(0,1),getRandomInt(0,1),getRandomInt(0,1)]
-  ],
-  'random2': [
-    [0, getRandomInt(0,1), getRandomInt(0,1), 0],
-    [getRandomInt(0,1), getRandomInt(0,1), getRandomInt(0,1), getRandomInt(0,1)],
-    [getRandomInt(0,1), getRandomInt(0,1), getRandomInt(0,1), getRandomInt(0,1)],
-    [0, getRandomInt(0,1), getRandomInt(0,1),0]
-  ],
-  'd': [
-    [0,1],
-    [1,0]
-  ],
-  'banana': [
-    [0,0,1],
-    [1,1,0],
-    [0,0,0]
-  ],
-  'unbanana': [
-    [1,0,0],
-    [0,1,1],
-    [0,0,0]
-  ],
-  '[': [
-    [0,0,0,0,0],
-    [1,0,0,0,1],
-    [1,1,1,1,1],
-    [0,0,0,0,0],
-    [0,0,0,0,0]
-  ],
-  'R2': [
-    [0,1,1,1],
-    [1,1,0,0],
-    [0,1,0,0],
-    [0,1,0,0]
-  ],
-  'F2': [
-    [1,1,1,0],
-    [0,0,1,1],
-    [0,0,1,0],
-    [0,0,1,0]
-  ]
-};
-tetrominos['madnor'] = tetrominos['random'].map(cell => cell.toReversed()); // there's like no way this worked first try
-tetrominos['madnor2'] = tetrominos['random2'].map(cell => cell.toReversed());
+import {default as mu} from './mathutil.js'; 
+import * as settings from './settings.js'; 
+import * as controls from './controls.js'; 
+import * as ts from './tetrominos.js'; 
 
 
-var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'banana', 'unbanana', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'D', 'F2', 'R2', 'X2', 'FYold', '[', 'W'].map(x => tetrominos[x]); // i could do the effort of properly removing this, but i'm pretty sure we'll usurp the need for this list soon
+
+
+var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'banana', 'unbanana', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'D', 'F2', 'R2', 'X2', 'FYold', '[', 'W'].map(x => ts.tetrominos[x]); // i could do the effort of properly removing this, but i'm pretty sure we'll usurp the need for this list soon
 
 function allorientations(matrix) {
   return [matrix,rotate(matrix),rotate(rotate(matrix)),rotate(rotate(rotate(matrix))), matrix.toReversed(), rotate(matrix.toReversed()), rotate(rotate(matrix.toReversed())), rotate(rotate(rotate(matrix.toReversed())))];
@@ -286,37 +29,7 @@ function colorDistance(a, b) {
     (parseInt(a[5] + a[6], 16) - parseInt(b[5] + b[6], 16))**2 * 1.5);
 }
 
-function randomizeSettings() {
-  settings["boardHeight"] = getRandomInt(10,30);
-  settings["boardWidth"] = getRandomInt(Math.round(settings["boardHeight"]/3), Math.round(settings["boardHeight"]*2/3));
-  settings["gr"] = Math.min(getRandomInt(0,settings["boardHeight"]),getRandomInt(0,settings["boardHeight"]));
-  settings["fallingSpeed"] = getRandomInt(20, 50);
-  settings["fa"] = 1 + 0.02 * Math.random();
-  settings["mystery"] = 0;
-  let randomColor = '#' + padwithzeros(getRandomInt(0, 16777215).toString(16));
-  let j = Math.ceil(Math.random()**Math.exp(- settingsb.prdb / 3) * allpieces.length);
-  for (let i = 1 + Math.floor(-6*Math.log(Math.random()));i>0;i--) {
-    let k = getRandomInt(0,j);
-    while (((allorientations(allpieces[k]).lastIndexOf(allpieces[k]) > 3 ^ (Math.random() < 1 / (Math.exp(-settingsb.prsb) + 1))) ||
-      (colorDistance(matrix2color(allpieces[k]), randomColor) > 255 * 3 / Math.exp(settingsb.prscb)) && Math.random() > 0.0003) || !(settings["mystery"] % 2**(k+1) < 2**k) ) {
 
-      k = (Math.random() > 0.003) ? getRandomInt(0,j) : getRandomInt(0, allpieces.length - 1);
-    }
-    settings["mystery"] += 2**k;
-  }
-  settings["nextPieces"] = Math.floor(-2*Math.log(Math.random()));
-  settings["closeEnough"] = Math.floor(-Math.log(Math.random()));
-  settings["heldPieces"] = Math.floor(-2*Math.log(Math.random()));
-  settings["garbagePercentage"] = getRandomInt(1, 99);
-  settings["scoreAcceleration"] = getRandomInt(0, 2);
-  settings["wrapAround"] = (Math.random() > 5/6);
-  settings["rgr"] = (Math.random() > 5/6);
-  settings["sd"] = (Math.random() > 5/6);
-  settings["dual"] = (Math.random() > 5/6);
-  settings["flipping"] = (Math.random() > 5/6);
-  settings["stairs"] = (Math.random() > 5/6);
-  showSettings();
-}
 
 var pause = false; 
 var canvas = document.getElementById('game');
@@ -327,53 +40,8 @@ var tetrominoSequence = [];
 var held = [];
 
 
-// color of each tetromino
-const colors = {
-  'I': '#00FFFF',
-  'O': '#FFFF00',
-  'T': '#800080',
-  'S': '#008000',
-  'Z': '#FF0000',
-  'J': '#0000FF',
-  'L': '#FFA400',
-  'FY': '#FFFFFF',
-  '|': '#00FFFF',
-  'II': '#00FFFF',
-  'F': '#8B0000',
-  'D': '#808080',
-  'W': '#C0C0C0',
-  'l': '#FFC0CB',
-  'garbage': '#DCDCDC',
-  'X': '#8B4513',
-  'nonsolid': '#1F1F1F',
-  'R': '#006400',
-  'theBrick': '#A52A2A',
-  '.': '#663399',
-  'i': '#4169E1',
-  'X2': '#B22222',
-  'brick2': '#B22222',
-  'FYold': '#FFFFFF',
-  'V': '#87CEEB',
-  'random': '#' + getRandomInt(100000,999999),
-  'madnor': '#' + getRandomInt(100000,999999),
-  'random2': '#' + getRandomInt(100000,999999),
-  'madnor2': '#' + getRandomInt(100000,999999),
-  'd': '#FF1493',
-  'banana': '#F5F5DC',
-  'unbanana': '#FFFFE0',
-  '[': '#C701FF',
-  'F2': '#440000',
-  'R2': '#003500'
-};
 
-function minusonetoinf(element) {
-  return element == -1 ? Infinity : element;
-}
 
-function extremifiedaverage(array) {
-  let X = (Math.max(...array) + Math.min(...array)) / 2;
-  return X;
-}
 
 function removeEdgeInf(array) {
   let boole = false;
@@ -425,20 +93,14 @@ function bottom2numberC(bottom) {
   return (0.5 ** toret) * 255;
 }
 
-function zeroifnan(number) {
-  if (number > 0 || number < 0 || number == 0) {
-    return number;
-  } else {
-    return 0;
-  }
-}
+
 
 function matrix2color(matrix) {
   let matrices = [matrix, rotate(matrix), rotate(rotate(matrix)), rotate(rotate(rotate(matrix)))];
-  let bottoms = matrices.map(matrice => removeEdgeInf(matrice.map(row => minusonetoinf(row.indexOf(1)))));
-  let A = extremifiedaverage(bottoms.map(bottom => zeroifnan(bottom2numberA(bottom))));
-  let B = extremifiedaverage(bottoms.map(bottom => zeroifnan(bottom2numberB(bottom))));
-  let C = extremifiedaverage(bottoms.map(bottom => zeroifnan(bottom2numberC(bottom))));
+  let bottoms = matrices.map(matrice => removeEdgeInf(matrice.map(row => mu.minusonetoinf(row.indexOf(1)))));
+  let A = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberA(bottom))));
+  let B = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberB(bottom))));
+  let C = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberC(bottom))));
   return '#' + padwithzeros((Math.round(A) * 65536 + Math.round(B) * 256 + Math.round(C)).toString(16));
 }
 
@@ -462,16 +124,16 @@ var wadcmult = 1;
 function restartGame() {
   box = [];
   for(let i = 0; i < allpieces.length; i++) {
-    if (!(settings.mystery % 2**(i + 1) < 2**i)) {
+    if (!(settings.game.mystery % 2**(i + 1) < 2**i)) {
       box.push(allpieces[i]);
     }
   }
-  if (settingsb.wadc && settings.wrapAround) {wadcmult = 2} else {wadcmult = 1}
-  grid = Math.round(Math.sqrt(204800 / (settings.boardWidth * settings.boardHeight * wadcmult)));
+  if (settings.user.wadc && settings.game.wrapAround) {wadcmult = 2} else {wadcmult = 1}
+  grid = Math.round(Math.sqrt(204800 / (settings.game.boardWidth * settings.game.boardHeight * wadcmult)));
   gridsmall = Math.round(grid * 0.625);
 
-  canvas.width = settings["boardWidth"]*grid*wadcmult + gridsmall * 11;
-  canvas.height = (settings["boardHeight"] + (settings.stairs ? settings["boardWidth"]*wadcmult : 0))*grid;
+  canvas.width = settings.game.boardWidth*grid*wadcmult + gridsmall * 11;
+  canvas.height = (settings.game.boardHeight + (settings.stairs ? settings.game.boardWidth*wadcmult : 0))*grid;
   canvas = document.getElementById('game');
   context = canvas.getContext('2d');
   
@@ -480,28 +142,28 @@ function restartGame() {
 
   playfield = [];
   // populate the empty state
-  for (let row = -4-settings.boardWidth; row < settings.boardHeight + settings.boardWidth + 4; row++) {
+  for (let row = -4-settings.game.boardWidth; row < settings.game.boardHeight + settings.game.boardWidth + 4; row++) {
     playfield[row] = [];
-    if (row >= 0 && row < settings.boardHeight) {
-      for (let col = 0; col < settings.boardWidth; col++) {
-        if (settings.dual) {
-          if (Math.abs(settings.boardHeight - row * 2 - 1/2) > settings["gr"]) {
-            playfield[row][col] = (row > settings.boardHeight / 2) ? 'garbage' : 0; 
+    if (row >= 0 && row < settings.game.boardHeight) {
+      for (let col = 0; col < settings.game.boardWidth; col++) {
+        if (settings.game.dual) {
+          if (Math.abs(settings.game.boardHeight - row * 2 - 1/2) > settings.game.gr) {
+            playfield[row][col] = (row > settings.game.boardHeight / 2) ? 'garbage' : 0; 
           } else {
-            playfield[row][col] = [0, 'garbage'][(Math.random() < settings.garbagePercentage / 100) * 1];
+            playfield[row][col] = [0, 'garbage'][(Math.random() < settings.game.garbagePercentage / 100) * 1];
           }
 
         } else {
-          if (settings.boardHeight - row > settings["gr"]) {
+          if (settings.game.boardHeight - row > settings.game.gr) {
             playfield[row][col] = 0;
           } else {
-            playfield[row][col] = [0, 'garbage'][(Math.random() < settings.garbagePercentage / 100) * 1];
+            playfield[row][col] = [0, 'garbage'][(Math.random() < settings.game.garbagePercentage / 100) * 1];
           }
         }
       }
     } else {
-      for (let col = 0; col < settings.boardWidth; col++) {
-        playfield[row][col] = (row > settings.boardHeight / 2) ? 'garbage' : 0; 
+      for (let col = 0; col < settings.game.boardWidth; col++) {
+        playfield[row][col] = (row > settings.game.boardHeight / 2) ? 'garbage' : 0; 
       }
     }
   }
@@ -510,9 +172,10 @@ function restartGame() {
   tetromino = matrix2tetromino(getNextTetromino());
   nextpieces = [];
   held = [];
-  for(let i=0;i<settings.nextPieces;i++) {
+  for(let i=0;i<settings.game.nextPieces;i++) {
     nextpieces.push(getNextTetromino());
   }
+  
   rAF = null;  // keep track of the animation frame so we can cancel it
   if (gameOver = true) {
     rAF = requestAnimationFrame(loop);
@@ -524,8 +187,8 @@ function restartGame() {
 }
 
 function noTouchy() {
-  for (let row = -2; row < settings.boardHeight; row++) {
-    for (let col = 0; col < settings.boardWidth; col++) {
+  for (let row = -2; row < settings.game.boardHeight; row++) {
+    for (let col = 0; col < settings.game.boardWidth; col++) {
       if (!isSocialDistancer(row,col)) {
         if ((isSocialDistancer(row,col+1) || isSocialDistancer(row,col-1) || isSocialDistancer(row+1,col) || isSocialDistancer(row-1,col))) {
           playfield[row][col] = 'nonsolid';
@@ -536,11 +199,11 @@ function noTouchy() {
 }
 
 function isSocialDistancer(row,col) {
-  if (-2 <= row && row < settings.boardHeight) {
-    if (0 <= col && col < settings.boardWidth) {
+  if (-2 <= row && row < settings.game.boardHeight) {
+    if (0 <= col && col < settings.game.boardWidth) {
       return FlipIfDual(!!playfield[row][col]) && (playfield[row][col] != 'nonsolid')
     } else {
-      if (settings.wrapAround) {return isSocialDistancer(row, modulo(col,settings.boardWidth));}
+      if (settings.game.wrapAround) {return isSocialDistancer(row, mu.modulo(col,settings.game.boardWidth));}
     }
   } else {return false;}
   
@@ -548,11 +211,11 @@ function isSocialDistancer(row,col) {
 
 function spawningCol(piece) {
   // I and O start centered, all others start in left-middle
-  return Math.floor((settings.boardWidth - piece[0].length) / 2);
+  return Math.floor((settings.game.boardWidth - piece[0].length) / 2);
 }
 function spawningRow(piece) {
   // I starts on row 21 (-1), all others start on row 22 (-2)
-  return -1-piece.map(row => row.reduce((a, b) => 1 - (1-a) * (1-b))).lastIndexOf(1) + (settings.stairs ? (FlipIfDual(false) ? -spawningCol(piece) : spawningCol(piece)) : 0);
+  return -1-piece.map(row => row.reduce((a, b) => 1 - (1-a) * (1-b))).lastIndexOf(1) + (settings.game.stairs ? (FlipIfDual(false) ? -spawningCol(piece) : spawningCol(piece)) : 0);
 }
 
 // generate a new tetromino sequence
@@ -561,7 +224,7 @@ function generateSequence() {
   let sequence = box.slice();
 
   while (sequence.length) {
-    const rand = getRandomInt(0, sequence.length - 1);
+    const rand = mu.getRandomInt(0, sequence.length - 1);
     const matrix = sequence.splice(rand, 1)[0];
     tetrominoSequence.push(matrix);
   }
@@ -580,9 +243,9 @@ function getNextTetromino() {
 function matrix2tetromino(s) {
 
   let col = spawningCol(s);
-  if (settings.wrapAround && !settingsb.wadc) {col = col + tetromino.col - spawningCol(tetromino.matrix);}
+  if (settings.game.wrapAround && !settings.user.wadc) {col = col + tetromino.col - spawningCol(tetromino.matrix);}
   
-  let row = spawningRow(s) - (settings.stairs && settings.wrapAround && !settingsb.wadc ? (spawningCol(tetromino.matrix) - tetromino.col) * (FlipIfDual(false) ? -1 : 1) : 0);
+  let row = spawningRow(s) - (settings.game.stairs && settings.game.wrapAround && !settings.user.wadc ? (spawningCol(tetromino.matrix) - tetromino.col) * (FlipIfDual(false) ? -1 : 1) : 0);
 
   return {
     matrix: s,  // the piece shape, rotated
@@ -609,10 +272,10 @@ function isValidMove(matrix, cellRow, cellCol) {
       if (matrix[row][col] && (
           // outside the game bounds
           ((cellCol + col < 0 ||
-          cellCol + col >= settings.boardWidth) && !settings.wrapAround) ||
-          (cellRow + row - (settings.stairs ? (cellCol + col) : 0)) >= settings.boardHeight ||
+          cellCol + col >= settings.game.boardWidth) && !settings.game.wrapAround) ||
+          (cellRow + row - (settings.game.stairs ? (cellCol + col) : 0)) >= settings.game.boardHeight ||
           // collides with another piece
-          isCollidable(playfield[FlipIfDual(cellRow + row) - (settings.stairs ? (cellCol + col) : 0)][modulo(cellCol + col, settings.boardWidth)]))
+          isCollidable(playfield[FlipIfDual(cellRow + row) - (settings.game.stairs ? (cellCol + col) : 0)][mu.modulo(cellCol + col, settings.game.boardWidth)]))
         ) {
         return false;
       }
@@ -641,7 +304,7 @@ function nexttetromino() {
 let scoreincrease = 1;
 function increasescore() {
   score += scoreincrease;
-  scoreincrease = scoreincrease + settings.scoreAcceleration;
+  scoreincrease = scoreincrease + settings.game.scoreAcceleration;
 }
 
 function droprowsaboverow(row) {
@@ -669,25 +332,25 @@ function placeTetromino() {
       if (tetromino.matrix[row][col]) {
 
         // game over if piece has any part offscreen
-        let playrow = FlipIfDual(tetromino.row + row) - (settings.stairs ? tetromino.col + col : 0);
-        if (playrow < 0 || playrow >= settings.boardHeight) {
+        let playrow = FlipIfDual(tetromino.row + row) - (settings.game.stairs ? tetromino.col + col : 0);
+        if (playrow < 0 || playrow >= settings.game.boardHeight) {
           return showGameOver();
         }
 
-        playfield[playrow][modulo((tetromino.col + col),settings.boardWidth)] = FlipIfDual(false) ? 0 : tetromino.matrix;
+        playfield[playrow][mu.modulo((tetromino.col + col),settings.game.boardWidth)] = FlipIfDual(false) ? 0 : tetromino.matrix;
       }
     }
   }
-  if (settings.sd) {noTouchy();}
+  if (settings.game.sd) {noTouchy();}
   scoreincrease = 1;
   // check for line clears starting from the bottom and working our way up
-  if (!settings.dual) {
-    for (let row = settings.boardHeight - 1; row >= 0; ) {
-      if (playfield[row].filter(cell => !cell).length <= settings.closeEnough) {
-        if (settings.rgr && playfield[row].filter(cell => cell == 'garbage').length > 0) {
+  if (!settings.game.dual) {
+    for (let row = settings.game.boardHeight - 1; row >= 0; ) {
+      if (playfield[row].filter(cell => !cell).length <= settings.game.closeEnough) {
+        if (settings.game.rgr && playfield[row].filter(cell => cell == 'garbage').length > 0) {
           // raise every row below this one
           raiserowsbelowrow(row);
-          playfield[settings.boardHeight - 1] = playfield[settings.boardHeight - 1].map(cell => (Math.random() * 100 > settings.garbagePercentage ? 0 : 'garbage'));
+          playfield[settings.game.boardHeight - 1] = playfield[settings.game.boardHeight - 1].map(cell => (Math.random() * 100 > settings.game.garbagePercentage ? 0 : 'garbage'));
         } else {
           // drop every row above this one
           droprowsaboverow(row);
@@ -700,24 +363,24 @@ function placeTetromino() {
     }
   } else {
     let thebool = false;
-    for (let row = settings.boardHeight - 1; row >= 0; row--) {
-      if (playfield[FlipIfDual(row)].filter(cell => !isCollidable(cell)).length <= settings.closeEnough) {
+    for (let row = settings.game.boardHeight - 1; row >= 0; row--) {
+      if (playfield[FlipIfDual(row)].filter(cell => !isCollidable(cell)).length <= settings.game.closeEnough) {
         if (thebool) {
         // drop every row above this one
-          FlipIfDual(false) ? droprowsaboverow(settings.boardHeight - 1 - row) : raiserowsbelowrow(row);
+          FlipIfDual(false) ? droprowsaboverow(settings.game.boardHeight - 1 - row) : raiserowsbelowrow(row);
         }  
       } else {thebool = true;}
     }
   }
-  if (settings.sd) {noTouchy();}
+  if (settings.game.sd) {noTouchy();}
   nexttetromino();
 }
 
 function FlipIfDual(k) {
   if (typeof k == "number") {
-    return ((piececount % 2 == 1) && settings.dual) ? (settings.boardHeight - 1 - k) : k
+    return ((piececount % 2 == 1) && settings.game.dual) ? (settings.game.boardHeight - 1 - k) : k
   } else {
-    return ((piececount % 2 == 1) && settings.dual) ^ k
+    return ((piececount % 2 == 1) && settings.game.dual) ^ k
   }
 }
 // show the game over screen
@@ -746,40 +409,41 @@ function loop() {
 
   context.strokeStyle = "white";
   context.strokeWidth = 2;
-  let drawnWidth = settings.boardWidth*wadcmult;
-  if (settings.stairs) {
+  let drawnWidth = settings.game.boardWidth*wadcmult;
+  if (settings.game.stairs) {
     context.beginPath();
     context.moveTo(gridsmall * 5.5, 0);
     for (let i = 0; i < drawnWidth; i++) {
       context.lineTo(gridsmall * 5.5 + grid * (i+1), grid * i);
       context.lineTo(gridsmall * 5.5 + grid * (i+1), grid * (i + 1));
     }
-    context.lineTo(gridsmall * 5.5 + grid * drawnWidth, grid * (drawnWidth + settings.boardHeight - 1));
+    context.lineTo(gridsmall * 5.5 + grid * drawnWidth, grid * (drawnWidth + settings.game.boardHeight - 1));
     for (let i = 0; i < drawnWidth; i++) {
-      context.lineTo(gridsmall * 5.5 + grid * (drawnWidth - (i+1)), grid * (drawnWidth + settings.boardHeight - (i+1)));
-      context.lineTo(gridsmall * 5.5 + grid * (drawnWidth - (i+1)), grid * (drawnWidth + settings.boardHeight - (i+2)));
+      context.lineTo(gridsmall * 5.5 + grid * (drawnWidth - (i+1)), grid * (drawnWidth + settings.game.boardHeight - (i+1)));
+      context.lineTo(gridsmall * 5.5 + grid * (drawnWidth - (i+1)), grid * (drawnWidth + settings.game.boardHeight - (i+2)));
     }
     context.closePath();
     context.stroke();
   } else {
-    context.strokeRect(gridsmall * 5.5,0,drawnWidth*grid,settings.boardHeight*grid);
+    context.strokeRect(gridsmall * 5.5,0,drawnWidth*grid,settings.game.boardHeight*grid);
   }
   // draw the playfield
-  for (let row = 0; row < settings.boardHeight; row++) {
-    for (let col = 0; col < settings.boardWidth; col++) {
+
+  for (let row = 0; row < settings.game.boardHeight; row++) {
+    for (let col = 0; col < settings.game.boardWidth; col++) {
       if (playfield[row][col]) {
         const name = playfield[row][col];
-        context.fillStyle = (name == 0 || name == 'garbage' || name == 'nonsolid') ? (colors[name]) : matrix2color(name);
+        context.fillStyle = (name == 0 || name == 'garbage' || name == 'nonsolid') ? (ts.colors[name]) : matrix2color(name);
         // drawing 1 px smaller than the grid creates a grid effect
-        if (settings.wrapAround) {
-          if (settingsb.wadc) {
-            context.fillRect(col * grid + gridsmall * 5.5, row * grid + (settings.stairs ? (col * grid) : 0), grid-1, grid-1);
-            context.fillRect((col + settings.boardWidth) * grid + gridsmall * 5.5, row * grid + (settings.stairs ? ((col + settings.boardWidth) * grid) : 0), grid-1, grid-1);
+        if (settings.game.wrapAround) {
+          if (settings.user.wadc) {
+            context.fillRect(col * grid + gridsmall * 5.5, row * grid + (settings.game.stairs ? (col * grid) : 0), grid-1, grid-1);
+            context.fillRect((col + settings.game.boardWidth) * grid + gridsmall * 5.5, row * grid + (settings.game.stairs ? ((col + settings.game.boardWidth) * grid) : 0), grid-1, grid-1);
           } else {
-            context.fillRect(modulo(col - tetromino.col + spawningCol(tetromino.matrix),settings.boardWidth) * grid + gridsmall * 5.5, row * grid + (settings.stairs ? (modulo(col - tetromino.col + spawningCol(tetromino.matrix),settings.boardWidth) * grid) : 0), grid-1, grid-1);
+            context.fillRect(mu.modulo(col - tetromino.col + spawningCol(tetromino.matrix),settings.game.boardWidth) * grid + gridsmall * 5.5, row * grid + (settings.game.stairs ? (mu.modulo(col - tetromino.col + spawningCol(tetromino.matrix),settings.game.boardWidth) * grid) : 0), grid-1, grid-1);
           }
         } else {
-          context.fillRect(col * grid + gridsmall * 5.5, row * grid + (settings.stairs ? (col * grid) : 0), grid-1, grid-1);
+          context.fillRect(col * grid + gridsmall * 5.5, row * grid + (settings.game.stairs ? (col * grid) : 0), grid-1, grid-1);
         }
       }
     }
@@ -789,7 +453,7 @@ function loop() {
   if (tetromino) {
 
     // tetromino falls every 35 frames, but they get faster as you score
-    if (++count > (settings.fallingSpeed / (settings.fa ** score))) {
+    if (++count > (settings.game.fallingSpeed / (settings.game.fa ** score))) {
       tetromino.row++;
       count = 0;
 
@@ -807,13 +471,13 @@ function loop() {
         if (tetromino.matrix[row][col]) {
 
           // drawing 1 px smaller than the grid creates a grid effect
-          if (settings.wrapAround) {
-            if (settingsb.wadc) {
-              context.fillRect((modulo(col + tetromino.col,settings.boardWidth)) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
-              context.fillRect((modulo(col + tetromino.col,settings.boardWidth) + settings.boardWidth) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
+          if (settings.game.wrapAround) {
+            if (settings.user.wadc) {
+              context.fillRect((mu.modulo(col + tetromino.col,settings.game.boardWidth)) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
+              context.fillRect((mu.modulo(col + tetromino.col,settings.game.boardWidth) + settings.game.boardWidth) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
             } else {
             // I am aware that if the tetromino is wider than the grid, it renders out of bounds. I don't care
-              context.fillRect((col + spawningCol(tetromino.matrix)) * grid + gridsmall*5.5, (FlipIfDual(tetromino.row + row + (settings.stairs ? spawningRow(tetromino.matrix) + 2 : 0)) - (settings.stairs ? tetromino.col : 0)) * grid, grid-1, grid-1);
+              context.fillRect((col + spawningCol(tetromino.matrix)) * grid + gridsmall*5.5, (FlipIfDual(tetromino.row + row + (settings.game.stairs ? spawningRow(tetromino.matrix) + 2 : 0)) - (settings.game.stairs ? tetromino.col : 0)) * grid, grid-1, grid-1);
             }
           } else {
             context.fillRect((col + tetromino.col) * grid + gridsmall*5.5, FlipIfDual(tetromino.row + row) * grid, grid-1, grid-1);
@@ -823,7 +487,7 @@ function loop() {
     }
   }
   // draw the next tetrominoes
-  for (let i=0;i<settings.nextPieces;i++) {
+  for (let i=0;i<settings.game.nextPieces;i++) {
 
     context.fillStyle = matrix2color(nextpieces[i]);
     for (let row = 0; row < nextpieces[i].length; row++) {
@@ -831,17 +495,17 @@ function loop() {
         if (nextpieces[i][row][col]) {
 
           // drawing it smaller to indicate that it isn't right now
-          context.fillRect((spawningCol(nextpieces[i]) + col + 8.5 - settings.boardWidth / 2) * gridsmall + settings.boardWidth * grid * wadcmult, (row + 8.5 + i*4 - nextpieces[i].length / 2) * gridsmall, gridsmall-1, gridsmall-1);
+          context.fillRect((spawningCol(nextpieces[i]) + col + 8.5 - settings.game.boardWidth / 2) * gridsmall + settings.game.boardWidth * grid * wadcmult, (row + 8.5 + i*4 - nextpieces[i].length / 2) * gridsmall, gridsmall-1, gridsmall-1);
         }
       }
     }
   }
 
   context.fillStyle = 'darkslategray';
-  context.fillRect(0, 4.5 * gridsmall, 5.5 * gridsmall, settings.heldPieces * 4 * gridsmall);
+  context.fillRect(0, 4.5 * gridsmall, 5.5 * gridsmall, settings.game.heldPieces * 4 * gridsmall);
 
   // draw the held tetrominoes
-  for (let i=0;i<settings.heldPieces;i++) {
+  for (let i=0;i<settings.game.heldPieces;i++) {
     if (held[i]) {
       context.fillStyle = matrix2color(held[i]);
 
@@ -850,7 +514,7 @@ function loop() {
           if (held[i][row][col]) {
 
           // drawing it smaller to indicate that it isn't right now
-            context.fillRect((spawningCol(held[i]) + col + 3 - settings.boardWidth / 2) * gridsmall, (spawningRow(held[i]) + row + 8.5 + (settings.heldPieces-1-i)*4 - held[i].length / 2) * gridsmall, gridsmall-1, gridsmall-1);
+            context.fillRect((spawningCol(held[i]) + col + 3 - settings.game.boardWidth / 2) * gridsmall, (spawningRow(held[i]) + row + 8.5 + (settings.game.heldPieces-1-i)*4 - held[i].length / 2) * gridsmall, gridsmall-1, gridsmall-1);
           }
         }
       }
@@ -861,75 +525,78 @@ function loop() {
   context.font = '36px monospace';
   context.textAlign = 'right';
   context.textBaseline = 'middle';
-  context.fillText(score, settings.boardWidth * grid * wadcmult + gridsmall * 11, 20);
+  context.fillText(score, settings.game.boardWidth * grid * wadcmult + gridsmall * 11, 20);
 
   context.font = '36px monospace';
   context.textAlign = 'left';
-  if(settings.closeEnough > 0) {
-    context.fillText("AH: " + settings.closeEnough, 0, 20);
+  if(settings.game.closeEnough > 0) {
+    context.fillText("AH: " + settings.game.closeEnough, 0, 20);
   }
-  if(settings.flipping) {
+  if(settings.game.flipping) {
     context.fillText("Flip", 0, 56);
+  }
+
+}
+
+export function pieceLeft() {
+  if (gameOver) return;
+  if (pause) return;
+
+  if (isValidMove(tetromino.matrix, tetromino.row, tetromino.col + 1)) {
+    tetromino.col++;
   }
 }
 
-// listen to keyboard events to move the active tetromino
-document.addEventListener('keydown', function(e) {
+export function pieceRight() {
   if (gameOver) return;
+  if (pause) return;
 
-  // left and right arrow keys (move)
-  if (e.which === 37 || e.which === 39 || e.which === 65 || e.which === 68 || e.which === 97 || e.which === 100) {
-    const col = ((e.which === 37 || e.which === 65 || e.which === 97) ^ (FlipIfDual(false) && settingsb.lrDual))
-      ? tetromino.col - 1
-      : tetromino.col + 1;
+  if (isValidMove(tetromino.matrix, tetromino.row, tetromino.col - 1)) {
+    tetromino.col--;
+  }
+}
 
-    if (isValidMove(tetromino.matrix, tetromino.row, col)) {
-      tetromino.col = col;
+export function pieceRotate() {
+  const matrix = (FlipIfDual(false) && !settings.user.roateDual) ? rotate(rotate(rotate(tetromino.matrix))) : rotate(tetromino.matrix);
+  if (isValidMove(matrix, tetromino.row, tetromino.col)) {
+    tetromino.matrix = matrix;
+  }
+}
+
+export function pieceDown() {
+  const row = tetromino.row + 1;
+  if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
+    tetromino.row = row - 1;
+
+    placeTetromino();
+    return;
+  }
+  tetromino.row = row;
+}
+
+export function pieceFlip() {
+  if (settings.game.flipping) {
+    const matrix = tetromino.matrix.map(sdrvg => sdrvg.toReversed());
+    if(isValidMove(matrix,tetromino.row,tetromino.col)) {
+      tetromino.matrix = matrix;
     }
   }
+}
 
-  // up arrow key (rotate)
-  if (e.which === 38 || e.which === 87 || e.which === 119 || e.which === 40 || e.which === 83 || e.which === 115) {
-    if((e.which === 38 || e.which === 87 || e.which === 119) ^ (FlipIfDual(false) && settingsb.udDual)) {
-      const matrix = (FlipIfDual(false) && !settingsb.roateDual) ? rotate(rotate(rotate(tetromino.matrix))) : rotate(tetromino.matrix);
-      if (isValidMove(matrix, tetromino.row, tetromino.col)) {
-        tetromino.matrix = matrix;
-      }
+export function pieceHold() {
+  document.getElementById("settingsButton").blur(); // this one is necessary
+  if (settings.game.heldPieces > 0 && holdcycleattempts < settings.game.heldPieces) {
+    held.splice(0, 0, tetromino.matrix);
+    holdcycleattempts++;
+    if (held.length > settings.game.heldPieces) {
+      tetromino = matrix2tetromino(held.pop());
     } else {
-      const row = tetromino.row + 1;
-      if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
-        tetromino.row = row - 1;
-
-        placeTetromino();
-        return;
-      }
-      tetromino.row = row;
+      nexttetromino();
     }
   }
+}
 
-  if (e.which === 32 || e.which === 81 || e.which === 113) {
-    document.getElementById("settingsButton").blur(); // this one is necessary
-    if (settings.heldPieces > 0 && holdcycleattempts < settings.heldPieces) {
-      held.splice(0, 0, tetromino.matrix);
-      holdcycleattempts++;
-      if (held.length > settings.heldPieces) {
-        tetromino = matrix2tetromino(held.pop());
-      } else {
-        nexttetromino();
-      }
-    }
-  }
 
-  if (e.which === 69 || e.which === 101) {
-    if (settings.flipping) {
-      const matrix = tetromino.matrix.map(sdrvg => sdrvg.toReversed());
-      if(isValidMove(matrix,tetromino.row,tetromino.col)) {
-        tetromino.matrix = matrix;
-      }
-    }
-  }
-
-});
 
 // start the game
 rAF = requestAnimationFrame(loop);
@@ -937,13 +604,18 @@ rAF = requestAnimationFrame(loop);
 restartGame();
 
 document.addEventListener("DOMContentLoaded", function() {
-  document.getElementById(       "settingsButton").addEventListener("click", function() { showSettings();      }); 
-  document.getElementById(           "helpButton").addEventListener("click", function() { showControls();      });
-  document.getElementById("settingsShuffleButton").addEventListener("click", function() { randomizeSettings(); }); 
-  document.getElementById(  "settingsResetButton").addEventListener("click", function() { resetSettings(); 
-                                                                                           showSettings();     });
-  document.getElementById(   "settingsHideButton").addEventListener("click", function() { hideSettings();      }); 
-  document.getElementById(   "settingsSaveButton").addEventListener("click", function() { saveSettings();      });
-  document.getElementById(   "controlsHideButton").addEventListener("click", function() { hideControls();      }); 
+  document.getElementById(       "settingsButton").addEventListener("click", function() { settings.showSettings(); pause=true; }); 
+  document.getElementById(           "helpButton").addEventListener("click", function() { controls.showControls(); pause=true; });
+  document.getElementById("settingsShuffleButton").addEventListener("click", function() { settings.randomizeSettings(allpieces); 
+                                                                                          settings.showSettings(); 
+                                                                                        }); 
+  document.getElementById(  "settingsResetButton").addEventListener("click", function() { settings.resetSettings(); 
+                                                                                           settings.showSettings();     });
+  document.getElementById(   "settingsHideButton").addEventListener("click", function() { settings.hideSettings(); pause=false; }); 
+  document.getElementById(   "settingsSaveButton").addEventListener("click", function() { settings.saveSettings(); 
+                                                                                           restartGame(); pause=false; });
+  document.getElementById(   "controlsHideButton").addEventListener("click", function() { controls.hideControls(); pause=false; }); 
+
+  restartGame();
 });
 
