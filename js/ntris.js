@@ -12,7 +12,7 @@ var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'banana', 'unbanana', '
 
 // color
 function allorientations(matrix) {
-  return [matrix,rotate(matrix),rotate(rotate(matrix)),rotate(rotate(rotate(matrix))), matrix.toReversed(), rotate(matrix.toReversed()), rotate(rotate(matrix.toReversed())), rotate(rotate(rotate(matrix.toReversed())))];
+  return [matrix,mu.rotate(matrix),mu.rotate(mu.rotate(matrix)),mu.rotate(mu.rotate(mu.rotate(matrix))), matrix.toReversed(), mu.rotate(matrix.toReversed()), mu.rotate(mu.rotate(matrix.toReversed())), mu.rotate(mu.rotate(mu.rotate(matrix.toReversed())))];
 }
 
 // color
@@ -100,13 +100,33 @@ function bottom2numberC(bottom) {
 
 
 // color
+function bottom2numberD(bottom) {
+  let X = 0;
+  let toret = 0;
+  for (let i=0; i<bottom.length - 1; i++) {
+    if (bottom[i] == bottom[i+1]) {
+      X += 1;
+    } else {
+      toret += 255 * (1 - 0.5 ** X);
+      X = 0;
+    }
+  }
+  toret += 255 * (1 - 0.5 ** X);
+  return toret;
+}
+
 function matrix2color(matrix) {
-  let matrices = [matrix, rotate(matrix), rotate(rotate(matrix)), rotate(rotate(rotate(matrix)))];
+  let matrices = [matrix, mu.rotate(matrix), mu.rotate(mu.rotate(matrix)), mu.rotate(mu.rotate(mu.rotate(matrix)))];
   let bottoms = matrices.map(matrice => removeEdgeInf(matrice.map(row => mu.minusonetoinf(row.indexOf(1)))));
   let A = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberA(bottom))));
   let B = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberB(bottom))));
   let C = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberC(bottom))));
-  return '#' + padwithzeros((Math.round(A) * 65536 + Math.round(B) * 256 + Math.round(C)).toString(16));
+  let D = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberD(bottom))));
+  let channels = [A, B, C, D];
+  return '#' + padwithzeros((
+    Math.round(channels[mu.modulo(Math.round(settings.user['redColor']),4)]) * 65536 + 
+    Math.round(channels[mu.modulo(Math.round(settings.user['greenColor']),4)]) * 256 + 
+    Math.round(channels[mu.modulo(Math.round(settings.user['blueColor']),4)])).toString(16));
 }
 
 // game
@@ -588,7 +608,7 @@ export function pieceRight() {
 export function pieceRotate() {
   if (controlsOff()) return;
 
-  const matrix = (FlipIfDual(false) && !settings.user.roateDual) ? rotate(rotate(rotate(tetromino.matrix))) : rotate(tetromino.matrix);
+  const matrix = (FlipIfDual(false) && !settings.user.roateDual) ? mu.rotate(mu.rotate(mu.rotate(tetromino.matrix))) : mu.rotate(tetromino.matrix);
   if (isValidMove(matrix, tetromino.row, tetromino.col)) {
     tetromino.matrix = matrix;
   }

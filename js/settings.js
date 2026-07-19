@@ -17,7 +17,8 @@ let gameDefault = {
 	sd: false, 
 	dual: false, 
 	flipping: false, 
-	stairs: false};
+	stairs: false
+};
 
 export let game = {...gameDefault};
 
@@ -28,7 +29,11 @@ export let user = {
 	wadc: false, 
 	prdb: 0, 
 	prscb: 0, 
-	prsb: 0};
+	prsb: 0,
+  redColor: 0,
+  greenColor: 1,
+  blueColor: 2
+};
 
 export function resetSettings() { 
   game = {...gameDefault};
@@ -60,6 +65,9 @@ export function showSettings() {
   document.getElementById("settingbPRDB").value         = user["prdb"];
   document.getElementById("settingbPRSB").value         = user["prsb"];
   document.getElementById("settingbPRSCB").value        = user["prscb"];
+  document.getElementById("settingbRedColor").value     = user["redColor"];
+  document.getElementById("settingbGreenColor").value   = user["greenColor"];
+  document.getElementById("settingbBlueColor").value    = user["blueColor"];
 
   document.getElementById("settingsDialog").showModal();
   document.getElementById("settingsButton").blur();
@@ -95,6 +103,9 @@ export function saveSettings() {
   user["prdb"]       = document.getElementById("settingbPRDB").value * 1;
   user["prscb"]      = document.getElementById("settingbPRSCB").value * 1;
   user["prsb"]       = document.getElementById("settingbPRSB").value * 1;
+  user["redColor"]   = document.getElementById("settingbRedColor").value * 1;
+  user["greenColor"] = document.getElementById("settingbGreenColor").value * 1;
+  user["blueColor"]  = document.getElementById("settingbBlueColor").value * 1;
 
   
   document.getElementById("settingsDialog").close();
@@ -110,15 +121,7 @@ function padwithzeros(string) {
   return a;
 }
 function allorientations(matrix) {
-  return [matrix,rotate(matrix),rotate(rotate(matrix)),rotate(rotate(rotate(matrix))), matrix.toReversed(), rotate(matrix.toReversed()), rotate(rotate(matrix.toReversed())), rotate(rotate(rotate(matrix.toReversed())))];
-}
-function rotate(matrix) {
-  const N = matrix.length - 1;
-  const result = matrix.map((row, i) =>
-    row.map((val, j) => matrix[N - j][i])
-  );
-
-  return result;
+  return [matrix,mu.rotate(matrix),mu.rotate(mu.rotate(matrix)),mu.rotate(mu.rotate(mu.rotate(matrix))), matrix.toReversed(), mu.rotate(matrix.toReversed()), mu.rotate(mu.rotate(matrix.toReversed())), mu.rotate(mu.rotate(mu.rotate(matrix.toReversed())))];
 }
 function colorDistance(a, b) {
   return Math.sqrt(
@@ -126,14 +129,7 @@ function colorDistance(a, b) {
     (parseInt(a[3] + a[4], 16) - parseInt(b[3] + b[4], 16))**2 * 5 + 
     (parseInt(a[5] + a[6], 16) - parseInt(b[5] + b[6], 16))**2 * 1.5);
 }
-function matrix2color(matrix) {
-  let matrices = [matrix, rotate(matrix), rotate(rotate(matrix)), rotate(rotate(rotate(matrix)))];
-  let bottoms = matrices.map(matrice => removeEdgeInf(matrice.map(row => mu.minusonetoinf(row.indexOf(1)))));
-  let A = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberA(bottom))));
-  let B = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberB(bottom))));
-  let C = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberC(bottom))));
-  return '#' + padwithzeros((Math.round(A) * 65536 + Math.round(B) * 256 + Math.round(C)).toString(16));
-}
+
 function removeEdgeInf(array) {
   let boole = false;
   let half = [];
@@ -181,6 +177,35 @@ function bottom2numberC(bottom) {
     toret += bottom[i] * i / bottom.length;
   }
   return (0.5 ** toret) * 255;
+}
+
+function bottom2numberD(bottom) {
+  let X = 0;
+  let toret = 0;
+  for (let i=0; i<bottom.length - 1; i++) {
+    if (bottom[i] == bottom[i+1]) {
+      X += 1;
+    } else {
+      toret += 255 * (1 - 0.5 ** X);
+      X = 0;
+    }
+  }
+  toret += 255 * (1 - 0.5 ** X);
+  return toret;
+}
+
+function matrix2color(matrix) {
+  let matrices = [matrix, mu.rotate(matrix), mu.rotate(mu.rotate(matrix)), mu.rotate(mu.rotate(mu.rotate(matrix)))];
+  let bottoms = matrices.map(matrice => removeEdgeInf(matrice.map(row => mu.minusonetoinf(row.indexOf(1)))));
+  let A = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberA(bottom))));
+  let B = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberB(bottom))));
+  let C = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberC(bottom))));
+  let D = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberD(bottom))));
+  let channels = [A, B, C, D];
+  return '#' + padwithzeros((
+    Math.round(channels[mu.modulo(Math.round(user['redColor']),4)]) * 65536 + 
+    Math.round(channels[mu.modulo(Math.round(user['greenColor']),4)]) * 256 + 
+    Math.round(channels[mu.modulo(Math.round(user['blueColor']),4)])).toString(16));
 }
 // ==================
 
