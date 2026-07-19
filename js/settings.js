@@ -191,6 +191,8 @@ export function randomizeSettings(allpieces) {
   game["fallingSpeed"] = mu.getRandomInt(20, 50);
   game["fa"] = 1 + 0.02 * Math.random();
   game["mystery"] = 0;
+
+  // Here there be dragons =====================
   let randomColor = '#' + padwithzeros(mu.getRandomInt(0, 16777215).toString(16));
   let j = Math.ceil(Math.random()**Math.exp(- user.prdb / 3) * allpieces.length); // ISSUE
   for (let i = 1 + Math.floor(-6*Math.log(Math.random()));i>0;i--) {
@@ -202,6 +204,8 @@ export function randomizeSettings(allpieces) {
     }
     game["mystery"] += 2**k;
   }
+  // End dragons ===============================
+
   game["nextPieces"] = Math.floor(-2*Math.log(Math.random()));
   game["closeEnough"] = Math.floor(-Math.log(Math.random()));
   game["heldPieces"] = Math.floor(-2*Math.log(Math.random()));

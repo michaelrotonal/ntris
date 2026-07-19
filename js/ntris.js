@@ -7,13 +7,15 @@ import * as ts from './tetrominos.js';
 
 
 
-
+// defunct
 var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'banana', 'unbanana', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'D', 'F2', 'R2', 'X2', 'FYold', '[', 'W'].map(x => ts.tetrominos[x]); // i could do the effort of properly removing this, but i'm pretty sure we'll usurp the need for this list soon
 
+// color
 function allorientations(matrix) {
   return [matrix,rotate(matrix),rotate(rotate(matrix)),rotate(rotate(rotate(matrix))), matrix.toReversed(), rotate(matrix.toReversed()), rotate(rotate(matrix.toReversed())), rotate(rotate(rotate(matrix.toReversed())))];
 }
 
+// color
 function padwithzeros(string) {
   let a = string;
   for (let i=0; i < 6 - string.length; i++) {
@@ -22,6 +24,7 @@ function padwithzeros(string) {
   return a;
 }
 
+// color
 function colorDistance(a, b) {
   return Math.sqrt(
     (parseInt(a[1] + a[2], 16) - parseInt(b[1] + b[2], 16))**2 * 2.5 + 
@@ -30,7 +33,7 @@ function colorDistance(a, b) {
 }
 
 
-
+// game + constants
 var pause = false; 
 var canvas = document.getElementById('game');
 var context = canvas.getContext('2d');
@@ -42,7 +45,7 @@ var held = [];
 
 
 
-
+// color
 function removeEdgeInf(array) {
   let boole = false;
   let half = [];
@@ -63,6 +66,7 @@ function removeEdgeInf(array) {
   return toret;
 }
 
+// color
 function bottom2numberA(bottom) {
   let toret = 0;
   for (let i=0; i<bottom.length; i++) {
@@ -71,6 +75,7 @@ function bottom2numberA(bottom) {
   return Math.cbrt(toret / bottom.length) * 255;
 } 
 
+// color
 function bottom2numberB(bottom) {
   let toret = 0;
   for (let i=0; i<bottom.length; i++) {
@@ -84,7 +89,7 @@ function bottom2numberB(bottom) {
   }
   return (toret / bottom.length + 255) / 2;
 }
-
+// color
 function bottom2numberC(bottom) {
   let toret = 0;
   for (let i=0; i<bottom.length; i++) {
@@ -94,7 +99,7 @@ function bottom2numberC(bottom) {
 }
 
 
-
+// color
 function matrix2color(matrix) {
   let matrices = [matrix, rotate(matrix), rotate(rotate(matrix)), rotate(rotate(rotate(matrix)))];
   let bottoms = matrices.map(matrice => removeEdgeInf(matrice.map(row => mu.minusonetoinf(row.indexOf(1)))));
@@ -104,7 +109,7 @@ function matrix2color(matrix) {
   return '#' + padwithzeros((Math.round(A) * 65536 + Math.round(B) * 256 + Math.round(C)).toString(16));
 }
 
-
+// game
 // keep track of what is in every cell of the game using a 2d array
 // tetris playfield is 10x20, with a few rows offscreen
 var playfield = [];
@@ -117,10 +122,12 @@ let score = 0;
 var holdcycleattempts = 0;
 var piececount = 0;
 
+// tf
 var box = [];
-var nextpieces = [];
+var nextpieces = []; // game
 var wadcmult = 1;
 
+// game, mostly
 function restartGame() {
   box = [];
   for(let i = 0; i < allpieces.length; i++) {
@@ -186,6 +193,7 @@ function restartGame() {
   pause = false;
 }
 
+// game? 
 function noTouchy() {
   for (let row = -2; row < settings.game.boardHeight; row++) {
     for (let col = 0; col < settings.game.boardWidth; col++) {
@@ -198,6 +206,7 @@ function noTouchy() {
   }
 }
 
+// game? 
 function isSocialDistancer(row,col) {
   if (-2 <= row && row < settings.game.boardHeight) {
     if (0 <= col && col < settings.game.boardWidth) {
@@ -209,6 +218,7 @@ function isSocialDistancer(row,col) {
   
 }
 
+// game
 function spawningCol(piece) {
   // I and O start centered, all others start in left-middle
   return Math.floor((settings.game.boardWidth - piece[0].length) / 2);
@@ -218,6 +228,7 @@ function spawningRow(piece) {
   return -1-piece.map(row => row.reduce((a, b) => 1 - (1-a) * (1-b))).lastIndexOf(1) + (settings.game.stairs ? (FlipIfDual(false) ? -spawningCol(piece) : spawningCol(piece)) : 0);
 }
 
+// Tetrominofactory
 // generate a new tetromino sequence
 // @see https://tetris.fandom.com/wiki/Random_Generator
 function generateSequence() {
@@ -230,6 +241,8 @@ function generateSequence() {
   }
 }
 
+
+// Tetrominofactory
 // get the next tetromino in the sequence
 function getNextTetromino() {
   if (tetrominoSequence.length === 0) {
@@ -240,6 +253,7 @@ function getNextTetromino() {
   return matrix;
 }
 
+// Tetrominofactory
 function matrix2tetromino(s) {
 
   let col = spawningCol(s);
@@ -254,6 +268,7 @@ function matrix2tetromino(s) {
   };
 }
 
+// matnutil? 
 // rotate an NxN matrix 90deg
 // @see https://codereview.stackexchange.com/a/186834
 function rotate(matrix) {
@@ -265,6 +280,7 @@ function rotate(matrix) {
   return result;
 }
 
+// game
 // check to see if the new matrix/row/col is valid
 function isValidMove(matrix, cellRow, cellCol) {
   for (let row = 0; row < matrix.length; row++) {
@@ -285,6 +301,7 @@ function isValidMove(matrix, cellRow, cellCol) {
   return true;
 }
 
+// game
 function isCollidable(cell) {
   if (FlipIfDual(false)) {
     return cell == 'nonsolid' || !cell; 
@@ -293,6 +310,7 @@ function isCollidable(cell) {
   }
 }
 
+// tetrominofactory
 function nexttetromino() {
   holdcycleattempts = 0;
   piececount += 1;
@@ -301,12 +319,14 @@ function nexttetromino() {
   nextpieces.splice(0, 1);
 }
 
+// game?
 let scoreincrease = 1;
 function increasescore() {
   score += scoreincrease;
   scoreincrease = scoreincrease + settings.game.scoreAcceleration;
 }
 
+// game.grid?
 function droprowsaboverow(row) {
   for (let r = row; r >= 0; r--) {
     for (let c = 0; c < playfield[r].length; c++) {
@@ -316,6 +336,7 @@ function droprowsaboverow(row) {
   increasescore();
 }
 
+// game.grid?
 function raiserowsbelowrow(row) {
   for (let r = row; r < settings.boardHeight - 1; r++) {
     for (let c = 0; c < playfield[r].length; c++) {
@@ -325,6 +346,7 @@ function raiserowsbelowrow(row) {
   increasescore();
 }
 
+// game.grid?
 // place the tetromino on the playfield
 function placeTetromino() {
   for (let row = 0; row < tetromino.matrix.length; row++) {
@@ -376,6 +398,7 @@ function placeTetromino() {
   nexttetromino();
 }
 
+// cursed
 function FlipIfDual(k) {
   if (typeof k == "number") {
     return ((piececount % 2 == 1) && settings.game.dual) ? (settings.game.boardHeight - 1 - k) : k
@@ -383,6 +406,8 @@ function FlipIfDual(k) {
     return ((piececount % 2 == 1) && settings.game.dual) ^ k
   }
 }
+
+// game/ui?
 // show the game over screen
 function showGameOver() {
   cancelAnimationFrame(rAF);
@@ -400,7 +425,7 @@ function showGameOver() {
   context.fillText('GAME OVER!', canvas.width / 2, canvas.height / 2);
 }
 
-// game loop
+// game loop, factor out tetromino painting
 function loop() {
   rAF = requestAnimationFrame(loop);
   if(pause) { return; }
