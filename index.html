@@ -62,6 +62,10 @@
     justify-content: center;
   }
 
+  .buttonRow {
+    display: block;
+  }
+
   </style>
 </head>
 <body>
@@ -128,8 +132,10 @@
     </div>
   </dialog>
 <canvas width="540" height="640" id="game"></canvas>
- <button class="settingsbutton" id="helpButton" onclick="showControls();">Controls</button>
- <button class="settingsbutton" id="settingsButton" onclick="showSettings();this.blur();">Settings</button>
+ <div class="buttonRow">
+   <button class="settingsbutton" id="helpButton" onclick="showControls();">Controls</button>
+   <button class="settingsbutton" id="settingsButton" onclick="showSettings();this.blur();">Settings</button>
+  </div>
 <script>
 // https://tetris.fandom.com/wiki/Tetris_Guideline
 
