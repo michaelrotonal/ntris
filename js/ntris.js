@@ -4,7 +4,7 @@ import {default as mu} from './mathutil.js';
 import * as settings from './settings.js'; 
 import * as controls from './controls.js'; 
 import * as ts from './tetrominos.js'; 
-import * as clr from './color.js'; 
+import * as color from './color.js'; 
 
 
 // defunct
@@ -372,7 +372,7 @@ function loop() {
     for (let col = 0; col < settings.game.boardWidth; col++) {
       if (playfield[row][col]) {
         const name = playfield[row][col];
-        context.fillStyle = (name == 0 || name == 'garbage' || name == 'nonsolid') ? (ts.colors[name]) : clr.matrix2color(name); // 'name' is a misnomer here -- it's the matrix
+        context.fillStyle = (name == 0 || name == 'garbage' || name == 'nonsolid') ? (ts.colors[name]) : color.matrix2color(name); // 'name' is a misnomer here -- it's the matrix
         // drawing 1 px smaller than the grid creates a grid effect
         if (settings.game.wrapAround) {
           if (settings.user.wadc) {
@@ -403,7 +403,7 @@ function loop() {
       }
     }
 
-    context.fillStyle = FlipIfDual(false) ? 'black' : clr.matrix2color(tetromino.matrix);
+    context.fillStyle = FlipIfDual(false) ? 'black' : color.matrix2color(tetromino.matrix);
 
     for (let row = 0; row < tetromino.matrix.length; row++) {
       for (let col = 0; col < tetromino.matrix[row].length; col++) {
@@ -428,7 +428,7 @@ function loop() {
   // draw the next tetrominoes
   for (let i=0;i<settings.game.nextPieces;i++) {
 
-    context.fillStyle = clr.matrix2color(nextpieces[i]);
+    context.fillStyle = color.matrix2color(nextpieces[i]);
     for (let row = 0; row < nextpieces[i].length; row++) {
       for (let col = 0; col < nextpieces[i][row].length; col++) {
         if (nextpieces[i][row][col]) {
@@ -446,7 +446,7 @@ function loop() {
   // draw the held tetrominoes
   for (let i=0;i<settings.game.heldPieces;i++) {
     if (held[i]) {
-      context.fillStyle = clr.matrix2color(held[i]);
+      context.fillStyle = color.matrix2color(held[i]);
 
       for (let row = 0; row < held[i].length; row++) {
         for (let col = 0; col < held[i][row].length; col++) {

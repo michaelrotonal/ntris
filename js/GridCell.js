@@ -7,16 +7,34 @@ class GridCell {
 		this.type = 'empty'; 
 	}
 
+	isEmpty() {
+		return this.type == 'empty'; 
+	}
+
 	makeGarbage() {
 		this.type = 'garbage';
 	}
 
-	makePiece(matrix) {
-		this.type = 'placedPiece';
+	isGarbage() {
+		return this.type == 'garbage'; 
+	}
+
+	makePlacedPiece(matrix) {
+		this.type = 'placed';
 		this.matrix = matrix.map(r => r.slice()); // Deep local copy
 	}
 
-	makeSD() {
-		this.type = 'socialdistancer';
+	isPlaced() {
+		return this.type == 'placed'; 
 	}
+
+	makeSD() {
+		this.type = 'sd';
+	}
+
+	isSD() {
+		return this.type == 'sd'; 
+	}
+
+
 }
