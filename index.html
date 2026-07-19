@@ -106,9 +106,6 @@
               <tr><td>Piece Randomization Difficulty Bias</td><td><input id="settingbPRDB" size="3"></td></tr>
               <tr><td>Piece Randomization Same Color Bias</td><td><input id="settingbPRSCB" size="3"></td></tr>
               <tr><td>Piece Randomization Symmetry Bias</td><td><input id="settingbPRSB" size="3"></td></tr>
-              <tr><td>Piece Color Red Channel Mode</td><td><input id="settingbRedColor" size="1"></td></tr>
-              <tr><td>Piece Color Green Channel Mode</td><td><input id="settingbGreenColor" size="1"></td></tr>
-              <tr><td>Piece Color Blue Channel Mode</td><td><input id="settingbBlueColor" size="1"></td></tr>
             </table>
           </div>
         </div>
@@ -116,7 +113,6 @@
         <div style="display: block; margin-top: 20px;">
           <button onclick="randomizeSettings();">Shuffle</button>
           <button onclick="resetSettings();showSettings();">Reset</button>
-          <button onclick="resetSettings();resetSettingsB();showSettings();">Reset All</button>
           <button onclick="hideSettings();">Close</button>
           <button onclick="saveSettings();">Save</button>
         </div>
@@ -174,12 +170,9 @@ function resetSettings() {
   settings = {gr: 0, boardWidth: 10, boardHeight: 20, mystery: 15584, fallingSpeed: 35, fa: 1.01, nextPieces: 1, closeEnough: 0, heldPieces: 0, garbagePercentage: 50, scoreAcceleration: 1, wrapAround: false, rgr: false, sd: false, dual: false, flipping: false, stairs: false};
 }
 
-function resetSettingsB() {
-  settingsb = {udDual: false, lrDual: false, rotateDual: false, wadc: false, prdb: 0, prscb: 0, prsb: 0, redColor: 0, greenColor: 1, blueColor: 2};
-}
+settingsb = {udDual: false, lrDual: false, rotateDual: false, wadc: false, prdb: 0, prscb: 0, prsb: 0};
 
 resetSettings();
-resetSettingsB();
 
 function showSettings() {
   pause = true; 
@@ -207,9 +200,6 @@ function showSettings() {
   document.getElementById("settingbPRDB").value = settingsb["prdb"];
   document.getElementById("settingbPRSB").value = settingsb["prsb"];
   document.getElementById("settingbPRSCB").value = settingsb["prscb"];
-  document.getElementById("settingbRedColor").value = settingsb["redColor"];
-  document.getElementById("settingbGreenColor").value = settingsb["greenColor"];
-  document.getElementById("settingbBlueColor").value = settingsb["blueColor"];
   document.getElementById("settingsDialog").showModal();
   document.getElementById("settingsButton").blur();
 }
@@ -244,9 +234,6 @@ function saveSettings() {
   settingsb["prdb"] = document.getElementById("settingbPRDB").value * 1;
   settingsb["prscb"] = document.getElementById("settingbPRSCB").value * 1;
   settingsb["prsb"] = document.getElementById("settingbPRSB").value * 1;
-  settingsb["redColor"] = document.getElementById("settingbRedColor").value * 1;
-  settingsb["greenColor"] = document.getElementById("settingbGreenColor").value * 1;
-  settingsb["blueColor"] = document.getElementById("settingbBlueColor").value * 1;
   restartGame();
   document.getElementById("settingsDialog").close();
 }
@@ -577,21 +564,6 @@ function bottom2numberC(bottom) {
   return (0.5 ** toret) * 255;
 }
 
-function bottom2numberD(bottom) {
-  let X = 0;
-  let toret = 0;
-  for (let i=0; i<bottom.length-1; i++) {
-    if (bottom[i] == bottom[i+1]) {
-      X += 1;
-    } else {
-      toret += (1 - 0.5 ** X) * 255;
-      X = 0;
-    }
-  }
-  toret += (1 - 0.5 ** X) * 255;
-  return toret * 4 / bottom.length;
-}
-
 function zeroifnan(number) {
   if (number > 0 || number < 0 || number == 0) {
     return number;
@@ -606,12 +578,7 @@ function matrix2color(matrix) {
   let A = extremifiedaverage(bottoms.map(bottom => zeroifnan(bottom2numberA(bottom))));
   let B = extremifiedaverage(bottoms.map(bottom => zeroifnan(bottom2numberB(bottom))));
   let C = extremifiedaverage(bottoms.map(bottom => zeroifnan(bottom2numberC(bottom))));
-  let D = extremifiedaverage(bottoms.map(bottom => zeroifnan(bottom2numberD(bottom))));
-  let channels = [A, B, C, D];
-  return '#' + padwithzeros((
-    Math.round(channels[modulo(Math.round(settingsb.redColor),4)]) * 65536 + 
-    Math.round(channels[modulo(Math.round(settingsb.greenColor),4)]) * 256 + 
-    Math.round(channels[modulo(Math.round(settingsb.blueColor),4)])).toString(16));
+  return '#' + padwithzeros((Math.round(A) * 65536 + Math.round(B) * 256 + Math.round(C)).toString(16));
 }
 
 
