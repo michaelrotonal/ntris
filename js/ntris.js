@@ -4,33 +4,13 @@ import {default as mu} from './mathutil.js';
 import * as settings from './settings.js'; 
 import * as controls from './controls.js'; 
 import * as ts from './tetrominos.js'; 
-
+import * as clr from './color.js'; 
 
 
 // defunct
 var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'banana', 'unbanana', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'D', 'F2', 'R2', 'X2', 'FYold', '[', 'W'].map(x => ts.tetrominos[x]); // i could do the effort of properly removing this, but i'm pretty sure we'll usurp the need for this list soon
 
-// color
-function allorientations(matrix) {
-  return [matrix,mu.rotate(matrix),mu.rotate(mu.rotate(matrix)),mu.rotate(mu.rotate(mu.rotate(matrix))), matrix.toReversed(), mu.rotate(matrix.toReversed()), mu.rotate(mu.rotate(matrix.toReversed())), mu.rotate(mu.rotate(mu.rotate(matrix.toReversed())))];
-}
 
-// color
-function padwithzeros(string) {
-  let a = string;
-  for (let i=0; i < 6 - string.length; i++) {
-    a = '0' + a;
-  }
-  return a;
-}
-
-// color
-function colorDistance(a, b) {
-  return Math.sqrt(
-    (parseInt(a[1] + a[2], 16) - parseInt(b[1] + b[2], 16))**2 * 2.5 + 
-    (parseInt(a[3] + a[4], 16) - parseInt(b[3] + b[4], 16))**2 * 5 + 
-    (parseInt(a[5] + a[6], 16) - parseInt(b[5] + b[6], 16))**2 * 1.5);
-}
 
 
 // game + constants
@@ -42,92 +22,6 @@ var gridsmall = 20;
 var tetrominoSequence = [];
 var held = [];
 
-
-
-
-// color
-function removeEdgeInf(array) {
-  let boole = false;
-  let half = [];
-  for (let i=0; i < array.length; i++) {
-    if (array[i] != Infinity) {
-      boole = true;
-    }
-    if (boole) {half.push(array[i]);}
-  }
-  boole = false;
-  let toret = [];
-  for (let i=array.length - 1; i > -1; i--) {
-    if (array[i] != Infinity) {
-      boole = true;
-    }
-    if (boole) {toret.unshift(array[i]);}
-  }
-  return toret;
-}
-
-// color
-function bottom2numberA(bottom) {
-  let toret = 0;
-  for (let i=0; i<bottom.length; i++) {
-    toret += (1 - 0.5 ** bottom[i]);
-  }
-  return Math.cbrt(toret / bottom.length) * 255;
-} 
-
-// color
-function bottom2numberB(bottom) {
-  let toret = 0;
-  for (let i=0; i<bottom.length; i++) {
-    if ((i + bottom[i]) % 2 > 0) {
-      toret += 255;
-    } else {
-      if ((i + bottom[i] + 1) % 2 > 0) {
-        toret -= 255;
-      }
-    }
-  }
-  return (toret / bottom.length + 255) / 2;
-}
-// color
-function bottom2numberC(bottom) {
-  let toret = 0;
-  for (let i=0; i<bottom.length; i++) {
-    toret += bottom[i] * i / bottom.length;
-  }
-  return (0.5 ** toret) * 255;
-}
-
-
-// color
-function bottom2numberD(bottom) {
-  let X = 0;
-  let toret = 0;
-  for (let i=0; i<bottom.length - 1; i++) {
-    if (bottom[i] == bottom[i+1]) {
-      X += 1;
-    } else {
-      toret += 255 * (1 - 0.5 ** X);
-      X = 0;
-    }
-  }
-  toret += 255 * (1 - 0.5 ** X);
-  return toret;
-}
-
-function matrix2color(matrix) {
-  let matrices = [matrix, mu.rotate(matrix), mu.rotate(mu.rotate(matrix)), mu.rotate(mu.rotate(mu.rotate(matrix)))];
-  let bottoms = matrices.map(matrice => removeEdgeInf(matrice.map(row => mu.minusonetoinf(row.indexOf(1)))));
-  let A = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberA(bottom))));
-  let B = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberB(bottom))));
-  let C = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberC(bottom))));
-  let D = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberD(bottom))));
-  let channels = [A, B, C, D];
-  return '#' + padwithzeros((
-    Math.round(channels[mu.modulo(Math.round(settings.user['redColor']),4)]) * 65536 + 
-    Math.round(channels[mu.modulo(Math.round(settings.user['greenColor']),4)]) * 256 + 
-    Math.round(channels[mu.modulo(Math.round(settings.user['blueColor']),4)])).toString(16));
-}
 
 // game
 // keep track of what is in every cell of the game using a 2d array
@@ -478,7 +372,7 @@ function loop() {
     for (let col = 0; col < settings.game.boardWidth; col++) {
       if (playfield[row][col]) {
         const name = playfield[row][col];
-        context.fillStyle = (name == 0 || name == 'garbage' || name == 'nonsolid') ? (ts.colors[name]) : matrix2color(name);
+        context.fillStyle = (name == 0 || name == 'garbage' || name == 'nonsolid') ? (ts.colors[name]) : clr.matrix2color(name); // 'name' is a misnomer here -- it's the matrix
         // drawing 1 px smaller than the grid creates a grid effect
         if (settings.game.wrapAround) {
           if (settings.user.wadc) {
@@ -509,7 +403,7 @@ function loop() {
       }
     }
 
-    context.fillStyle = FlipIfDual(false) ? 'black' : matrix2color(tetromino.matrix);
+    context.fillStyle = FlipIfDual(false) ? 'black' : clr.matrix2color(tetromino.matrix);
 
     for (let row = 0; row < tetromino.matrix.length; row++) {
       for (let col = 0; col < tetromino.matrix[row].length; col++) {
@@ -534,7 +428,7 @@ function loop() {
   // draw the next tetrominoes
   for (let i=0;i<settings.game.nextPieces;i++) {
 
-    context.fillStyle = matrix2color(nextpieces[i]);
+    context.fillStyle = clr.matrix2color(nextpieces[i]);
     for (let row = 0; row < nextpieces[i].length; row++) {
       for (let col = 0; col < nextpieces[i][row].length; col++) {
         if (nextpieces[i][row][col]) {
@@ -552,7 +446,7 @@ function loop() {
   // draw the held tetrominoes
   for (let i=0;i<settings.game.heldPieces;i++) {
     if (held[i]) {
-      context.fillStyle = matrix2color(held[i]);
+      context.fillStyle = clr.matrix2color(held[i]);
 
       for (let row = 0; row < held[i].length; row++) {
         for (let col = 0; col < held[i][row].length; col++) {

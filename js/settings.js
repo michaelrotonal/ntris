@@ -1,4 +1,5 @@
 import {default as mu} from './mathutil.js'; 
+import * as color from './color.js'; 
 
 let gameDefault = {
 	gr: 0, 
@@ -111,104 +112,6 @@ export function saveSettings() {
   document.getElementById("settingsDialog").close();
 }
 
-
-// Temp dup FIXME ==============
-function padwithzeros(string) {
-  let a = string;
-  for (let i=0; i < 6 - string.length; i++) {
-    a = '0' + a;
-  }
-  return a;
-}
-function allorientations(matrix) {
-  return [matrix,mu.rotate(matrix),mu.rotate(mu.rotate(matrix)),mu.rotate(mu.rotate(mu.rotate(matrix))), matrix.toReversed(), mu.rotate(matrix.toReversed()), mu.rotate(mu.rotate(matrix.toReversed())), mu.rotate(mu.rotate(mu.rotate(matrix.toReversed())))];
-}
-function colorDistance(a, b) {
-  return Math.sqrt(
-    (parseInt(a[1] + a[2], 16) - parseInt(b[1] + b[2], 16))**2 * 2.5 + 
-    (parseInt(a[3] + a[4], 16) - parseInt(b[3] + b[4], 16))**2 * 5 + 
-    (parseInt(a[5] + a[6], 16) - parseInt(b[5] + b[6], 16))**2 * 1.5);
-}
-
-function removeEdgeInf(array) {
-  let boole = false;
-  let half = [];
-  for (let i=0; i < array.length; i++) {
-    if (array[i] != Infinity) {
-      boole = true;
-    }
-    if (boole) {half.push(array[i]);}
-  }
-  boole = false;
-  let toret = [];
-  for (let i=array.length - 1; i > -1; i--) {
-    if (array[i] != Infinity) {
-      boole = true;
-    }
-    if (boole) {toret.unshift(array[i]);}
-  }
-  return toret;
-}
-function bottom2numberA(bottom) {
-  let toret = 0;
-  for (let i=0; i<bottom.length; i++) {
-    toret += (1 - 0.5 ** bottom[i]);
-  }
-  return Math.cbrt(toret / bottom.length) * 255;
-} 
-
-function bottom2numberB(bottom) {
-  let toret = 0;
-  for (let i=0; i<bottom.length; i++) {
-    if ((i + bottom[i]) % 2 > 0) {
-      toret += 255;
-    } else {
-      if ((i + bottom[i] + 1) % 2 > 0) {
-        toret -= 255;
-      }
-    }
-  }
-  return (toret / bottom.length + 255) / 2;
-}
-
-function bottom2numberC(bottom) {
-  let toret = 0;
-  for (let i=0; i<bottom.length; i++) {
-    toret += bottom[i] * i / bottom.length;
-  }
-  return (0.5 ** toret) * 255;
-}
-
-function bottom2numberD(bottom) {
-  let X = 0;
-  let toret = 0;
-  for (let i=0; i<bottom.length - 1; i++) {
-    if (bottom[i] == bottom[i+1]) {
-      X += 1;
-    } else {
-      toret += 255 * (1 - 0.5 ** X);
-      X = 0;
-    }
-  }
-  toret += 255 * (1 - 0.5 ** X);
-  return toret;
-}
-
-function matrix2color(matrix) {
-  let matrices = [matrix, mu.rotate(matrix), mu.rotate(mu.rotate(matrix)), mu.rotate(mu.rotate(mu.rotate(matrix)))];
-  let bottoms = matrices.map(matrice => removeEdgeInf(matrice.map(row => mu.minusonetoinf(row.indexOf(1)))));
-  let A = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberA(bottom))));
-  let B = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberB(bottom))));
-  let C = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberC(bottom))));
-  let D = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberD(bottom))));
-  let channels = [A, B, C, D];
-  return '#' + padwithzeros((
-    Math.round(channels[mu.modulo(Math.round(user['redColor']),4)]) * 65536 + 
-    Math.round(channels[mu.modulo(Math.round(user['greenColor']),4)]) * 256 + 
-    Math.round(channels[mu.modulo(Math.round(user['blueColor']),4)])).toString(16));
-}
-// ==================
-
 export function randomizeSettings(allpieces) {
   game["boardHeight"] = mu.getRandomInt(10,30);
   game["boardWidth"] = mu.getRandomInt(Math.round(game["boardHeight"]/3), Math.round(game["boardHeight"]*2/3));
@@ -218,12 +121,12 @@ export function randomizeSettings(allpieces) {
   game["mystery"] = 0;
 
   // Here there be dragons =====================
-  let randomColor = '#' + padwithzeros(mu.getRandomInt(0, 16777215).toString(16));
+  let randomColor = '#' + color.padwithzeros(mu.getRandomInt(0, 16777215).toString(16));
   let j = Math.ceil(Math.random()**Math.exp(- user.prdb / 3) * allpieces.length); // ISSUE
   for (let i = 1 + Math.floor(-6*Math.log(Math.random()));i>0;i--) {
     let k = mu.getRandomInt(0,j);
-    while (((allorientations(allpieces[k]).lastIndexOf(allpieces[k]) > 3 ^ (Math.random() < 1 / (Math.exp(-user.prsb) + 1))) ||
-      (colorDistance(matrix2color(allpieces[k]), randomColor) > 255 * 3 / Math.exp(user.prscb)) && Math.random() > 0.0003) || !(game["mystery"] % 2**(k+1) < 2**k) ) {
+    while (((mu.allorientations(allpieces[k]).lastIndexOf(allpieces[k]) > 3 ^ (Math.random() < 1 / (Math.exp(-user.prsb) + 1))) ||
+      (color.colorDistance(color.matrix2color(allpieces[k]), randomColor) > 255 * 3 / Math.exp(user.prscb)) && Math.random() > 0.0003) || !(game["mystery"] % 2**(k+1) < 2**k) ) {
 
       k = (Math.random() > 0.003) ? mu.getRandomInt(0,j) : mu.getRandomInt(0, allpieces.length - 1);
     }

@@ -37,7 +37,11 @@ function rotate(matrix) {
   return result;
 }
 
+function allorientations(matrix) {
+  return [matrix,rotate(matrix),rotate(rotate(matrix)),rotate(rotate(rotate(matrix))), matrix.toReversed(), rotate(matrix.toReversed()), rotate(rotate(matrix.toReversed())), rotate(rotate(rotate(matrix.toReversed())))];
+}
+
 export default {
-	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate
+	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations
 }
 
