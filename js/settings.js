@@ -19,7 +19,9 @@ let gameDefault = {
 	sd: false, 
 	dual: false, 
 	flipping: false, 
-	stairs: false
+	stairs: false,
+  morph: false,
+  drunkAnt: false,
 };
 
 export let game = {...gameDefault};
@@ -60,6 +62,8 @@ export function showSettings() {
   document.getElementById("settingDual").checked = game["dual"];
   document.getElementById("settingFlipping").checked = game["flipping"];
   document.getElementById("settingStairs").checked = game["stairs"];
+  document.getElementById("settingMorph").checked = game["morph"];
+  document.getElementById("settingDrunkAnt").checked = game["drunkAnt"];
 
   document.getElementById("settingbLRDual").checked     = user["lrDual"];
   document.getElementById("settingbUDDual").checked     = user["udDual"];
@@ -98,6 +102,8 @@ export function saveSettings() {
   game["dual"]         = document.getElementById("settingDual").checked;
   game["flipping"]     = document.getElementById("settingFlipping").checked;
   game["stairs"]       = document.getElementById("settingStairs").checked;
+  game["morph"]        = document.getElementById("settingMorph").checked;
+  game["drunkAnt"]     = document.getElementById("settingDrunkAnt").checked;
 
   user["lrDual"]     = document.getElementById("settingbLRDual").checked;
   user["udDual"]     = document.getElementById("settingbUDDual").checked;
@@ -110,11 +116,15 @@ export function saveSettings() {
   user["greenColor"] = document.getElementById("settingbGreenColor").value * 1;
   user["blueColor"]  = document.getElementById("settingbBlueColor").value * 1;
 
+
+  if(game["morph"] || game["drunkAnt"]) {
+    game["mystery"] = 2; // These settings override piece selection, but keep one to avoid crashes
+  }
   
   document.getElementById("settingsDialog").close();
 }
 
-export function randomizeSettings(allpieces) {
+export function randomizeSettings() {
   game["boardHeight"] = mu.getRandomInt(10,30);
   game["boardWidth"] = mu.getRandomInt(Math.round(game["boardHeight"]/3), Math.round(game["boardHeight"]*2/3));
   game["gr"] = Math.min(mu.getRandomInt(0,game["boardHeight"]),mu.getRandomInt(0,game["boardHeight"]));
@@ -123,7 +133,7 @@ export function randomizeSettings(allpieces) {
   game["mystery"] = 0;
 
   let randomColor = '#' + color.padwithzeros(mu.getRandomInt(0, 16777215).toString(16));
-  let j = Math.ceil(Math.random()**Math.exp(- user.prdb / 3) * allpieces.length); 
+  let j = Math.ceil(Math.random()**Math.exp(- user.prdb / 3) * ts.allpieces.length); 
 
   // Here there be dragons =====================
   // I have attempted to make the dragons more readable below
@@ -148,11 +158,11 @@ export function randomizeSettings(allpieces) {
     watcond = true; 
     while (watcond || (colorcond && randcond) || mystcond) {
 
-      k = (Math.random() > 0.003) ? mu.getRandomInt(0,j) : mu.getRandomInt(0, allpieces.length - 1);
+      k = (Math.random() > 0.003) ? mu.getRandomInt(0,j) : mu.getRandomInt(0, ts.allpieces.length - 1);
 
-      let kname  = allpieces[k];
+      let kname  = ts.allpieces[k];
       let kmatrix = ts.tetrominos[kname];
-      let kcolor  = color.tetromino2color(kmatrix, kname); 
+      let kcolor  = color.matrix2color(kmatrix); 
 
       watcond   = mu.allorientations(kmatrix).lastIndexOf(kmatrix) > 3 ^ (Math.random() < 1 / (Math.exp(-user.prsb) + 1));
       colorcond = color.colorDistance(kcolor, randomColor) > 255 * 3 / Math.exp(user.prscb);
@@ -175,5 +185,12 @@ export function randomizeSettings(allpieces) {
   game["dual"] = (Math.random() > 5/6);
   game["flipping"] = (Math.random() > 5/6);
   game["stairs"] = (Math.random() > 5/6);
+
+
+  game["morph"]    = (Math.random() > 9/10);
+  game["drunkAnt"] = (Math.random() > 9/10);
+  if(game["morph"] || game["drunkAnt"]) {
+    game["mystery"] = 2; // These settings override piece selection
+  }
 
 }

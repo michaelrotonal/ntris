@@ -1,4 +1,4 @@
-import * as game from './ntris.js'; 
+import {ntrisGame as game} from './ntris.js'; 
 import * as settings from './settings.js'; 
 
 export function showControls() {
@@ -11,7 +11,7 @@ export function hideControls() {
 
 // listen to keyboard events to move the active tetromino
 document.addEventListener('keydown', function(e) {
-
+  
   // left
   if (e.which === 37 || e.which === 65 || e.which === 97) {
     if(settings.game.dual && settings.user.lrDual && FlipIfDual(false)) {

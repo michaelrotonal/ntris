@@ -27,10 +27,11 @@ export class GridCell {
 		return this.type == GARBAGE; 
 	}
 
-	makePlacedPiece(matrix, name) {
+	makePlacedPiece(matrix, name='', color=null) {
 		this.type = PLACED;
 		this.matrix = matrix.map(r => r.slice()); // Deep local copy
 		this.name = name;
+		this.color = color; 
 	}
 
 	isPlaced() {
@@ -59,11 +60,12 @@ export class GridCell {
 		}
 
 		if(this.isPlaced()) {
-			//if(ts.colors[this.name]) {
-			//	return ts.colors[this.name]; 
-			//} else {
-				return color.tetromino2color(this.matrix, this.name); 
-			//}
+			if(this.color) {
+				return this.color; 
+			}
+			
+			return color.matrix2color(this.matrix); 
+			
 		}
 
 		return '#FF0000'; // ERROR ERROR ERROR 

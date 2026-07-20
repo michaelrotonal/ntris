@@ -2,6 +2,19 @@ import {default as mu} from './mathutil.js';
 import * as settings from './settings.js';  
 import * as ts from './tetrominos.js'; 
 
+export function makeRandomColor(minBright=64) {
+  let r = mu.getRandomInt(minBright,255);
+  let g = mu.getRandomInt(minBright,255);        
+  let b = mu.getRandomInt(minBright,255);
+  return `rgb(${r},${g},${b})`;
+}
+
+export function driftColor(rgb, amount) {
+  let clamp = (x => x < 64 ? 64 : x > 255 ? 255 : x); 
+  return [clamp(rgb[0] + mu.getRandomInt(-amount, amount)),
+          clamp(rgb[1] + mu.getRandomInt(-amount, amount)),
+          clamp(rgb[2] + mu.getRandomInt(-amount, amount))];
+  }
 
 function removeEdgeInf(array) {
   let boole = false;
@@ -100,10 +113,4 @@ export function matrix2color(matrix) {
     Math.round(channels[mu.modulo(Math.round(settings.user['blueColor']),4)])).toString(16));
 }
 
-export function tetromino2color(matrix, name) {
-	if(ts.colors[name] && settings.user.useStaticColor) {
-		return ts.colors[name];
-	} else {
-		return matrix2color(matrix);
-	}
-}
+
