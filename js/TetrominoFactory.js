@@ -96,7 +96,7 @@ function makeFromMystery() {
       		colorStyle: 'dynamic',
       		name: name});	
       } else {
-      	bp = new TetrominoBlueprint({type: 'static', matrix: ts.tetrominos[name], color: ts.colors[name], name: name, colorStyle: 'static'});
+      	bp = new TetrominoBlueprint({type: 'static', matrix: ts.tetrominos[name], color: ts.colors[name], name: name, colorStyle: settings.user.useStaticColor ? 'static' : 'dynamic'});
       }
 	  blueprints.push(bp); 
     }
@@ -113,7 +113,7 @@ function makeMorph() {
 			chanceToMutate: 0.2,
 			matrix: ts.tetrominos[i], 
 			color: ts.colors[i],
-			colorStyle: 'static'});
+			colorStyle: settings.user.useStaticColor ? 'static' : 'dynamic'});
 		blueprints.push(bp); 
 	});
 

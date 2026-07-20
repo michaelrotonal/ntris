@@ -37,7 +37,7 @@ export let user = {
   redColor: 0,
   greenColor: 1,
   blueColor: 2,
-  useStaticColor: 1 // No UI -- just to demonstrate power of new interfaces
+  useStaticColor: 0 // Yes UI -- just to demonstrate power of new interfaces
 };
 
 export function resetSettings() { 
@@ -75,6 +75,7 @@ export function showSettings() {
   document.getElementById("settingbRedColor").value     = user["redColor"];
   document.getElementById("settingbGreenColor").value   = user["greenColor"];
   document.getElementById("settingbBlueColor").value    = user["blueColor"];
+  document.getElementById("settingbStaticColor").checked= user["useStaticColor"];
 
   document.getElementById("settingsDialog").showModal();
   document.getElementById("settingsButton").blur();
@@ -115,6 +116,7 @@ export function saveSettings() {
   user["redColor"]   = document.getElementById("settingbRedColor").value * 1;
   user["greenColor"] = document.getElementById("settingbGreenColor").value * 1;
   user["blueColor"]  = document.getElementById("settingbBlueColor").value * 1;
+  user["useStaticColor"] = document.getElementById("settingbStaticColor").checked;
 
 
   if(game["morph"] || game["drunkAnt"]) {
