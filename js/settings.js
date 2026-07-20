@@ -154,9 +154,9 @@ export function randomizeSettings() {
   for (let i = 1 + Math.floor(-6*Math.log(Math.random()));i>0;i--) {
     let k = mu.getRandomInt(0,j);
 
-    let watcond, colorcond, randcond, mystcond;
-    watcond = true; 
-    while (watcond || (colorcond && randcond) || mystcond) {
+    let symmetrycond, colorcond, randcond, mystcond;
+    symmetrycond = true; 
+    while (symmetrycond || (colorcond && randcond) || mystcond) {
 
       k = (Math.random() > 0.003) ? mu.getRandomInt(0,j) : mu.getRandomInt(0, ts.allpieces.length - 1);
 
