@@ -123,9 +123,9 @@ function makeMorph() {
 function makeDrunkAnt() {
     let blueprints = [];
 
-	let pieceCount = mu.getRandomInt(3,9);
+	let pieceCount = Math.ceil(-7*Math.log(Math.random()));
 	for(let i = 0; i < pieceCount; i++) {
-		let rows = mu.getRandomInt(3,6);
+		let rows = 1 + Math.ceil(-3*Math.log(Math.random()));
 		let cols = rows; //mu.getRandomInt(1,5); // For some reason, rectanges mess up rotate.
 		let bp = new TetrominoBlueprint({
 			type: 'random',

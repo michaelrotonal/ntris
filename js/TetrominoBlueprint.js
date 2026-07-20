@@ -120,7 +120,13 @@ export default class TetrominoBlueprint {
 
 		if(this.type == 'mutate') {
 			if(Math.random() < this.chanceToMutate) {
-				let flipBit = (i => i == 0 ? 1 : 0); 
+				let flipBit = (i => 1 - i); 
+				this.matrix.push(new Array(this.matrix[0].length).fill(0));
+				this.matrix.unshift(new Array(this.matrix[0].length).fill(0));
+				for (let i = 0; i < this.matrix.length; i++) {
+					this.matrix[i].push(0);
+					this.matrix[i].unshift(0);
+				}
 				let i = mu.getRandomInt(0,this.gridsizeRows-1); 
 				let j = mu.getRandomInt(0,this.gridsizeCols-1); 
 
@@ -139,6 +145,10 @@ export default class TetrominoBlueprint {
 				}
 				
 				this.matrix[i][j] = flipBit(this.matrix[i][j]);
+				while (this.matrix[0].indexOf(1) == -1 && this.matrix[this.matrix.length-1].indexOf(1) == -1 && this.matrix.every(trerr => trerr[0] == 0 && trerr[trerr.length-1] == 0)) {
+					this.matrix = this.matrix.slice(1, -1);
+					this.matrix = this.matrix.map(nswttt => nswttt.slice(1, -1));
+				}
 			}
 
 			return new Tetromino({

@@ -30,7 +30,7 @@ export default class Tetromino {
 			}
 		}
 		if(cells == 0) {
-			console.log("Warning: Empty matrix.  Creating monomino.");
+			console.log("Warning: Empty matrix of size " + this.matrix.length + " by " + this.matrix[0].length + ".  Creating monomino.");
 			this.matrix = [[1]];
 		}
 	}
@@ -41,14 +41,14 @@ export default class Tetromino {
 		else {
 			switch(this.colorStyle) {
 				case 'dynamic':
-					tetcolor = this.color = colors.matrix2color(this.matrix); 
+					tetcolor = this.color = color.matrix2color(this.matrix); 
 					break;
 				case 'static':
 					tetcolor = this.color;
 					break;
 				case 'dynamicFallback':
 					if(! this.color ){
-						tetcolor = this.color = colors.matrix2color(this.matrix); 
+						tetcolor = this.color = color.matrix2color(this.matrix); 
 					}
 					break;
 				case 'driftOnPaint':

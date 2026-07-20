@@ -164,7 +164,7 @@ export function randomizeSettings() {
       let kmatrix = ts.tetrominos[kname];
       let kcolor  = color.matrix2color(kmatrix); 
 
-      watcond   = mu.allorientations(kmatrix).lastIndexOf(kmatrix) > 3 ^ (Math.random() < 1 / (Math.exp(-user.prsb) + 1));
+      symmetrycond   = mu.allorientations(kmatrix).lastIndexOf(kmatrix) > 3 ^ (Math.random() < 1 / (Math.exp(-user.prsb) + 1));
       colorcond = color.colorDistance(kcolor, randomColor) > 255 * 3 / Math.exp(user.prscb);
       randcond  = Math.random() > 0.0003;
       mystcond  = !(game["mystery"] % 2**(k+1) < 2**k); 
