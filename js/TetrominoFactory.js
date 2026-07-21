@@ -40,7 +40,8 @@ export class TetrominoFactory {
 		}
 
 		if(this.distribution == 'random') {
-			// select a blueprint at random, per blueprint.probability?
+			let pieces = this.getRandomBag();
+			return pieces[mu.getRandomInt(0, pieces.length - 1)];
 		}
 
 
