@@ -185,7 +185,7 @@ export default class TetrominoBlueprint {
 			}
 
 			console.log("Shotgun matrix " + this.gridsizeRows + " x " + this.gridsizeCols + " density " + this.density + " made " + madeCells + " cells.");
-			return matrix; 
+			return mu.toCentered(matrix); 
 		}
 
 
@@ -218,7 +218,7 @@ export default class TetrominoBlueprint {
 				squaresToWalk--; 
 			}
 
-			return matrix; 
+			return mu.toCentered(matrix); 
 
 		}
 	}
