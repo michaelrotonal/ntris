@@ -145,6 +145,7 @@ export default class TetrominoBlueprint {
 				}
 				
 				this.matrix[i][j] = flipBit(this.matrix[i][j]);
+				this.matrix = mu.toCentered(this.matrix);
 				while (this.matrix[0].indexOf(1) == -1 && this.matrix[this.matrix.length-1].indexOf(1) == -1 && this.matrix.every(trerr => trerr[0] == 0 && trerr[trerr.length-1] == 0)) {
 					this.matrix = this.matrix.slice(1, -1);
 					this.matrix = this.matrix.map(nswttt => nswttt.slice(1, -1));

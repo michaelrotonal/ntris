@@ -165,6 +165,8 @@ export const tetrominos = {
     [0,0,1,0]
   ]
 };
+tetrominos['random'] = mu.toCentered(tetrominos['random']);
+tetrominos['random2'] = mu.toCentered(tetrominos['random2']);
 tetrominos['madnor'] = tetrominos['random'].map(cell => cell.toReversed()); // there's like no way this worked first try
 tetrominos['madnor2'] = tetrominos['random2'].map(cell => cell.toReversed());
 
