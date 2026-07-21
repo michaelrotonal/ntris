@@ -1,4 +1,5 @@
 import * as color from './color.js'; 
+import * as settings from './settings.js'; 
 
 // Potential color styles:
 //   - Fixed/hardcoded; stays the same even if the piece mutates
@@ -22,6 +23,7 @@ export default class Tetromino {
 		this.colorStyle = options.colorStyle || 'dynamicFallback'; 
 		this.colorDriftAmount = options.colorDriftAmount; 
 		this.blueprint = options.blueprint || null; // In case we want its current life to affect its future life
+		this.sticky = (Math.random() * 100 < settings.game.stickyChance);
 
 		let cells = 0;
 		for(let i = 0; i < this.matrix.length; i++) {
@@ -65,8 +67,16 @@ export default class Tetromino {
 		let gridRight   = options.gridRight;
 		let gridWrap    = options.gridWrap; 
 		let gridWidth   = gridRight - gridLeft; 
-
-		context.fillStyle = tetcolor; 
+		if (this.sticky) {
+			let centerx = x+this.matrix[0].length*gridsize/2;
+			let centery = y+this.matrix.length*gridsize/2;
+			let stickygradient = context.createRadialGradient(centerx, centery, gridsize/3, centerx, centery, Math.sqrt((this.matrix.length)**2 + (this.matrix[0].length)**2) / 3 * gridsize);
+			stickygradient.addColorStop(0, tetcolor);
+			stickygradient.addColorStop(1, 'green');
+			context.fillStyle = stickygradient;
+		} else {
+			context.fillStyle = tetcolor; 
+		}
 		for (let row = 0; row < this.matrix.length; row++) {
 		  for (let col = 0; col < this.matrix[row].length; col++) {
 		  	if(this.matrix[row][col]) {

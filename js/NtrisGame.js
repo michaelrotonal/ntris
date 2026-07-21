@@ -605,7 +605,7 @@ export default class NtrisGame {
 	  if (this.controlsOff()) return;
 	  if (this.isValidMove(this.tetromino.matrix, this.tetromino.row, this.tetromino.col + 1)) {
 	    this.tetromino.col++;
-	  }
+	  } else {if (this.tetromino.sticky) {this.placeTetromino();}}
 	}
 
 	pieceRight() {
@@ -613,7 +613,7 @@ export default class NtrisGame {
 
 	  if (this.isValidMove(this.tetromino.matrix, this.tetromino.row, this.tetromino.col - 1)) {
 	    this.tetromino.col--;
-	  }
+	  } else {if (this.tetromino.sticky) {this.placeTetromino();}}
 	}
 
 	pieceRotate() {
@@ -622,7 +622,7 @@ export default class NtrisGame {
 	  const matrix = (this.FlipIfDual(false) && !settings.user.roateDual) ? mu.rotate(mu.rotate(mu.rotate(this.tetromino.matrix))) : mu.rotate(this.tetromino.matrix);
 	  if (this.isValidMove(matrix, this.tetromino.row, this.tetromino.col)) {
 	   this.tetromino.matrix = matrix.map(r => r.slice());
-	  }
+	  } else {if (this.tetromino.sticky) {this.placeTetromino();}}
 	}
 
 	pieceDown() {
@@ -647,7 +647,7 @@ export default class NtrisGame {
 	    const matrix = this.tetromino.matrix.map(sdrvg => sdrvg.toReversed());
 	    if(this.isValidMove(matrix,this.tetromino.row,this.tetromino.col)) {
 	      this.tetromino.matrix = matrix.map(r => r.slice());
-	    }
+	    } else {if (this.tetromino.sticky) {this.placeTetromino();}}
 	  }
 	  
 	}

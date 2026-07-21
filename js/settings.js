@@ -22,6 +22,7 @@ let gameDefault = {
 	stairs: false,
   morph: false,
   drunkAnt: false,
+  stickyChance: 0
 };
 
 export let game = {...gameDefault};
@@ -64,6 +65,7 @@ export function showSettings() {
   document.getElementById("settingStairs").checked = game["stairs"];
   document.getElementById("settingMorph").checked = game["morph"];
   document.getElementById("settingDrunkAnt").checked = game["drunkAnt"];
+  document.getElementById("settingStickyChance").value = game["stickyChance"];
 
   document.getElementById("settingbLRDual").checked     = user["lrDual"];
   document.getElementById("settingbUDDual").checked     = user["udDual"];
@@ -97,6 +99,7 @@ export function saveSettings() {
   game["heldPieces"]   = document.getElementById("settingHeldPieces").value * 1;
   game["garbagePercentage"] = document.getElementById("settingGarbagePercentage").value * 1;
   game["scoreAcceleration"] = document.getElementById("settingScoreAcceleration").value * 1;
+  game["stickyChance"] = document.getElementById("settingStickyChance").value * 1;
   game["wrapAround"]   = document.getElementById("settingWrapAround").checked;
   game["rgr"]          = document.getElementById("settingRGR").checked;
   game["sd"]           = document.getElementById("settingSD").checked;
@@ -181,6 +184,7 @@ export function randomizeSettings() {
   game["heldPieces"] = Math.floor(-2*Math.log(Math.random()));
   game["garbagePercentage"] = mu.getRandomInt(1, 99);
   game["scoreAcceleration"] = mu.getRandomInt(0, 2);
+  game["stickyChance"] = mu.getRandomInt(0, 1) * mu.getRandomInt(0, 1) * mu.getRandomInt(1, 99);
   game["wrapAround"] = (Math.random() > 5/6);
   game["rgr"] = (Math.random() > 5/6);
   game["sd"] = (Math.random() > 5/6);
