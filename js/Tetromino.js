@@ -53,7 +53,7 @@ export default class Tetromino {
 					break;
 				case 'driftOnPaint':
 					if(this.blueprint) {
-						this.blueprint.updateColor(color.driftColor(this.blueprint.baseColor, this.colorDriftAmount));
+						this.blueprint.doColorDrift();
 						this.color = this.blueprint.color; 
 					}
 					break; 

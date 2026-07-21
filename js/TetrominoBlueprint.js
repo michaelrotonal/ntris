@@ -52,6 +52,8 @@ export default class TetrominoBlueprint {
 
 		if(this.colorStyle == 'driftOnPaint' || this.colorStyle == 'driftOnMake') {
 			this.updateColor([mu.getRandomInt(64,255), mu.getRandomInt(64,255), mu.getRandomInt(64,255)]);
+			this.colorDriftRate = 50; // ms
+			this.lastColorDrift = performance.now(); 
 		}
 	}
 
@@ -94,6 +96,16 @@ export default class TetrominoBlueprint {
 	updateColor(rgb) {
 		this.baseColor = rgb; 
 		this.color = `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+	}
+
+	doColorDrift() {
+		let now = performance.now();
+		if(now - this.lastColorDrift < this.colorDriftRate) { 
+			return;
+		}
+
+		this.updateColor(color.driftColor(this.baseColor, this.colorDriftAmount)); 
+		this.lastColorDrift = now; 
 	}
 
 	makeTetromino() {
