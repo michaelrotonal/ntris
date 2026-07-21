@@ -444,7 +444,7 @@ export default class NtrisGame {
 	          	   this.playfield[
 	          		 this.FlipIfDual(gridRow) - (settings.game.stairs ? (gridCol) : 0)]
 	          		   [mu.modulo(cellCol + col, settings.game.boardWidth)])) {     
-	          	if(this.tetromino.sticky || this.movingDown) {this.placeTetromino(); return;}
+	          	if(this.tetromino.sticky || this.movingDown) {this.placeTetromino();} return;
 	      	  }
 	        
 	      }
