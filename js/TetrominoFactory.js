@@ -4,6 +4,8 @@ import TetrominoBlueprint from './TetrominoBlueprint.js';
 import {default as mu} from './mathutil.js'; 
 import Tetromino from './Tetromino.js';
 
+import ExampleTetrominoFactory from "./ExampleTetrominoFactory.js";
+
 export class TetrominoFactory {
 	constructor(nextPieces, blueprints, tfsettings) {
 		this.nextPieces = nextPieces; 
@@ -56,6 +58,15 @@ export class TetrominoFactory {
 
 // FactoryFactories are in fact a real thing 
 export function tetrominoFactoryFactory() {
+	// An example minimal tetrominal factory
+	// Uncomment the below line to use it
+	//
+	// In practice, this function should be expanded into something
+	// that intelligently translates settings into tetromino factories,
+	// including combining settings when needed. 
+	// 
+	//return new ExampleTetrominoFactory(settings.game.nextPieces);
+
 	if(settings.game.morph) {
 		return makeMorph();
 	}
