@@ -26,8 +26,8 @@ export class TetrominoFactory {
 	}
 	
 	getNextTetromino() {
-		if(this.tetrominoSequence > this.nextPieces) {
-			return this.tetrominoSequence.unshift(); 
+		if(this.tetrominoSequence.length > this.nextPieces) {
+			return this.tetrominoSequence.splice(0,1)[0]; 
 		}
 
 		if(this.distribution == 'bag') {
