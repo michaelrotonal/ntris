@@ -141,7 +141,7 @@ function makeDrunkAnt() {
 		let cols = rows; //mu.getRandomInt(1,5); // For some reason, rectanges mess up rotate.
 		let bp = new TetrominoBlueprint({
 			type: 'random',
-			stability: 'stable',
+			stability: 'unstable',
 			gridsizeCols: cols,
 			gridsizeRows: rows,
 			density: 0.3,
