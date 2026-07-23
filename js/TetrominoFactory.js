@@ -73,6 +73,9 @@ export function tetrominoFactoryFactory() {
 	if(settings.game.drunkAnt) {
 		return makeDrunkAnt(); 
 	}
+	if(settings.game.polyominoes) {
+		return makeAllPolyominoes();
+	}
 	//return makeStandardTetris(); 
 	return makeFromMystery();
 }
@@ -81,7 +84,7 @@ export function tetrominoFactoryFactory() {
 function makeStandardTetris() {
     let blueprints = [];
     ['I', 'O', 'T', 'S', 'Z', 'J', 'L'].forEach(i => {
-		let bp = new TetrominoBlueprint({type: 'static', matrix: ts.tetrominos[i], color: ts.colors[i], name: i, colorMode: 'static'});
+		let bp = new TetrominoBlueprint({type: 'static', matrix: ts.tetrominos[i], color: ts.colors[i], name: i, colorStyle: 'static'});
 		blueprints.push(bp); 
 	});
 
@@ -150,6 +153,52 @@ function makeDrunkAnt() {
 			colorDriftAmount: 2
 		});
 		blueprints.push(bp); 
+	}
+
+	return new TetrominoFactory(settings.game.nextPieces, blueprints, {distribution: 'bag'}); 
+}
+
+function allPolyominoes(n) {
+	if (n > 1) {
+		let matrices = allPolyominoes(n-1);
+		matrices.forEach(matrix => mu.addZeros(matrix));
+		let toret = [];
+		for (let i = 0; i < matrices.length; i++) {
+			for (let j = 0; j < matrices[i].length; j++) {
+				for (let k = 0; k < matrices[i][j].length; k++) {
+					if (mu.isAdjacent(matrices[i], j, k)) {
+						let matrix = matrices[i].map(l => l.slice());
+						matrix[j][k] = 1;
+						toret.push(matrix);
+					}
+				}
+			}
+		}
+		// standardize each polyomino
+		toret = toret.map(matrix => mu.removeZeros(matrix));
+		toret = toret.map(matrix => mu.standardOrientation(matrix));
+		// remove duplicates
+		toret.sort((a, b) => mu.isGreater(a, b) - mu.isGreater(b, a));
+		let ugh = [toret[0]]; // i'm tired of naming variables
+		for (let i = 1; i < toret.length-1; i++) {
+			if ((mu.isGreater(toret[i], toret[i-1]) || mu.isGreater(toret[i-1], toret[i]))) {
+				ugh.push(toret[i]);
+			}
+		}
+		return ugh;
+	} else {return [[[1]]];}
+}
+
+function makeAllPolyominoes() {
+	let blueprints = [];
+	for (let j = 1; j < Math.log2(settings.game.mystery) + 2; j++) {
+		if (settings.game.mystery % 2 ** j >= 2 ** (j-1)) {
+			let them = allPolyominoes(j);
+			them.forEach(i => {
+				let bp = new TetrominoBlueprint({type: 'static', matrix: mu.toCentered(i), colorStyle: 'dynamic'});
+				blueprints.push(bp); 
+			});
+		}
 	}
 
 	return new TetrominoFactory(settings.game.nextPieces, blueprints, {distribution: 'bag'}); 

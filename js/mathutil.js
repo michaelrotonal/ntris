@@ -30,11 +30,24 @@ function extremifiedaverage(array) {
 
 function rotate(matrix) {
   const N = matrix.length - 1;
-  const result = matrix.map((row, i) =>
-    row.map((val, j) => matrix[N - j][i])
-  );
-
+  let result = [];
+  for (let i = 0; i < matrix[0].length; i++) {
+    result.push([]);
+    for (let j = 0; j < matrix.length; j++) {
+      result[i].push(matrix[matrix.length - 1 - j][i])
+    }
+  }
   return result;
+}
+
+function addZeros(matrix) {
+  matrix.push(new Array(matrix[0].length).fill(0));
+  matrix.unshift(new Array(matrix[0].length).fill(0));
+  for (let i = 0; i < matrix.length; i++) {
+    matrix[i].push(0);
+    matrix[i].unshift(0);
+  }
+  return matrix;
 }
 
 function toCentered(grid) {
@@ -96,11 +109,65 @@ function toCentered(grid) {
   return matrix;
 }
 
+function isGreater(array1, array2) {
+  if (array1.length > array2.length) {return true;}
+  if (array2.length > array1.length) {return false;}
+  for (let X = 0; X < Math.min(array1.length, array2.length); X++) {
+    if (typeof(array1[X]) == 'number') {
+      if (array1[X] > array2[X]) {return true;}
+      if (array2[X] > array1[X]) {return false;}
+    } else {
+      if (isGreater(array1[X], array2[X])) {return true;}
+      if (isGreater(array2[X], array1[X])) {return false;}
+    }
+  }
+  return false;
+}
+
+function removeZeros(matrix) {
+  while (matrix[0].indexOf(1) == -1) {
+    matrix = matrix.slice(1, matrix.length);
+  }
+  while (matrix[matrix.length-1].indexOf(1) == -1) {
+    matrix = matrix.slice(0, matrix.length-1);
+  }
+  while (matrix.every(trerr => trerr[0] == 0)) {
+    matrix = matrix.map(nswttt => nswttt.slice(1, nswttt.length));
+  }
+  while (matrix.every(trerr => trerr[trerr.length-1] == 0)) {
+    matrix = matrix.map(nswttt => nswttt.slice(0, nswttt.length-1));
+  }
+  return matrix;
+}
+
+function standardOrientation(matrix) {
+  let h = [matrix, rotate(matrix), rotate(rotate(matrix)), rotate(rotate(rotate(matrix)))];
+  let J = h[0];
+  for(let i = 0; i < 4; i++) {
+    if (isGreater(h[i], J)) {J = h[i];}
+  }
+  return J;
+}
+
+function clamp (matrix, i) {return Math.max(0, Math.min(i, matrix.length - 1));}
+
+function notAdjacentOrOn (matrix, a, b) {return (matrix[a][b] == 0 && 
+                                               matrix[clamp(matrix, a+1)][clamp(matrix[0], b)] == 0 &&
+                                               matrix[clamp(matrix, a-1)][clamp(matrix[0],b)] == 0 &&
+                                               matrix[clamp(matrix, a)][clamp(matrix[0],b+1)] == 0 &&
+                                               matrix[clamp(matrix, a)][clamp(matrix[0],b-1)] == 0);}
+
+function isAdjacent(matrix, a, b){return (matrix[a][b] == 0 && !(
+                                               matrix[clamp(matrix, a+1)][clamp(matrix[0], b)] == 0 &&
+                                               matrix[clamp(matrix, a-1)][clamp(matrix[0],b)] == 0 &&
+                                               matrix[clamp(matrix, a)][clamp(matrix[0],b+1)] == 0 &&
+                                               matrix[clamp(matrix, a)][clamp(matrix[0],b-1)] == 0));}
+
 function allorientations(matrix) {
   return [matrix,rotate(matrix),rotate(rotate(matrix)),rotate(rotate(rotate(matrix))), matrix.toReversed(), rotate(matrix.toReversed()), rotate(rotate(matrix.toReversed())), rotate(rotate(rotate(matrix.toReversed())))];
 }
 
 export default {
-	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations, toCentered
+	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations, toCentered, addZeros, clamp, notAdjacentOrOn, isAdjacent, removeZeros, standardOrientation, isGreater
 }
 

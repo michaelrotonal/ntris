@@ -27,11 +27,11 @@ function removeEdgeInf(array) {
   }
   boole = false;
   let toret = [];
-  for (let i=array.length - 1; i > -1; i--) {
-    if (array[i] != Infinity) {
+  for (let i=half.length - 1; i > -1; i--) {
+    if (half[i] != Infinity) {
       boole = true;
     }
-    if (boole) {toret.unshift(array[i]);}
+    if (boole) {toret.unshift(half[i]);}
   }
   return toret;
 }

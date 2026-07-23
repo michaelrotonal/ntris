@@ -133,25 +133,15 @@ export default class TetrominoBlueprint {
 		if(this.type == 'mutate') {
 			if(Math.random() < this.chanceToMutate) {
 				let flipBit = (i => 1 - i); 
-				this.matrix.push(new Array(this.matrix[0].length).fill(0));
-				this.matrix.unshift(new Array(this.matrix[0].length).fill(0));
-				for (let i = 0; i < this.matrix.length; i++) {
-					this.matrix[i].push(0);
-					this.matrix[i].unshift(0);
-				}
+				mu.addZeros(matrix);
 				let i = mu.getRandomInt(0,this.matrix.length-1); 
 				let j = mu.getRandomInt(0,this.matrix.length-1); 
 
-				let clamp = ((matrix, i) => i < 0 ? 0 : i >= matrix.length ? matrix.length-1 : i);
-				let notAdjacentOrOn = ((matrix, a, b) => matrix[a][b] == 0 && 
-					                                     matrix[clamp(matrix, a+1)][clamp(matrix[0], b)] == 0 &&
-					                                     matrix[clamp(matrix, a-1)][clamp(matrix[0],b)] == 0 &&
-					                                     matrix[clamp(matrix, a)][clamp(matrix[0],b+1)] == 0 &&
-					                                     matrix[clamp(matrix, a)][clamp(matrix[0],b-1)] == 0);
+				
 
 				// Special case: don't flip off monomino do doo do do do 
 				let cellCount = this.matrix.reduce((acc,row) => acc + row.reduce((acc2, cell) => cell ? acc2 + 1 : acc2, 0), 0); 
-				while( (cellCount < 2 && this.matrix[i][j]) || notAdjacentOrOn(this.matrix, i, j)) {
+				while( (cellCount < 2 && this.matrix[i][j]) || mu.notAdjacentOrOn(this.matrix, i, j)) {
 					i = mu.getRandomInt(0,this.matrix.length-1); 
 					j = mu.getRandomInt(0,this.matrix.length-1); 
 				}

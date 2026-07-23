@@ -23,7 +23,8 @@ let gameDefault = {
   morph: false,
   drunkAnt: false,
   stickyChance: 0,
-  floorIsLava: false
+  floorIsLava: false,
+  polyominoes: false
 };
 
 export let game = {...gameDefault};
@@ -69,6 +70,7 @@ export function showSettings() {
   document.getElementById("settingDrunkAnt").checked = game["drunkAnt"];
   document.getElementById("settingStickyChance").value = game["stickyChance"];
   document.getElementById("settingFloorIsLava").checked = game["floorIsLava"];
+  document.getElementById("settingPolyominoes").checked = game["polyominoes"];
 
   document.getElementById("settingbLRDual").checked     = user["lrDual"];
   document.getElementById("settingbUDDual").checked     = user["udDual"];
@@ -113,6 +115,7 @@ export function saveSettings() {
   game["stairs"]       = document.getElementById("settingStairs").checked;
   game["morph"]        = document.getElementById("settingMorph").checked;
   game["drunkAnt"]     = document.getElementById("settingDrunkAnt").checked;
+  game["polyominoes"]  = document.getElementById("settingPolyominoes").checked;
 
   user["lrDual"]     = document.getElementById("settingbLRDual").checked;
   user["udDual"]     = document.getElementById("settingbUDDual").checked;
@@ -198,6 +201,10 @@ export function randomizeSettings() {
   game["flipping"] = (Math.random() > 5/6);
   game["stairs"] = (Math.random() > 5/6);
   game["floorIsLava"] = (game.stickyChance > 0 || game.gr > 0) && (Math.random() > 1/2);
+  game["polyominoes"] = (Math.random() > 4/5);
+  if (game["polyominoes"]) {
+    game["mystery"] = Math.floor(-8*Math.log(Math.random()));
+  }
 
   game["morph"]    = (Math.random() > 9/10);
   game["drunkAnt"] = (Math.random() > 9/10);
