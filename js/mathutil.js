@@ -40,6 +40,47 @@ function rotate(matrix) {
   return result;
 }
 
+// Cleverness preserved
+// let cellCount = this.matrix.reduce((acc,row) => acc + row.reduce((acc2, cell) => cell ? acc2 + 1 : acc2, 0), 0); 
+function countCells(matrix) {
+  let cells = 0; 
+  for(let i = 0; i < matrix.length; i++) {
+    for(let j = 0; j < matrix.length; j++) {
+      if(matrix[i][j]) { cells++; }
+    }
+  }
+
+  return cells; 
+}
+
+function countNeighbors(matrix, i, j) {
+  let localMatrix = matrix.map(r => r.splice());
+  localMatrix = addZeros(localMatrix); 
+
+  i += 1;
+  j += 1;
+
+  let count = 0; 
+  for(let a = i-1; a <= i+1; a++) {
+    for(let b = j-1; b <= j+1; b++) {
+      if(a == b == 0) { continue; }
+      count += localMatrix[a][b]; 
+    }
+  }
+
+  return count; 
+}
+
+function cellTouchesEdge(matrix) {
+  if(matrix[0].indexOf(1) != -1)                 { return true; }
+  if(matrix[matrix.length - 1].indexOf(1) != -1) { return true; }
+  for(let i = 0; i < matrix.length; i++) {
+    if(matrix[i][0] == 1) { return true; }
+    if(matrix[i][matrix[i].length-1] == 1) { return true; }
+  }
+  return false; 
+}
+
 function addZeros(matrix) {
   matrix.push(new Array(matrix[0].length).fill(0));
   matrix.unshift(new Array(matrix[0].length).fill(0));
@@ -168,6 +209,7 @@ function allorientations(matrix) {
 }
 
 export default {
-	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations, toCentered, addZeros, clamp, notAdjacentOrOn, isAdjacent, removeZeros, standardOrientation, isGreater
+	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations, toCentered, addZeros, clamp, notAdjacentOrOn, isAdjacent, removeZeros, standardOrientation, isGreater,
+  countCells, cellTouchesEdge, countNeighbors
 }
 

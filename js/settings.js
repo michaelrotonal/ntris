@@ -131,10 +131,13 @@ export function saveSettings() {
   user["lossBehavior"] = document.getElementById("settingbLoss").value;
 
 
-  if(game["morph"] || game["drunkAnt"]) {
-    game["mystery"] = 2; // These settings override piece selection, but keep one to avoid crashes
-  }
-  
+  if(game.polyominoes && game.drunkAnt) {
+    if(Math.random() > 0.5) {
+      game.polyominoes = 0;
+    } else {
+      game.drunkAnt = 0; 
+    }
+  }  
   document.getElementById("settingsDialog").close();
 }
 

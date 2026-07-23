@@ -69,9 +69,6 @@ export function tetrominoFactoryFactory() {
 	// 
 	//return new ExampleTetrominoFactory(settings.game.nextPieces);
 
-	if(settings.game.morph) {
-		return makeMorph();
-	}
 	if(settings.game.drunkAnt) {
 		return makeDrunkAnt(); 
 	}
@@ -104,16 +101,23 @@ function makeFromMystery() {
 
       // Similar to existing game: random pieces are set at game start (though not page load)
       if(name == 'random' || name == 'random2') {
-      	bp = new TetrominoBlueprint({type: 'random', 
+      	bp = new TetrominoBlueprint({
+      		type: settings.game.morph ? 'mutate' : 'static',  
       		stability: 'stable',
-      		randomStyle: 'shotgun',
+      		randomStyle: 'shotgun', 
+      		matrix: ts.tetrominos[name], 
       		gridsizeRows: ts.tetrominos[name].length,
       		gridsizeCols: ts.tetrominos[name][0].length, 
       		color: null, 
       		colorStyle: 'dynamic',
       		name: name});	
       } else {
-      	bp = new TetrominoBlueprint({type: 'static', matrix: ts.tetrominos[name], color: ts.colors[name], name: name, colorStyle: settings.user.useStaticColor ? 'static' : 'dynamic'});
+      	bp = new TetrominoBlueprint({
+      		type: settings.game.morph ? 'mutate' : 'static', 
+      		matrix: ts.tetrominos[name], 
+      		color: ts.colors[name], 
+      		name: name, 
+      		colorStyle: settings.user.useStaticColor ? 'static' : 'dynamic'});
       }
 	  blueprints.push(bp); 
     }
@@ -127,7 +131,6 @@ function makeMorph() {
     ['I', 'O', 'T', 'S', 'Z', 'J', 'L'].forEach(i => {
 		let bp = new TetrominoBlueprint({
 			type: 'mutate', 
-			chanceToMutate: 0.2,
 			matrix: ts.tetrominos[i], 
 			color: ts.colors[i],
 			colorStyle: settings.user.useStaticColor ? 'static' : 'dynamic'});
@@ -161,6 +164,7 @@ function makeDrunkAnt() {
 }
 
 function allPolyominoes(n) {
+	if (n > 8) { n = 8; } // Hanging computer issues
 	if (n > 1) {
 		let matrices = allPolyominoes(n-1);
 		matrices.forEach(matrix => mu.addZeros(matrix));
@@ -197,11 +201,15 @@ function makeAllPolyominoes() {
 		if (settings.game.mystery % 2 ** j >= 2 ** (j-1)) {
 			let them = allPolyominoes(j);
 			them.forEach(i => {
-				let bp = new TetrominoBlueprint({type: 'static', matrix: mu.toCentered(i), colorStyle: 'dynamic'});
+				let bp = new TetrominoBlueprint(
+					{type: settings.game.morph ? 'mutate' : 'static', 
+					matrix: mu.toCentered(i), 
+					colorStyle: 'dynamic'});
 				blueprints.push(bp); 
 			});
 		}
 	}
 
-	return new TetrominoFactory(settings.game.nextPieces, blueprints, {distribution: 'bag'}); 
+	return new TetrominoFactory(settings.game.nextPieces, blueprints, 
+		{distribution: 'bag'}); 
 }

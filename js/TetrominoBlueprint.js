@@ -12,12 +12,12 @@ export default class TetrominoBlueprint {
 		this.colorStyle = settings.colorStyle; 
 		this.color = settings.color || ''; 
 		this.colorDriftAmount = settings.colorDriftAmount || 5;
+		this.matrix = settings.matrix ? settings.matrix.map(r => r.slice()) : null; 
+		this.name = settings.name || ''; 
 
 		switch(this.type) {
 			case 'static': 
-				this.matrix = settings.matrix.map(r => r.slice()); 
 				this.color = settings.color; 
-				this.name = settings.name; 
 				break;
 
 			// I didn't make this a setting -- this is just to demonstrate what OO can do for you =) 
@@ -42,7 +42,9 @@ export default class TetrominoBlueprint {
 				this.matrix = settings.matrix.map(r => r.slice());
 				this.gridsizeRows = this.matrix.length;
 				this.gridsizeCols = this.matrix[0].length; 
-				this.chanceToMutate = settings.chanceToMutate || 0.5; 
+				this.chanceToMutate = settings.chanceToMutate || 0.25; 
+				this.originalCellCount = mu.countCells(this.matrix); 
+				this.mutations = 0; 
 				break;
 
 			default: 
@@ -131,19 +133,50 @@ export default class TetrominoBlueprint {
 		}
 
 		if(this.type == 'mutate') {
-			if(Math.random() < this.chanceToMutate) {
+			this.mutations++;
+
+			if(Math.random() < this.chanceToMutate && this.mutations > 1) {
+
+				let cellCount = mu.countCells(this.matrix); 
+				let addCell = false;
+				if(cellCount == 1) {
+					addCell = true;
+				} else {
+					let targetSize = mu.getRandomInt(1, this.originalCellCount + this.mutations/2);
+					if(targetSize > cellCount) {
+						addCell = true;
+					} else {
+						addCell = false; 
+					}
+				}
+
 				let flipBit = (i => 1 - i); 
-				mu.addZeros(matrix);
+				if(mu.cellTouchesEdge(this.matrix)) {
+					mu.addZeros(this.matrix);
+				}
+
 				let i = mu.getRandomInt(0,this.matrix.length-1); 
-				let j = mu.getRandomInt(0,this.matrix.length-1); 
+				let j = mu.getRandomInt(0,this.matrix.length-1); 				
 
-				
+				let tries=0;
+				while(true) {
+					if(addCell && mu.isAdjacent(this.matrix, i, j)) { break; }
+					if((! addCell) && this.matrix[i][j]) { 
 
-				// Special case: don't flip off monomino do doo do do do 
-				let cellCount = this.matrix.reduce((acc,row) => acc + row.reduce((acc2, cell) => cell ? acc2 + 1 : acc2, 0), 0); 
-				while( (cellCount < 2 && this.matrix[i][j]) || mu.notAdjacentOrOn(this.matrix, i, j)) {
+						// Try not to disconnect pieces very often
+						if(mu.countNeighbors(this.matrix, i, j) == 2) {
+							if(Math.random() < 0.1) {
+								break; 
+							}
+						} else {
+							break; 
+						}
+					}
+
 					i = mu.getRandomInt(0,this.matrix.length-1); 
 					j = mu.getRandomInt(0,this.matrix.length-1); 
+
+					if(tries++ > 10000) { console.log("Panic! Can't find spot!"); break; } // Shouldn't happen?
 				}
 				
 				this.matrix[i][j] = flipBit(this.matrix[i][j]);
