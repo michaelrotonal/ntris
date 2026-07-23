@@ -33,10 +33,12 @@ export class TetrominoFactory {
 		}
 
 		if(this.distribution == 'bag') {
-			let pieces = this.getRandomBag(); 
-			pieces.forEach(blueprint => {
-				this.tetrominoSequence.push(blueprint.makeTetromino()); 
-			});
+			while(this.tetrominoSequence.length <= this.nextPieces) {
+				let pieces = this.getRandomBag(); 
+				pieces.forEach(blueprint => {
+					this.tetrominoSequence.push(blueprint.makeTetromino()); 
+				});
+			}
 
 			return this.tetrominoSequence.splice(0,1)[0]; 
 		}
@@ -138,16 +140,16 @@ function makeMorph() {
 function makeDrunkAnt() {
     let blueprints = [];
 
-	let pieceCount = Math.ceil(-7*Math.log(Math.random()));
+	let pieceCount = 1; //Math.ceil(-7*Math.log(Math.random()));
 	for(let i = 0; i < pieceCount; i++) {
-		let rows = 1 + Math.ceil(-3*Math.log(Math.random()));
+		let rows = mu.getRandomInt(2,5);
 		let cols = rows; //mu.getRandomInt(1,5); // For some reason, rectanges mess up rotate.
 		let bp = new TetrominoBlueprint({
 			type: 'random',
 			stability: 'unstable',
 			gridsizeCols: cols,
 			gridsizeRows: rows,
-			density: 0.3,
+			density: 0.4,
 			randomStyle: 'ortho',
 			colorStyle: 'driftOnPaint',
 			colorDriftAmount: 2

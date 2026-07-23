@@ -186,13 +186,26 @@ export default class TetrominoBlueprint {
 				}
 			}
 
-			console.log("Shotgun matrix " + this.gridsizeRows + " x " + this.gridsizeCols + " density " + this.density + " made " + madeCells + " cells.");
 			return mu.toCentered(matrix); 
 		}
 
 
 		// Ant walks density steps orthogonally
 		if(this.randomStyle == 'ortho') {
+			if(this.stability == 'unstable') {
+				this.gridsizeRows = mu.getRandomInt(2,5);
+				this.gridsizeCols = this.gridsizeRows;
+
+				matrix = []; 
+				for(let i = 0; i < this.gridsizeRows; i++) {
+					let row = [];
+					for(let j = 0; j < this.gridsizeCols; j++) {
+						row.push(0);
+					}
+					matrix.push(row); 
+				}
+			}
+
 			let anti = Math.floor((this.gridsizeRows-1)/2);
 			let antj = Math.floor((this.gridsizeCols-1)/2);; 
 
