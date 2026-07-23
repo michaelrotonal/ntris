@@ -13,6 +13,11 @@ export class TetrominoFactory {
 		this.tfsettings = tfsettings; 
 		this.distribution = tfsettings.distribution; 
 		this.tetrominoSequence = []; 
+
+		if(this.distribution == 'bagofbags') {
+			this.masterbags = tfsettings.bagofbags; 
+			this.bagbag = []; 
+		}
 	}
 
 	getRandomBag() {
@@ -38,6 +43,37 @@ export class TetrominoFactory {
 				pieces.forEach(blueprint => {
 					this.tetrominoSequence.push(blueprint.makeTetromino()); 
 				});
+			}
+
+			return this.tetrominoSequence.splice(0,1)[0]; 
+		}
+
+		if(this.distribution == 'bagofbags') {
+			while(this.tetrominoSequence.length <= this.nextPieces) {
+				if(this.bagbag.length == 0) {
+					// Refill bag of bags
+					let masterbagscopy = this.masterbags.slice(); 
+					while(masterbagscopy.length > 0) {						
+					    let rand = mu.getRandomInt(0, masterbagscopy.length - 1);
+					    this.bagbag.push(masterbagscopy.splice(rand, 1)[0]);
+					}
+				}
+
+				let rand = mu.getRandomInt(0, this.bagbag.length - 1);
+				let thisBag = this.bagbag.splice(rand, 1)[0]; 
+
+				if(thisBag.bag.length == 0) {
+					// Refill the bag
+					let bagcopy = thisBag.blueprints.slice(); 
+
+					while(bagcopy.length > 0) {						
+					    let rand = mu.getRandomInt(0, bagcopy.length - 1);
+					    thisBag.bag.push(bagcopy.splice(rand, 1)[0]);
+					}
+				}
+
+				this.tetrominoSequence.push(thisBag.bag[0].makeTetromino());
+				thisBag.bag.splice(0,1); 
 			}
 
 			return this.tetrominoSequence.splice(0,1)[0]; 
@@ -196,9 +232,10 @@ function allPolyominoes(n) {
 }
 
 function makeAllPolyominoes() {
-	let blueprints = [];
+	let bagofbags = []; 
 	for (let j = 1; j < Math.log2(settings.game.mystery) + 2; j++) {
 		if (settings.game.mystery % 2 ** j >= 2 ** (j-1)) {
+			let blueprints = [];
 			let them = allPolyominoes(j);
 			them.forEach(i => {
 				let bp = new TetrominoBlueprint(
@@ -207,9 +244,10 @@ function makeAllPolyominoes() {
 					colorStyle: 'dynamic'});
 				blueprints.push(bp); 
 			});
+			bagofbags.push({blueprints: blueprints, bag: []}); 
 		}
 	}
 
-	return new TetrominoFactory(settings.game.nextPieces, blueprints, 
-		{distribution: 'bag'}); 
+	return new TetrominoFactory(settings.game.nextPieces, null, 
+		{distribution: 'bagofbags', 'bagofbags': bagofbags}); 
 }
