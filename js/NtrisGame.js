@@ -445,8 +445,9 @@ export default class NtrisGame {
 	  }
 
 	  // If we're rotating or flipping, we need an updated ghosty matrix
-	  let lgm = this.tetromino.ghostymatrix.map(r => r.slice()); 
+	  let lgm;
 	  if(this.tetromino.ghosty) {
+	  	lgm =  this.tetromino.ghostymatrix.map(r => r.slice()); 
 	  	if(move == 'rotate') {
 	  		lgm = mu.rotate(lgm); 
 	  	}
