@@ -133,14 +133,23 @@ export function saveSettings() {
   user["useStaticColor"] = document.getElementById("settingbStaticColor").checked;
   user["lossBehavior"] = document.getElementById("settingbLoss").value;
 
-
+  // There can only be one alternative piece generation algorithm
   if(game.polyominoes && game.drunkAnt) {
     if(Math.random() > 0.5) {
       game.polyominoes = 0;
+      document.getElementById("settingPolyominoes").checked = false;
     } else {
       game.drunkAnt = 0; 
+      document.getElementById("settingDrunkAnt").checked = false;
     }
   }  
+
+  // Drunkant and morph are incompatible
+  if(game.drunkAnt) {
+    game.morph = false;    
+    document.getElementById("settingMorph").checked = false;
+  }
+
   document.getElementById("settingsDialog").close();
 
   if(game.dual) { game.ghostyChance = 0; }
@@ -217,9 +226,8 @@ export function randomizeSettings() {
 
   game["morph"]    = (Math.random() > 9/10);
   game["drunkAnt"] = (Math.random() > 9/10);
-  if((game["morph"] && !game["polyominoes"]) || game["drunkAnt"]) {
-    game["mystery"] = 2; // These settings override piece selection
-  }
+
+  if(game.drunkAnt) { game.morph = false; game.polyominoes = false; }
 
   if(game.dual) { game.ghostyChance = 0; }
 
