@@ -227,6 +227,7 @@ export default class TetrominoBlueprint {
 		if(this.randomStyle == 'ortho') {
 			if(this.stability == 'unstable') {
 				this.gridsizeRows = mu.getRandomInt(2,5);
+				if(Math.random() < 0.1) { this.gridsizeRows = 7;}
 				this.gridsizeCols = this.gridsizeRows;
 
 				matrix = []; 
