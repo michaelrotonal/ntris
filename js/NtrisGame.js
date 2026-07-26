@@ -367,14 +367,14 @@ export default class NtrisGame {
 		        if (Math.abs(sg.boardHeight - row * 2 - 1/2) > sg.gr) {
 		          playfield[row][col] = (row > sg.boardHeight / 2) ? new gc.GridCell(gc.GARBAGE) : new gc.GridCell(); 
 		        } else {
-		          playfield[row][col] = new gc.GridCell([gc.EMPTY, gc.GARBAGE][(Math.random() < sg.garbagePercentage / 100) * 1]);
+		          playfield[row][col] = new gc.GridCell([gc.GARBAGE, gc.EMPTY][(Math.random() < sg.garbagePercentage / 100) * 1]);
 		        }
 
 		      } else {
 		        if (sg.boardHeight - row > sg.gr) {
 		          playfield[row][col] = new gc.GridCell();
 		        } else {
-		          playfield[row][col] = new gc.GridCell([gc.GARBAGE, gc.EMPTY][(Math.random() < sg.garbagePercentage / 100) * 1]);
+		          playfield[row][col] = new gc.GridCell([gc.EMPTY, gc.GARBAGE][(Math.random() < sg.garbagePercentage / 100) * 1]);
 		        }
 		      }
 		    }
@@ -570,7 +570,7 @@ export default class NtrisGame {
 	          }
 	          this.increaseScore();
 
-	          playfield[settings.game.boardHeight - 1].map(cell => (Math.random() * 100 > settings.game.garbagePercentage ? new gc.GridCell() : new gc.GridCell(gc.GARBAGE)));
+	          playfield[settings.game.boardHeight - 1].map(cell => (Math.random() * 100 < settings.game.garbagePercentage ? new gc.GridCell(gc.EMPTY) : new gc.GridCell(gc.GARBAGE)));
 	        } else {
 	          // drop every row above this one
 	          this.droprowsaboverow(row);
