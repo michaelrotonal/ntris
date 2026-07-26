@@ -222,7 +222,7 @@ function allPolyominoes(n) {
 		// remove duplicates
 		toret.sort((a, b) => mu.isGreater(a, b) - mu.isGreater(b, a));
 		let ugh = [toret[0]]; // i'm tired of naming variables
-		for (let i = 1; i < toret.length-1; i++) {
+		for (let i = 1; i < toret.length; i++) {
 			if ((mu.isGreater(toret[i], toret[i-1]) || mu.isGreater(toret[i-1], toret[i]))) {
 				ugh.push(toret[i]);
 			}
