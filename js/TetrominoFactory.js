@@ -138,7 +138,7 @@ function makeFromMystery() {
       // Similar to existing game: random pieces are set at game start (though not page load)
       if(name == 'random' || name == 'random2') {
       	bp = new TetrominoBlueprint({
-      		type: settings.game.morph ? 'mutate' : 'static',  
+      		type: 'mutate',  
       		stability: 'stable',
       		randomStyle: 'shotgun', 
       		matrix: ts.tetrominos[name], 
@@ -149,7 +149,7 @@ function makeFromMystery() {
       		name: name});	
       } else {
       	bp = new TetrominoBlueprint({
-      		type: settings.game.morph ? 'mutate' : 'static', 
+      		type: 'mutate', 
       		matrix: ts.tetrominos[name], 
       		color: ts.colors[name], 
       		name: name, 
@@ -239,7 +239,7 @@ function makeAllPolyominoes() {
 			let them = allPolyominoes(j);
 			them.forEach(i => {
 				let bp = new TetrominoBlueprint(
-					{type: settings.game.morph ? 'mutate' : 'static', 
+					{type: 'mutate', 
 					matrix: mu.toCentered(i), 
 					colorStyle: 'dynamic'});
 				blueprints.push(bp); 

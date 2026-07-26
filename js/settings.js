@@ -20,12 +20,12 @@ let gameDefault = {
 	dual: false, 
 	flipping: false, 
 	stairs: false,
-  morph: false,
   drunkAnt: false,
   stickyChance: 0,
   floorIsLava: false,
   polyominoes: false,
-  ghostyChance: 0
+  ghostyChance: 0,
+  chanceToMutate: 0
 };
 
 export let game = {...gameDefault};
@@ -67,12 +67,12 @@ export function showSettings() {
   document.getElementById("settingDual").checked = game["dual"];
   document.getElementById("settingFlipping").checked = game["flipping"];
   document.getElementById("settingStairs").checked = game["stairs"];
-  document.getElementById("settingMorph").checked = game["morph"];
   document.getElementById("settingDrunkAnt").checked = game["drunkAnt"];
   document.getElementById("settingStickyChance").value = game["stickyChance"];
   document.getElementById("settingGhostyChance").value = game["ghostyChance"];
   document.getElementById("settingFloorIsLava").checked = game["floorIsLava"];
   document.getElementById("settingPolyominoes").checked = game["polyominoes"];
+  document.getElementById("settingMutateChance").value = game["chanceToMutate"];
 
   document.getElementById("settingbLRDual").checked     = user["lrDual"];
   document.getElementById("settingbUDDual").checked     = user["udDual"];
@@ -109,6 +109,7 @@ export function saveSettings() {
   game["scoreAcceleration"] = document.getElementById("settingScoreAcceleration").value * 1;
   game["stickyChance"] = document.getElementById("settingStickyChance").value * 1;
   game["ghostyChance"] = document.getElementById("settingGhostyChance").value * 1;
+  game["chanceToMutate"] = document.getElementById("settingMutateChance").value * 1;
   game["floorIsLava"]  = document.getElementById("settingFloorIsLava").checked;
   game["wrapAround"]   = document.getElementById("settingWrapAround").checked;
   game["rgr"]          = document.getElementById("settingRGR").checked;
@@ -116,7 +117,6 @@ export function saveSettings() {
   game["dual"]         = document.getElementById("settingDual").checked;
   game["flipping"]     = document.getElementById("settingFlipping").checked;
   game["stairs"]       = document.getElementById("settingStairs").checked;
-  game["morph"]        = document.getElementById("settingMorph").checked;
   game["drunkAnt"]     = document.getElementById("settingDrunkAnt").checked;
   game["polyominoes"]  = document.getElementById("settingPolyominoes").checked;
 
@@ -146,8 +146,8 @@ export function saveSettings() {
 
   // Drunkant and morph are incompatible
   if(game.drunkAnt) {
-    game.morph = false;    
-    document.getElementById("settingMorph").checked = false;
+    game.chanceToMutate = 0;    
+    document.getElementById("settingMutateChance").checked = false;
   }
 
   document.getElementById("settingsDialog").close();
@@ -211,6 +211,7 @@ export function randomizeSettings() {
   game["garbagePercentage"] = mu.getRandomInt(1, 99);
   game["scoreAcceleration"] = mu.getRandomInt(0, 2);
   game["stickyChance"] = mu.getRandomInt(0, 1) * mu.getRandomInt(0, 1) * mu.getRandomInt(1, 99);
+  game["chanceToMutate"] = mu.getRandomInt(0, 1) * mu.getRandomInt(0, 1) * mu.getRandomInt(1, 99);
   game["ghostyChance"] = mu.getRandomInt(0,5) < 1 ? Math.floor(Math.random()*Math.random()*100) : 0;
   game["wrapAround"] = (Math.random() > 5/6);
   game["rgr"] = (Math.random() > 5/6);
@@ -224,11 +225,9 @@ export function randomizeSettings() {
     game["mystery"] = Math.floor(-8*Math.log(Math.random()));
     game.drunkAnt = false; 
   }
-
-  game["morph"]    = (Math.random() > 9/10);
   game["drunkAnt"] = (Math.random() > 9/10);
 
-  if(game.drunkAnt) { game.morph = false; }
+  if(game.drunkAnt) { game.chanceToMutate = 0; }
 
   if(game.dual) { game.ghostyChance = 0; }
 

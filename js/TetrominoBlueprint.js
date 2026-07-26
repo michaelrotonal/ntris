@@ -1,6 +1,7 @@
 import {default as mu} from './mathutil.js'; 
 import Tetromino from './Tetromino.js'; 
 import * as color from './color.js'; 
+import * as globalsettings from './settings.js';
 
 // color styles: driftOnPaint -- tet drifts while in nextpiece/falling; value comes back to blueprint
 //               driftOnMake -- blueprint drifts when tetromino made 
@@ -16,9 +17,6 @@ export default class TetrominoBlueprint {
 		this.name = settings.name || ''; 
 
 		switch(this.type) {
-			case 'static': 
-				this.color = settings.color; 
-				break;
 
 			// I didn't make this a setting -- this is just to demonstrate what OO can do for you =) 
 			case 'random':
@@ -42,7 +40,7 @@ export default class TetrominoBlueprint {
 				this.matrix = settings.matrix.map(r => r.slice());
 				this.gridsizeRows = this.matrix.length;
 				this.gridsizeCols = this.matrix[0].length; 
-				this.chanceToMutate = settings.chanceToMutate || 0.25; 
+				this.chanceToMutate = globalsettings.game.chanceToMutate; 
 				this.originalCellCount = mu.countCells(this.matrix); 
 				this.mutations = 0; 
 				break;
@@ -135,7 +133,7 @@ export default class TetrominoBlueprint {
 		if(this.type == 'mutate') {
 			this.mutations++;
 
-			if(Math.random() < this.chanceToMutate && this.mutations > 1) {
+			if(Math.random() * 100 < this.chanceToMutate && this.mutations > 1) {
 
 				let cellCount = mu.countCells(this.matrix); 
 				let addCell = false;
