@@ -8,12 +8,6 @@ import * as tf from './TetrominoFactory.js';
 
 export default class NtrisGame {
 	constructor(gameSettings=null, userSettings=null) {
-		if(gameSettings) { this.gsettings = gameSettings; } 
-		else             { this.gsettings = settings.game; }
-
-		if(userSettings) { this.usettings = userSettings;  }
-		else             { this.usettings = settings.user; }
-
 		
 		// Screen
 		this.rAF = null; // Animation frame
@@ -343,7 +337,7 @@ export default class NtrisGame {
 
 	// Game logic
 	restartGame() {
-		this.tetrominoFactory = tf.tetrominoFactoryFactory(this.gsettings); 
+		this.tetrominoFactory = tf.tetrominoFactoryFactory(); 
 		this.tetromino = this.tetrominoFactory.getNextTetromino(); 
 		this.nextpieces = this.tetrominoFactory.getLookahead(); 
 		this.setSpawnLocation();
@@ -362,7 +356,7 @@ export default class NtrisGame {
 	newPlayfield() {
 		let playfield = [];
 
-		let sg = this.gsettings;
+		let sg = settings.game;
 
 	  	// populate the empty state
 		for (let row = -4-sg.boardWidth; row < sg.boardHeight + sg.boardWidth + 4; row++) {
