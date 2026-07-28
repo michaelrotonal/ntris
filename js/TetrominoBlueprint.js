@@ -162,19 +162,26 @@ export default class TetrominoBlueprint {
 					if((! addCell) && this.matrix[i][j]) { 
 
 						// Try not to disconnect pieces very often
-						if(mu.countNeighbors(this.matrix, i, j) == 2) {
-							if(Math.random() < 0.1) {
-								break; 
-							}
-						} else {
-							break; 
+						// if(mu.countNeighbors(this.matrix, i, j) == 2) {
+						// 	    if(Math.random() < 0.1) {
+						//		     break; 
+						//	    }
+						//  } else {
+						//  	break; 
+						//  }
+						let Q = this.matrix.map(l => l.toSpliced());
+						let R = this.matrix.map(l => l.toSpliced());
+						Q[i][j] = flipBit(Q[i][j]);
+						console.log(i + "," + j);
+						if ((!mu.isConnected(R)) || mu.isConnected(Q)) {
+							break;
 						}
 					}
 
 					i = mu.getRandomInt(0,this.matrix.length-1); 
 					j = mu.getRandomInt(0,this.matrix.length-1); 
 
-					if(tries++ > 10000) { console.log("Panic! Can't find spot!"); break; } // Shouldn't happen?
+					if(tries++ > 10000) { throw new Error("Panic! Can't find spot!"); break; } // Shouldn't happen, but if it does you can tell immedatiately
 				}
 				
 				this.matrix[i][j] = flipBit(this.matrix[i][j]);

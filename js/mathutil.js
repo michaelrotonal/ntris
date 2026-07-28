@@ -190,6 +190,28 @@ function standardOrientation(matrix) {
   return J;
 }
 
+function isConnected(matrix) {
+  let h = addZeros(matrix.map(l => l.toSpliced()));
+  let foundOneYet = false;
+  for (let i = 0; i < h.length; i++) {
+    for (let j = 0; j < h[0].length; j++) {
+      if (h[i][j] == 1) {
+        if (foundOneYet) {
+          if (h[i][j-1] == 2 || h[i-1][j] == 2 || h[i][j+1] == 2 || h[i+1][j] == 2) {
+            h[i][j] = 2;
+            i--;
+            j--;
+          }
+        } else {
+          foundOneYet = true;
+          h[i][j] = 2;
+        }
+      }
+    }
+  }
+  return !(h.findIndex(row => row.findIndex(l => l == 1) > -1) > -1);
+}
+
 function clamp (matrix, i) {return Math.max(0, Math.min(i, matrix.length - 1));}
 
 function notAdjacentOrOn (matrix, a, b) {return (matrix[a][b] == 0 && 
@@ -210,6 +232,6 @@ function allorientations(matrix) {
 
 export default {
 	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations, toCentered, addZeros, clamp, notAdjacentOrOn, isAdjacent, removeZeros, standardOrientation, isGreater,
-  countCells, cellTouchesEdge, countNeighbors
+  countCells, cellTouchesEdge, countNeighbors, isConnected
 }
-
+// isn't that like, all the functions in here?
