@@ -164,7 +164,7 @@ export function randomizeSettings() {
   game["mystery"] = 0;
 
   let randomColor = '#' + color.padwithzeros(mu.getRandomInt(0, 16777215).toString(16));
-  let j = Math.ceil(Math.random()**Math.exp(- user.prdb / 3) * ts.allpieces.length); 
+  let j = Math.min(Math.ceil(Math.random()**Math.exp(- user.prdb / 3) * ts.allpieces.length),ts.allpieces.length-1); 
 
   // Here there be dragons =====================
   // I have attempted to make the dragons more readable below
