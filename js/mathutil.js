@@ -92,7 +92,7 @@ function addZeros(matrix) {
 }
 
 function toCentered(grid) {
-  if (countCells(grid)) > 0 {
+  if (countCells(grid) > 0) {
     let matrix = grid.map(h => h.toSpliced());
     let Isum = 0;
     let Jsum = 0;
