@@ -345,7 +345,7 @@ export default class NtrisGame {
 		this.resizeCanvas(); 
 		this.newPlayfield(); 
 
-		if(settings.game.sd) { this.noTouchy(); }
+		this.noTouchy();
 		this.resetHold();
 		this.resetCounters();
 
@@ -507,6 +507,18 @@ export default class NtrisGame {
 	  }
 	}
 
+	isCollider(row, col) {
+		if (col < 0 || col >= settings.game.boardWidth) {
+			if (settings.game.wrapAround) {
+				return this.isCollider(row, mu.modulo(col, settings.game.boardWidth));
+			} else {
+				return true; // You do collide with the edges, don't you?
+			}
+		} else {
+			return this.isCollidable(this.playfield[row][col]);
+		}
+	}
+
 	FlipIfDual(k) {
 	  if (typeof k == "number") {
 	    return ((this.pieceCount % 2 == 1) && settings.game.dual) ? (settings.game.boardHeight - 1 - k) : k
@@ -556,7 +568,7 @@ export default class NtrisGame {
 	      }
 	    }
 	  }
-	  if (settings.game.sd) {this.noTouchy();}
+	  this.noTouchy();
 	  this.scoreincrease = 1;
 	  // check for line clears starting from the bottom and working our way up
 	  if (!settings.game.dual) {
@@ -594,22 +606,36 @@ export default class NtrisGame {
 	      } else {thebool = true;}
 	    }
 	  }
-	  if (settings.game.sd) {this.noTouchy();}
+	  this.noTouchy();
 	  this.wrapAroundCol = this.tetromino.col; 
 	  this.nextTetromino();
 	}
 
 	noTouchy() {
-	  for (let row = -2; row < settings.game.boardHeight; row++) {
-	    for (let col = 0; col < settings.game.boardWidth; col++) {
-	      if (!this.isSocialDistancer(row,col)) {
-	        if ((this.isSocialDistancer(row,col+1) || this.isSocialDistancer(row,col-1) || 
-	        	 this.isSocialDistancer(row+1,col) || this.isSocialDistancer(row-1,col))) {
-	          this.playfield[row][col] = new gc.GridCell(gc.SOCDIST);
-	        } else {this.playfield[row][col] = this.FlipIfDual(false) ? new gc.GridCell(gc.GARBAGE) : new gc.GridCell();}
-	      }
-	    }
-	  }
+		if (settings.game.sd) {
+		  for (let row = -2; row < settings.game.boardHeight; row++) {
+		    for (let col = 0; col < settings.game.boardWidth; col++) {
+		      if (!this.isSocialDistancer(row,col)) {
+		        if ((this.isSocialDistancer(row,col+1) || this.isSocialDistancer(row,col-1) || 
+		        	 this.isSocialDistancer(row+1,col) || this.isSocialDistancer(row-1,col))) {
+		          this.playfield[row][col] = new gc.GridCell(gc.SOCDIST);
+		        } else {this.playfield[row][col] = this.FlipIfDual(false) ? new gc.GridCell(gc.GARBAGE) : new gc.GridCell();}
+		      }
+		    }
+		  }
+		}
+	if (settings.game.fillSmallHoles) {
+		for (let row = -2; row < settings.game.boardHeight; row++) {
+	      for (let col = 0; col < settings.game.boardWidth; col++) {
+	        if (!this.isSocialDistancer(row,col)) {
+	          if ((this.isCollider(row,col+1) && this.isCollider(row,col-1) && 
+	        	this.isCollider(row+1,col) && this.isCollider(row-1,col))) {
+		          this.playfield[row][col] = this.FlipIfDual(false) ? new gc.GridCell() : new gc.GridCell(gc.UNGARBAGE);
+		        }
+		      }
+		    }
+		  }
+		}
 	}
 
 	isSocialDistancer(row,col) {

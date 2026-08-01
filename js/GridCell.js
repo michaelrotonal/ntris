@@ -5,6 +5,7 @@ export const EMPTY = 'empty';
 export const GARBAGE = 'garbage';
 export const PLACED = 'placed';
 export const SOCDIST = 'sd'; 
+export const UNGARBAGE = 'ungarbage';
 
 export class GridCell {
 	constructor(type=EMPTY) {
@@ -46,12 +47,16 @@ export class GridCell {
 		return this.type == SOCDIST; 
 	}
 
+	isUngarbage() {
+		return this.type == UNGARBAGE;
+	}
+
 	getColor() {
 		if(this.isEmpty()) {
 			return 'black';
 		}
 
-		if(this.isGarbage()) {
+		if(this.isGarbage() || this.isUngarbage()) {
 			return '#DCDCDC';
 		}
 

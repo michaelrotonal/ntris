@@ -25,7 +25,8 @@ let gameDefault = {
   floorIsLava: false,
   polyominoes: false,
   ghostyChance: 0,
-  chanceToMutate: 0
+  chanceToMutate: 0,
+  fillSmallHoles: false
 };
 
 export let game = {...gameDefault};
@@ -73,6 +74,7 @@ export function showSettings() {
   document.getElementById("settingFloorIsLava").checked = game["floorIsLava"];
   document.getElementById("settingPolyominoes").checked = game["polyominoes"];
   document.getElementById("settingMutateChance").value = game["chanceToMutate"];
+  document.getElementById("settingFillHoles").checked = game["fillSmallHoles"];
 
   document.getElementById("settingbLRDual").checked     = user["lrDual"];
   document.getElementById("settingbUDDual").checked     = user["udDual"];
@@ -119,6 +121,7 @@ export function saveSettings() {
   game["stairs"]       = document.getElementById("settingStairs").checked;
   game["drunkAnt"]     = document.getElementById("settingDrunkAnt").checked;
   game["polyominoes"]  = document.getElementById("settingPolyominoes").checked;
+  game["fillSmallHoles"] = document.getElementById("settingFillHoles").checked;
 
   user["lrDual"]     = document.getElementById("settingbLRDual").checked;
   user["udDual"]     = document.getElementById("settingbUDDual").checked;
@@ -226,6 +229,7 @@ export function randomizeSettings() {
     game.drunkAnt = false; 
   }
   game["drunkAnt"] = (Math.random() > 9/10);
+  game["fillSmallHoles"] = (Math.random() > 8/9);
 
   if(game.drunkAnt) { game.chanceToMutate = 0; }
 
