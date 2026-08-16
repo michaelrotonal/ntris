@@ -82,13 +82,27 @@ function cellTouchesEdge(matrix) {
 }
 
 function addZeros(matrix) {
-  matrix.push(new Array(matrix[0].length).fill(0));
-  matrix.unshift(new Array(matrix[0].length).fill(0));
-  for (let i = 0; i < matrix.length; i++) {
-    matrix[i].push(0);
-    matrix[i].unshift(0);
+  let array = matrix.map(l => l.toSpliced()); // okay now it's effectless. why was it not effectless before?
+  array.push(new Array(array[0].length).fill(0));
+  array.unshift(new Array(array[0].length).fill(0));
+  for (let i = 0; i < array.length; i++) {
+    array[i].push(0);
+    array[i].unshift(0);
   }
-  return matrix;
+  return array;
+}
+
+function perimeter(matrix) {
+  let p = 0;
+  let array = addZeros(matrix);
+  for (let i = 0; i < array.length; i++) {
+    for (let j = 0; j < array.length; j++) {
+      if (array[i][j] == 1) {
+        p += 4 - (array[i][j+1] + array[i][j-1] + array[i-1][j] + array[i+1][j]);
+      }
+    }
+  }
+  return p;
 }
 
 function toCentered(grid) {
@@ -235,6 +249,6 @@ function allorientations(matrix) {
 
 export default {
 	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations, toCentered, addZeros, clamp, notAdjacentOrOn, isAdjacent, removeZeros, standardOrientation, isGreater,
-  countCells, cellTouchesEdge, countNeighbors, isConnected
+  countCells, cellTouchesEdge, countNeighbors, isConnected, perimeter
 }
 // isn't that like, all the functions in here?

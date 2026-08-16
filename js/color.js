@@ -112,11 +112,12 @@ export function matrix2color(matrix) {
   let B = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberB(bottom))));
   let C = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberC(bottom))));
   let D = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberD(bottom))));
-  let channels = [A, B, C, D];
+  let E = 255 * ((16 * mu.countCells(matrix)) / (mu.perimeter(matrix) ** 2));
+  let channels = [A, B, C, D, E];
   return '#' + padwithzeros((
-    Math.round(channels[mu.modulo(Math.round(settings.user['redColor']),4)]) * 65536 + 
-    Math.round(channels[mu.modulo(Math.round(settings.user['greenColor']),4)]) * 256 + 
-    Math.round(channels[mu.modulo(Math.round(settings.user['blueColor']),4)])).toString(16));
+    Math.round(channels[mu.modulo(Math.round(settings.user['redColor']),5)]) * 65536 + 
+    Math.round(channels[mu.modulo(Math.round(settings.user['greenColor']),5)]) * 256 + 
+    Math.round(channels[mu.modulo(Math.round(settings.user['blueColor']),5)])).toString(16));
 }
 
 

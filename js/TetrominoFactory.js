@@ -200,10 +200,10 @@ function makeDrunkAnt() {
 }
 
 function allPolyominoes(n) {
-	if (n > 8) { n = 8; } // Hanging computer issues
+	// You can generate any size polyomino. Who cares if it's laggy
 	if (n > 1) {
 		let matrices = allPolyominoes(n-1);
-		matrices.forEach(matrix => mu.addZeros(matrix));
+		matrices = matrices.map(matrix => mu.addZeros(matrix));
 		let toret = [];
 		for (let i = 0; i < matrices.length; i++) {
 			for (let j = 0; j < matrices[i].length; j++) {

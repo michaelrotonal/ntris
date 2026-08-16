@@ -150,7 +150,7 @@ export default class TetrominoBlueprint {
 
 				let flipBit = (i => 1 - i); 
 				if(mu.cellTouchesEdge(this.matrix)) {
-					mu.addZeros(this.matrix);
+					this.matrix = mu.addZeros(this.matrix);
 				}
 
 				let i = mu.getRandomInt(0,this.matrix.length-1); 
