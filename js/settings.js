@@ -20,10 +20,9 @@ let gameDefault = {
 	dual: false, 
 	flipping: false, 
 	stairs: false,
-  drunkAnt: false,
   stickyChance: 0,
   floorIsLava: false,
-  polyominoes: false,
+  pieceType: "hardcoded",
   ghostyChance: 0,
   chanceToMutate: 0,
   fillSmallHoles: false
@@ -43,7 +42,7 @@ export let user = {
   greenColor: 1,
   blueColor: 2,
   useStaticColor: 0, // Yes UI -- just to demonstrate power of new interfaces
-  lossBehaivor: 'nothing'
+  lossBehaivor: "nothing"
 };
 
 export function resetSettings() { 
@@ -68,13 +67,14 @@ export function showSettings() {
   document.getElementById("settingDual").checked = game["dual"];
   document.getElementById("settingFlipping").checked = game["flipping"];
   document.getElementById("settingStairs").checked = game["stairs"];
-  document.getElementById("settingDrunkAnt").checked = game["drunkAnt"];
+  // document.getElementById("settingDrunkAnt").checked = game["drunkAnt"];
   document.getElementById("settingStickyChance").value = game["stickyChance"];
   document.getElementById("settingGhostyChance").value = game["ghostyChance"];
   document.getElementById("settingFloorIsLava").checked = game["floorIsLava"];
-  document.getElementById("settingPolyominoes").checked = game["polyominoes"];
+  // document.getElementById("settingPolyominoes").checked = game["polyominoes"];
   document.getElementById("settingMutateChance").value = game["chanceToMutate"];
   document.getElementById("settingFillHoles").checked = game["fillSmallHoles"];
+  document.getElementById("settingPieceType").value = game["pieceType"];
 
   document.getElementById("settingbLRDual").checked     = user["lrDual"];
   document.getElementById("settingbUDDual").checked     = user["udDual"];
@@ -119,9 +119,10 @@ export function saveSettings() {
   game["dual"]         = document.getElementById("settingDual").checked;
   game["flipping"]     = document.getElementById("settingFlipping").checked;
   game["stairs"]       = document.getElementById("settingStairs").checked;
-  game["drunkAnt"]     = document.getElementById("settingDrunkAnt").checked;
-  game["polyominoes"]  = document.getElementById("settingPolyominoes").checked;
+  // game["drunkAnt"]     = document.getElementById("settingDrunkAnt").checked;
+  // game["polyominoes"]  = document.getElementById("settingPolyominoes").checked;
   game["fillSmallHoles"] = document.getElementById("settingFillHoles").checked;
+  game["pieceType"]    = document.getElementById("settingPieceType").value;
 
   user["lrDual"]     = document.getElementById("settingbLRDual").checked;
   user["udDual"]     = document.getElementById("settingbUDDual").checked;
@@ -136,19 +137,10 @@ export function saveSettings() {
   user["useStaticColor"] = document.getElementById("settingbStaticColor").checked;
   user["lossBehavior"] = document.getElementById("settingbLoss").value;
 
-  // There can only be one alternative piece generation algorithm
-  if(game.polyominoes && game.drunkAnt) {
-    if(Math.random() > 0.5) {
-      game.polyominoes = 0;
-      document.getElementById("settingPolyominoes").checked = false;
-    } else {
-      game.drunkAnt = 0; 
-      document.getElementById("settingDrunkAnt").checked = false;
-    }
-  }  
+  // There can only be one alternative piece generation algorithm. This comment is now redundant
 
   // Drunkant and morph are incompatible
-  if(game.drunkAnt) {
+  if(game.pieceType == 'drunkAnt') {
     game.chanceToMutate = 0;    
     document.getElementById("settingMutateChance").checked = false;
   }
@@ -223,15 +215,13 @@ export function randomizeSettings() {
   game["flipping"] = (Math.random() > 5/6);
   game["stairs"] = (Math.random() > 5/6);
   game["floorIsLava"] = (game.stickyChance > 0 || game.gr > 0) && (Math.random() > 1/2);
-  game["polyominoes"] = (Math.random() > 4/5);
-  if (game["polyominoes"]) {
+  game["pieceType"] = Math.random > 2/3 ? (["polyomino", "polyking", "drunkAnt"][mu.getRandomInt(0, 2)]) : "hardcoded";
+  if (game["pieceType"] != "hardcoded") {
     game["mystery"] = Math.floor(-8*Math.log(Math.random()));
-    game.drunkAnt = false; 
   }
-  game["drunkAnt"] = (Math.random() > 9/10);
   game["fillSmallHoles"] = (Math.random() > 8/9);
 
-  if(game.drunkAnt) { game.chanceToMutate = 0; }
+  if(game.pieceType == "drunkAnt") { game.chanceToMutate = 0; }
 
   if(game.dual) { game.ghostyChance = 0; }
 

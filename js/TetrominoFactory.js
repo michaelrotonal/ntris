@@ -105,11 +105,11 @@ export function tetrominoFactoryFactory() {
 	// 
 	//return new ExampleTetrominoFactory(settings.game.nextPieces);
 
-	if(settings.game.drunkAnt) {
+	if(settings.game.pieceType == "drunkAnt") {
 		return makeDrunkAnt(); 
 	}
-	if(settings.game.polyominoes) {
-		return makeAllPolyominoes();
+	if(settings.game.pieceType != "hardcoded") {
+		return makeAllPolyominoes(settings.game.pieceType == "polyking");
 	}
 	//return makeStandardTetris(); 
 	return makeFromMystery();
@@ -199,16 +199,16 @@ function makeDrunkAnt() {
 	return new TetrominoFactory(settings.game.nextPieces, blueprints, {distribution: 'bag'}); 
 }
 
-function allPolyominoes(n) {
+function allPolyominoes(n, diagonals) {
 	// You can generate any size polyomino. Who cares if it's laggy
 	if (n > 1) {
-		let matrices = allPolyominoes(n-1);
+		let matrices = allPolyominoes(n-1, diagonals);
 		matrices = matrices.map(matrix => mu.addZeros(matrix));
 		let toret = [];
 		for (let i = 0; i < matrices.length; i++) {
 			for (let j = 0; j < matrices[i].length; j++) {
 				for (let k = 0; k < matrices[i][j].length; k++) {
-					if (mu.isAdjacent(matrices[i], j, k)) {
+					if (mu.isAdjacent(matrices[i], j, k) || (diagonals && mu.isDiagonal(matrices[i], j, k))) {
 						let matrix = matrices[i].map(l => l.slice());
 						matrix[j][k] = 1;
 						toret.push(matrix);
@@ -231,12 +231,12 @@ function allPolyominoes(n) {
 	} else {return [[[1]]];}
 }
 
-function makeAllPolyominoes() {
+function makeAllPolyominoes(diag) {
 	let bagofbags = []; 
 	for (let j = 1; j < Math.log2(settings.game.mystery) + 2; j++) {
 		if (settings.game.mystery % 2 ** j >= 2 ** (j-1)) {
 			let blueprints = [];
-			let them = allPolyominoes(j);
+			let them = allPolyominoes(j, diag);
 			them.forEach(i => {
 				let bp = new TetrominoBlueprint(
 					{type: 'mutate', 

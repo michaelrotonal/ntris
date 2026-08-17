@@ -231,11 +231,6 @@ function isConnected(matrix) {
 
 function clamp (matrix, i) {return Math.max(0, Math.min(i, matrix.length - 1));}
 
-function notAdjacentOrOn (matrix, a, b) {return (matrix[a][b] == 0 && 
-                                               matrix[clamp(matrix, a+1)][clamp(matrix[0], b)] == 0 &&
-                                               matrix[clamp(matrix, a-1)][clamp(matrix[0],b)] == 0 &&
-                                               matrix[clamp(matrix, a)][clamp(matrix[0],b+1)] == 0 &&
-                                               matrix[clamp(matrix, a)][clamp(matrix[0],b-1)] == 0);}
 
 function isAdjacent(matrix, a, b){return (matrix[a][b] == 0 && !(
                                                matrix[clamp(matrix, a+1)][clamp(matrix[0], b)] == 0 &&
@@ -243,12 +238,18 @@ function isAdjacent(matrix, a, b){return (matrix[a][b] == 0 && !(
                                                matrix[clamp(matrix, a)][clamp(matrix[0],b+1)] == 0 &&
                                                matrix[clamp(matrix, a)][clamp(matrix[0],b-1)] == 0));}
 
+function isDiagonal(matrix, a, b){return (matrix[a][b] == 0 && !(
+                                               matrix[clamp(matrix, a+1)][clamp(matrix[0], b+1)] == 0 &&
+                                               matrix[clamp(matrix, a-1)][clamp(matrix[0],b-1)] == 0 &&
+                                               matrix[clamp(matrix, a-1)][clamp(matrix[0],b+1)] == 0 &&
+                                               matrix[clamp(matrix, a+1)][clamp(matrix[0],b-1)] == 0));} // who did the tabbing on these. why are there so many tabs
+
 function allorientations(matrix) {
   return [matrix,rotate(matrix),rotate(rotate(matrix)),rotate(rotate(rotate(matrix))), matrix.toReversed(), rotate(matrix.toReversed()), rotate(rotate(matrix.toReversed())), rotate(rotate(rotate(matrix.toReversed())))];
 }
 
 export default {
-	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations, toCentered, addZeros, clamp, notAdjacentOrOn, isAdjacent, removeZeros, standardOrientation, isGreater,
+	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations, toCentered, addZeros, clamp, isAdjacent, isDiagonal, removeZeros, standardOrientation, isGreater,
   countCells, cellTouchesEdge, countNeighbors, isConnected, perimeter
 }
 // isn't that like, all the functions in here?

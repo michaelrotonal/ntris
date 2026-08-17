@@ -94,10 +94,16 @@
             <tr><td>Dual Mode</td>           <td><input type="checkbox" id="settingDual"></td></tr>
             <tr><td>Flipping</td>            <td><input type="checkbox" id="settingFlipping"></td></tr>
             <tr><td>Stairs Mode</td>         <td><input type="checkbox" id="settingStairs"></td></tr>
-            <tr><td>Drunk Ant Mode</td>      <td><input type="checkbox" id="settingDrunkAnt"></td></tr>
+            <tr><td>remove this too</td>      <td><input type="checkbox" id="settingDrunkAnt"></td></tr>
             <tr><td>Deadly Floor</td>        <td><input type="checkbox" id="settingFloorIsLava"></td></tr>
-            <tr><td>Non-Hardcoded Pieces</td><td><input type="checkbox" id="settingPolyominoes"></td></tr>
+            <tr><td>remove this please</td><td><input type="checkbox" id="settingPolyominoes"></td></tr>
             <tr><td>Fill Small Holes</td>    <td><input type="checkbox" id="settingFillHoles"></td></tr>
+            <tr><td>Piece Type</td>          <td><select id="settingPieceType">
+              <option value="hardcoded" selected>Hardcoded</option>
+              <option value="polyomino">Non-Hardcoded</option>
+              <option value="polyking">Non-Hardcoded + Diagonals</option>
+              <option value="drunkAnt">Drunk Ant</option>
+            </select></td></tr>
           </table>
 
           </div>
@@ -115,7 +121,7 @@
               <tr><td>Piece Color Green Channel Mode</td>     <td><input id="settingbGreenColor" size="1"></td></tr>
               <tr><td>Piece Color Blue Channel Mode</td>      <td><input id="settingbBlueColor" size="1"></td></tr>
               <tr><td>Use Static Color</td>                   <td><input type="checkbox" id="settingbStaticColor"></td></tr>
-              <tr><td>Behavior on Loss</td>                   <td><select name="settingbLoss" id="settingbLoss">
+              <tr><td>Behavior on Loss</td>                   <td><select id="settingbLoss">
                 <option value="nothing" selected>Nothing</option>
                 <option value="restart">Restart</option>
                 <option value="shuffle">Shuffle</option>
