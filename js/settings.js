@@ -217,7 +217,7 @@ export function randomizeSettings() {
   game["floorIsLava"] = (game.stickyChance > 0 || game.gr > 0) && (Math.random() > 1/2);
   game["pieceType"] = (Math.random() > 2/3) ? (["polyomino", "polyking", "drunkAnt"][mu.getRandomInt(0, 2)]) : "hardcoded";
   if (game["pieceType"] != "hardcoded") {
-    game["mystery"] = Math.floor(-8*Math.log(Math.random()));
+    game["mystery"] = 1 + Math.floor(-8*Math.log(Math.random()));
   }
   game["fillSmallHoles"] = (Math.random() > 8/9);
 
