@@ -616,8 +616,13 @@ export default class NtrisGame {
 		  for (let row = -2; row < settings.game.boardHeight; row++) {
 		    for (let col = 0; col < settings.game.boardWidth; col++) {
 		      if (!this.isSocialDistancer(row,col)) {
-		        if ((this.isSocialDistancer(row,col+1) || this.isSocialDistancer(row,col-1) || 
-		        	 this.isSocialDistancer(row+1,col) || this.isSocialDistancer(row-1,col))) {
+		      	let isinrange = false;
+		      	for (let i = 0; i < settings.game.adjacencies.length; i++) { // this could probably be shrunk to a single mu.isAdjacent() call if we deal with wraparound
+		      		if (this.isSocialDistancer(row+settings.game.adjacencies[i][0],col+settings.game.adjacencies[i][1])) {
+		      			isinrange = true;
+		      		}
+		      	}
+		        if (isinrange) {
 		          this.playfield[row][col] = new gc.GridCell(gc.SOCDIST);
 		        } else {this.playfield[row][col] = this.FlipIfDual(false) ? new gc.GridCell(gc.GARBAGE) : new gc.GridCell();}
 		      }
@@ -628,12 +633,15 @@ export default class NtrisGame {
 		for (let row = -2; row < settings.game.boardHeight; row++) {
 	      for (let col = 0; col < settings.game.boardWidth; col++) {
 	        if (!this.isSocialDistancer(row,col)) {
-	          if ((this.isCollider(row,col+1) && this.isCollider(row,col-1) && 
-	        	this.isCollider(row+1,col) && this.isCollider(row-1,col))) {
-		          this.playfield[row][col] = this.FlipIfDual(false) ? new gc.GridCell() : new gc.GridCell(gc.UNGARBAGE);
-		        }
-		      }
-		    }
+	        	let issurrounded = true;
+	        	for (let i = 0; i < settings.game.adjacencies.length; i++) {
+	        		if(!this.isCollider(row+settings.game.adjacencies[i][0],col+settings.game.adjacencies[i][1])) {issurrounded = false;}
+	        	}
+		        if (issurrounded) {
+			        this.playfield[row][col] = this.FlipIfDual(false) ? new gc.GridCell() : new gc.GridCell(gc.UNGARBAGE);
+			      }
+			    }
+			}
 		  }
 		}
 	}

@@ -25,7 +25,9 @@ let gameDefault = {
   pieceType: "hardcoded",
   ghostyChance: 0,
   chanceToMutate: 0,
-  fillSmallHoles: false
+  fillSmallHoles: false,
+  diagonalAdjacencies: false,
+  adjacencies: [[1,0],[-1,0],[0,1],[0,-1]] // This setting is controlled by the setting above
 };
 
 export let game = {...gameDefault};
@@ -75,6 +77,7 @@ export function showSettings() {
   document.getElementById("settingMutateChance").value = game["chanceToMutate"];
   document.getElementById("settingFillHoles").checked = game["fillSmallHoles"];
   document.getElementById("settingPieceType").value = game["pieceType"];
+  document.getElementById("settingDiagonal").checked = game["diagonalAdjacencies"];
 
   document.getElementById("settingbLRDual").checked     = user["lrDual"];
   document.getElementById("settingbUDDual").checked     = user["udDual"];
@@ -123,6 +126,8 @@ export function saveSettings() {
   // game["polyominoes"]  = document.getElementById("settingPolyominoes").checked;
   game["fillSmallHoles"] = document.getElementById("settingFillHoles").checked;
   game["pieceType"]    = document.getElementById("settingPieceType").value;
+  game["diagonalAdjacencies"] = document.getElementById("settingDiagonal").checked;
+  game["adjacencies"] = (game["diagonalAdjacencies"] ? [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]] : [[1,0],[-1,0],[0,1],[0,-1]]);
 
   user["lrDual"]     = document.getElementById("settingbLRDual").checked;
   user["udDual"]     = document.getElementById("settingbUDDual").checked;
@@ -215,7 +220,8 @@ export function randomizeSettings() {
   game["flipping"] = (Math.random() > 5/6);
   game["stairs"] = (Math.random() > 5/6);
   game["floorIsLava"] = (game.stickyChance > 0 || game.gr > 0) && (Math.random() > 1/2);
-  game["pieceType"] = (Math.random() > 2/3) ? (["polyomino", "polyking", "drunkAnt"][mu.getRandomInt(0, 2)]) : "hardcoded";
+  game["diagonalAdjacencies"] = (Math.random() > 4/5);
+  game["pieceType"] = (Math.random() > 2/3) ? (["polyomino", "drunkAnt"][mu.getRandomInt(0, 1)]) : "hardcoded";
   if (game["pieceType"] != "hardcoded") {
     game["mystery"] = 1 + Math.floor(-8*Math.log(Math.random()));
   }

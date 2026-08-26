@@ -158,7 +158,7 @@ export default class TetrominoBlueprint {
 
 				let tries=0;
 				while(true) {
-					if(addCell && mu.isAdjacent(this.matrix, i, j)) { break; }
+					if(addCell && mu.isAdjacent(this.matrix, i, j, globalsettings.game.adjacencies)) { break; }
 					if((! addCell) && this.matrix[i][j]) { 
 
 						// Try not to disconnect pieces very often
@@ -173,7 +173,7 @@ export default class TetrominoBlueprint {
 						let R = this.matrix.map(l => l.toSpliced());
 						Q[i][j] = flipBit(Q[i][j]);
 						console.log(i + "," + j);
-						if ((!mu.isConnected(R)) || mu.isConnected(Q)) {
+						if ((!mu.isConnected(R, globalsettings.game.adjacencies)) || mu.isConnected(Q, globalsettings.game.adjacencies)) {
 							break;
 						}
 					}
@@ -228,7 +228,7 @@ export default class TetrominoBlueprint {
 		}
 
 
-		// Ant walks density steps orthogonally
+		// Ant walks density steps orthogonally. Or at least it did before the adjacency update
 		if(this.randomStyle == 'ortho') {
 			if(this.stability == 'unstable') {
 				this.gridsizeRows = mu.getRandomInt(2,5);
@@ -250,23 +250,13 @@ export default class TetrominoBlueprint {
 
 			let squaresToWalk = Math.floor(this.gridsizeRows*this.gridsizeCols * this.density);
 
-			let inGridRow = (i => i > 0 && i < this.gridsizeRows); 
-			let inGridCol = (i => i > 0 && i < this.gridsizeCols); 
+			let inGrid = ((i,j) => i > 0 && i < this.gridsizeRows && j > 0 && j < this.gridsizeCols); 
 			while(squaresToWalk) {
 				matrix[anti][antj] = 1;
 
-				let dir = ['up', 'down', 'left', 'right'][mu.getRandomInt(0,3)];
-
-				if(dir == 'up' && inGridRow(anti - 1)) {
-					anti--; 
-				} else if(dir == 'down' && inGridRow(anti + 1)) {
-					anti++;
-				} else if(dir == 'left' && inGridCol(antj - 1)) {
-					antj--;
-				} else if(dir == 'right' && inGridCol(antj + 1)) {
-					antj++; 
-				} else {
-					continue;
+				let dir = globalsettings.game.adjacencies[mu.getRandomInt(0,globalsettings.game.adjacencies.length-1)];
+				if (inGrid(anti+dir[0],antj+dir[1])) {
+					[anti,antj] = [anti+dir[0],antj+dir[1]];
 				}
 
 				squaresToWalk--; 

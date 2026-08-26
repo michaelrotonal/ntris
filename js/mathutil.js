@@ -53,19 +53,16 @@ function countCells(matrix) {
   return cells; 
 }
 
-function countNeighbors(matrix, i, j) {
-  let localMatrix = matrix.map(r => r.splice());
+function countNeighbors(matrix, i, j, adjacencies) {
+  let localMatrix = matrix.map(r => r.toSpliced());
   localMatrix = addZeros(localMatrix); 
 
   i += 1;
   j += 1;
 
   let count = 0; 
-  for(let a = i-1; a <= i+1; a++) {
-    for(let b = j-1; b <= j+1; b++) {
-      if(a == b == 0) { continue; }
-      count += localMatrix[a][b]; 
-    }
+  for(let k = 0; k < adjacencies.length; k++) {
+    count += localMatrix[i+adjacencies[k][0]][j+adjacencies[k][1]];
   }
 
   return count; 
@@ -207,17 +204,20 @@ function standardOrientation(matrix) {
   return J;
 }
 
-function isConnected(matrix) {
+function isConnected(matrix, adjacencies) {
   let h = addZeros(matrix.map(l => l.toSpliced()));
   let foundOneYet = false;
   for (let i = 0; i < h.length; i++) {
     for (let j = 0; j < h[0].length; j++) {
       if (h[i][j] == 1) {
         if (foundOneYet) {
-          if (h[i][j-1] == 2 || h[i-1][j] == 2 || h[i][j+1] == 2 || h[i+1][j] == 2) {
-            h[i][j] = 2;
-            i--;
-            j--;
+          for (let k = 0; k < adjacencies.length; k++) {
+            if (h[i+adjacencies[k][0]][j+adjacencies[k][1]] == 2) {
+              h[i][j] = 2;
+              i = 0; // don't worry about the reset, it can only happen as many times as there are 1s in the shape
+              j = 0;
+              break;
+            }
           }
         } else {
           foundOneYet = true;
@@ -232,24 +232,23 @@ function isConnected(matrix) {
 function clamp (matrix, i) {return Math.max(0, Math.min(i, matrix.length - 1));}
 
 
-function isAdjacent(matrix, a, b){return (matrix[a][b] == 0 && !(
-                                               matrix[clamp(matrix, a+1)][clamp(matrix[0], b)] == 0 &&
-                                               matrix[clamp(matrix, a-1)][clamp(matrix[0],b)] == 0 &&
-                                               matrix[clamp(matrix, a)][clamp(matrix[0],b+1)] == 0 &&
-                                               matrix[clamp(matrix, a)][clamp(matrix[0],b-1)] == 0));}
+// function isAdjacent(matrix, a, b){return (matrix[a][b] == 0 && !(
+//                                               matrix[clamp(matrix, a+1)][clamp(matrix[0], b)] == 0 &&
+//                                               matrix[clamp(matrix, a-1)][clamp(matrix[0],b)] == 0 &&
+//                                               matrix[clamp(matrix, a)][clamp(matrix[0],b+1)] == 0 &&
+//                                               matrix[clamp(matrix, a)][clamp(matrix[0],b-1)] == 0));}
 
-function isDiagonal(matrix, a, b){return (matrix[a][b] == 0 && !(
-                                               matrix[clamp(matrix, a+1)][clamp(matrix[0], b+1)] == 0 &&
-                                               matrix[clamp(matrix, a-1)][clamp(matrix[0],b-1)] == 0 &&
-                                               matrix[clamp(matrix, a-1)][clamp(matrix[0],b+1)] == 0 &&
-                                               matrix[clamp(matrix, a+1)][clamp(matrix[0],b-1)] == 0));} // who did the tabbing on these. why are there so many tabs
+function isAdjacent(matrix, a, b, adjacencies) {
+  if (matrix[a][b] == 1) {return false;}
+  if (countNeighbors(matrix, a, b, adjacencies) > 0) {return true;} else {return false;}
+}
 
 function allorientations(matrix) {
   return [matrix,rotate(matrix),rotate(rotate(matrix)),rotate(rotate(rotate(matrix))), matrix.toReversed(), rotate(matrix.toReversed()), rotate(rotate(matrix.toReversed())), rotate(rotate(rotate(matrix.toReversed())))];
 }
 
 export default {
-	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations, toCentered, addZeros, clamp, isAdjacent, isDiagonal, removeZeros, standardOrientation, isGreater,
+	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations, toCentered, addZeros, clamp, isAdjacent, removeZeros, standardOrientation, isGreater,
   countCells, cellTouchesEdge, countNeighbors, isConnected, perimeter
 }
 // isn't that like, all the functions in here?
