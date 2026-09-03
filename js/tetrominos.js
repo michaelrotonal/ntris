@@ -163,6 +163,20 @@ export const tetrominos = {
     [0,0,1,1],
     [0,0,1,0],
     [0,0,1,0]
+  ],
+  'horse': [
+    [0,0,0,0,0],
+    [0,0,0,1,1],
+    [0,1,1,1,0],
+    [0,1,0,1,0],
+    [0,0,0,0,0]
+  ],
+  'lefthorse': [
+    [0,0,0,0,0],
+    [1,1,0,0,0],
+    [0,1,1,1,0],
+    [0,1,0,1,0],
+    [0,0,0,0,0]
   ]
 };
 tetrominos['random'] = mu.toCentered(tetrominos['random']);
@@ -207,10 +221,12 @@ export const colors = {
   'unbanana': '#FFFFE0',
   '[': '#C701FF',
   'F2': '#440000',
-  'R2': '#003500'
+  'R2': '#003500',
+  'horse': '#EB9C4C',
+  'lefthorse': '#C48F1E'
 };
 
 // defunct
 export var allpieces = ['.', 'i', 'l', 'd', '|', 'I', 'T', 'O', 'banana', 'unbanana', 'L', 'J', 'S', 'Z', 'V', 'F', 'R', 
-'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'D', 'F2', 'R2', 'X2', 
+'II', 'X', 'random', 'madnor', 'FY', 'theBrick', 'brick2', 'random2', 'madnor2', 'horse', 'lefthorse', 'D', 'F2', 'R2', 'X2', 
 'FYold', '[', 'W']; //.map(x => ts.tetrominos[x]); // i could do the effort of properly removing this, but i'm pretty sure we'll usurp the need for this list soon
