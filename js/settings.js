@@ -27,7 +27,8 @@ let gameDefault = {
   chanceToMutate: 0,
   fillSmallHoles: false,
   diagonalAdjacencies: false,
-  adjacencies: [[1,0],[-1,0],[0,1],[0,-1]] // This setting is controlled by the setting above
+  adjacencies: [[1,0],[-1,0],[0,1],[0,-1]], // This setting is controlled by the setting above
+  pfadjacencies: [[1,0],[-1,0],[0,1],[0,-1]] // This setting is controlled by the setting above, and another setting further above it
 };
 
 export let game = {...gameDefault};
@@ -128,6 +129,7 @@ export function saveSettings() {
   game["pieceType"]    = document.getElementById("settingPieceType").value;
   game["diagonalAdjacencies"] = document.getElementById("settingDiagonal").checked;
   game["adjacencies"] = (game["diagonalAdjacencies"] ? [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]] : [[1,0],[-1,0],[0,1],[0,-1]]);
+  game["pfadjacencies"] = (game["stairs"] ? game["adjacencies"].map(a => [a[0]-a[1], a[1]]) : game["adjacencies"]);
 
   user["lrDual"]     = document.getElementById("settingbLRDual").checked;
   user["udDual"]     = document.getElementById("settingbUDDual").checked;
@@ -147,7 +149,7 @@ export function saveSettings() {
   // Drunkant and morph are incompatible
   if(game.pieceType == 'drunkAnt') {
     game.chanceToMutate = 0;    
-    document.getElementById("settingMutateChance").checked = false;
+    // We don't need to change the actual UI here because it gets closed a few clock cycles later
   }
 
   document.getElementById("settingsDialog").close();
