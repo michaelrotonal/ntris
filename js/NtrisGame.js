@@ -53,7 +53,7 @@ export default class NtrisGame {
 
 	calculateCanvasSize() {
 		let width = settings.game.boardWidth*this.grid*this.wadcmult + this.gridsmall * 11;
-		let height = (settings.game.boardHeight + (settings.game.stairs ? settings.game.boardWidth*this.wadcmult : 0))*this.grid;
+		let height = (settings.game.boardHeight + (settings.game.stairs ? settings.game.boardWidth*this.wadcmult : 0) + (settings.game.hexMode ? settings.game.boardWidth*this.wadcmult / 2 : 0))*this.grid;
 
 		return([width, height]); 
 	}
@@ -88,15 +88,18 @@ export default class NtrisGame {
 
 	  	this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
 
-		this.drawOutline(); 
-		this.drawPlayfield();
-		this.drawFallingTetromino();
+		let drawnWidth = settings.game.boardWidth*this.wadcmult;
+		let stairscolumnshift = (settings.game.stairs ? 1 : 0) + (settings.game.hexMode ? -0.5 : 0);
+		let yshift = (stairscolumnshift < 0 ? -(stairscolumnshift * this.grid * (drawnWidth - 1)) : 0);
+		this.drawOutline(stairscolumnshift, yshift, drawnWidth); 
+		this.drawPlayfield(stairscolumnshift, yshift);
+		this.drawFallingTetromino(yshift);
 		this.drawHeld();
 		this.drawNextTetrominos();
 		this.drawScore(); 
 	}
 
-	drawOutline() {
+	drawOutline(stairscolumnshift, yshift, drawnWidth) {
 	  let context   = this.context;
 	  let canvas    = this.canvas; 
 	  let gridsmall = this.gridsmall; 
@@ -104,24 +107,23 @@ export default class NtrisGame {
 
 	  context.strokeStyle = "white";
 	  context.strokeWidth = 2;
-	  let drawnWidth = settings.game.boardWidth*this.wadcmult;
-	  if (settings.game.stairs) {
+	  if (stairscolumnshift != 0) {
 	    context.beginPath();
-	    context.moveTo(gridsmall * 5.5, grid * settings.game.boardHeight);
-	    context.lineTo(gridsmall * 5.5, 0);
+	    context.moveTo(gridsmall * 5.5, grid * settings.game.boardHeight + yshift);
+	    context.lineTo(gridsmall * 5.5, yshift);
 	    for (let i = 0; i < drawnWidth; i++) {
-	      context.lineTo(gridsmall * 5.5 + grid * (i+1), grid * i);
-	      context.lineTo(gridsmall * 5.5 + grid * (i+1), grid * (i + 1));
+	      context.lineTo(gridsmall * 5.5 + grid * (i+1), grid * i * stairscolumnshift + yshift);
+	      context.lineTo(gridsmall * 5.5 + grid * (i+1), grid * (i + 1) * stairscolumnshift + yshift);
 	    }
-	    context.lineTo(gridsmall * 5.5 + grid * drawnWidth, grid * (drawnWidth + settings.game.boardHeight - 1));
+	    context.lineTo(gridsmall * 5.5 + grid * drawnWidth, grid * ((drawnWidth - 1) * stairscolumnshift + settings.game.boardHeight) + yshift);
 	    context.stroke();
 	    if (settings.game.floorIsLava) {context.strokeStyle = "red";}
 	    context.beginPath();
-	    context.moveTo(gridsmall * 5.5 + grid * drawnWidth, grid * (drawnWidth + settings.game.boardHeight - 1));
+	    context.moveTo(gridsmall * 5.5 + grid * drawnWidth, grid * ((drawnWidth - 1) * stairscolumnshift + settings.game.boardHeight) + yshift);
 	    for (let i = 0; i < drawnWidth; i++) {
-	      context.lineTo(gridsmall * 5.5 + grid * (drawnWidth - (i+1)), grid * (drawnWidth + settings.game.boardHeight - (i+1)));
-	      context.lineTo(gridsmall * 5.5 + grid * (drawnWidth - (i+1)), grid * (drawnWidth + settings.game.boardHeight - (i+2)));
-	    }
+	      context.lineTo(gridsmall * 5.5 + grid * (drawnWidth - (i+1)), grid * (drawnWidth + settings.game.boardHeight - (i+1) * stairscolumnshift) + yshift);
+	      context.lineTo(gridsmall * 5.5 + grid * (drawnWidth - (i+1)), grid * (drawnWidth + settings.game.boardHeight - (i+2) * stairscolumnshift) + yshift);
+		}
 	    context.stroke();
 	  } else {
 	  	context.beginPath();
@@ -138,13 +140,12 @@ export default class NtrisGame {
 	  }
 	}
 
-	drawPlayfield() {
+	drawPlayfield(stairscolumnshift, yshift) {
 		let context = this.context; 
 		let playfield = this.playfield;
 		let grid = this.grid;
 		let gridsmall = this.gridsmall;
 		let tetromino = this.tetromino;
-
 		for (let row = 0; row < settings.game.boardHeight; row++) {
 		    for (let col = 0; col < settings.game.boardWidth; col++) {
 		      if (! this.playfield[row][col].isEmpty()) {
@@ -153,50 +154,50 @@ export default class NtrisGame {
 		        // drawing 1 px smaller than the grid creates a grid effect
 		        if (settings.game.wrapAround) {
 		          if (settings.user.wadc) {
-		          	// TODO 
-		            context.fillRect(col * grid + gridsmall * 5.5, row * grid + (settings.game.stairs ? (col * grid) : 0), grid-1, grid-1);
-		            context.fillRect((col + settings.game.boardWidth) * grid + gridsmall * 5.5, row * grid + (settings.game.stairs ? ((col + settings.game.boardWidth) * this.grid) : 0), this.grid-1, this.grid-1);
+		          	// TODO...? someone explain what needs to be done here 
+		            context.fillRect(col * grid + gridsmall * 5.5, row * grid + (stairscolumnshift * (col * grid)) + yshift, grid-1, grid-1);
+		            context.fillRect((col + settings.game.boardWidth) * grid + gridsmall * 5.5, row * grid + (stairscolumnshift * ((col + settings.game.boardWidth) * this.grid)) + yshift, this.grid-1, this.grid-1);
 		          } else {
-		            context.fillRect(mu.modulo(col - tetromino.col + this.spawningCol(tetromino),settings.game.boardWidth) * this.grid + this.gridsmall * 5.5, row * this.grid + (settings.game.stairs ? (mu.modulo(col - tetromino.col + this.spawningCol(tetromino),settings.game.boardWidth) * grid) : 0), grid-1, grid-1);
+		            context.fillRect(mu.modulo(col - tetromino.col + this.spawningCol(tetromino),settings.game.boardWidth) * this.grid + this.gridsmall * 5.5, row * this.grid + (stairscolumnshift * (mu.modulo(col - tetromino.col + this.spawningCol(tetromino),settings.game.boardWidth) * grid)) + yshift, grid-1, grid-1);
 		          }
 		        } else {
-		          context.fillRect(col * grid + gridsmall * 5.5, row * grid + (settings.game.stairs ? (col * grid) : 0), grid-1, grid-1);
+		          context.fillRect(col * grid + gridsmall * 5.5, row * grid + (stairscolumnshift * col * grid) + yshift, grid-1, grid-1);
 		        }
 		      }
 		    }
 		}
 	}
 
-	drawFallingTetromino() {
+	drawFallingTetromino(yshift) {
 		let tetromino = this.tetromino;
 		let x, y, gridsize;
 		let tetcolor = this.FlipIfDual(false) ? 'black' : '';
-
-		let opts = {drawAsDual: this.FlipIfDual(false), gridLeft: this.gridsmall*5.5, gridRight: this.gridsmall*5.5 + settings.game.boardWidth*this.grid};
+		let opts = {drawAsDual: this.FlipIfDual(false), gridLeft: this.gridsmall*5.5, gridRight: this.gridsmall*5.5 + settings.game.boardWidth*this.grid, hex: settings.game.hexMode};
+		let hexshift = (settings.game.hexMode ? tetromino.col * 0.5 * this.grid : 0)
 		if(! settings.game.wrapAround) {
 			opts["gridWrap"] = false; 
 
 			x = tetromino.col * this.grid + this.gridsmall*5.5; 
-			y = this.FlipIfDual(tetromino.row) * this.grid;
+			y = this.FlipIfDual(tetromino.row) * this.grid + yshift;
 			gridsize = this.grid; 
 
-			tetromino.paint(this.context, x, y, gridsize, tetcolor, 1, opts); 
+			tetromino.paint(this.context, x, y - hexshift, gridsize, tetcolor, 1, opts); 
 		} else {
 		  opts["gridWrap"] = true; 
 		  if (settings.user.wadc) {
 		  	opts["gridRight"] += settings.game.boardWidth*this.grid; 
 
 		    x = (mu.modulo(tetromino.col,settings.game.boardWidth)) * this.grid + this.gridsmall*5.5; 
-		    y = this.FlipIfDual(tetromino.row) * this.grid; // Dualmode bug -- flipifdual needs to account for row.  Maybe draw "up" in dual mode? 
-			tetromino.paint(this.context, x, y, this.grid, tetcolor, 1, opts); 
+		    y = this.FlipIfDual(tetromino.row) * this.grid + yshift; // Dualmode bug -- flipifdual needs to account for row.  Maybe draw "up" in dual mode? 
+			tetromino.paint(this.context, x, y - hexshift, this.grid, tetcolor, 1, opts); 
 
 			x = (mu.modulo(tetromino.col,settings.game.boardWidth) + settings.game.boardWidth) * this.grid + this.gridsmall*5.5;
-			tetromino.paint(this.context, x, y, this.grid, tetcolor, 1, opts); 
+			tetromino.paint(this.context, x, y - hexshift - (settings.game.hexMode ? settings.game.boardWidth * 0.5 * this.grid : 0), this.grid, tetcolor, 1, opts); 
           } else {
 	          // I am aware that if the tetromino is wider than the grid, it renders out of bounds. I don't care
 	          x = (this.spawningCol(tetromino)) * this.grid + this.gridsmall*5.5;
-	          y = (this.FlipIfDual(tetromino.row + (settings.game.stairs ? this.spawningRow(tetromino) + 2 : 0)) - (settings.game.stairs ? tetromino.col : 0)) * this.grid;
-	          tetromino.paint(this.context, x, y, this.grid, tetcolor, 1, opts); 
+	          y = (this.FlipIfDual(tetromino.row + (settings.game.stairs ? this.spawningRow(tetromino) + 2 : 0)) - (settings.game.stairs ? tetromino.col : 0)) * this.grid + yshift;
+	          tetromino.paint(this.context, x, y - (settings.game.hexMode ? this.spawningCol(tetromino) * 0.5 * this.grid : 0), this.grid, tetcolor, 1, opts); 
           }			
 		}
 
@@ -716,8 +717,7 @@ export default class NtrisGame {
 	}
 
 	pieceRotate() {
-
-	  const matrix = (this.FlipIfDual(false) && !settings.user.roateDual) ? mu.rotate(mu.rotate(mu.rotate(this.tetromino.matrix))) : mu.rotate(this.tetromino.matrix);
+	  const matrix = (this.FlipIfDual(false) && !settings.user.roateDual) ? mu.mirror(mu.rotate(mu.mirror(this.tetromino.matrix), settings.game.hexMode)) : mu.rotate(this.tetromino.matrix, settings.game.hexMode);
 	  this.tryValidMove(matrix, this.tetromino.row, this.tetromino.col, 'rotate')
 	}
 
@@ -732,7 +732,7 @@ export default class NtrisGame {
 
 	  
 	  if (settings.game.flipping) {
-	    const matrix = this.tetromino.matrix.map(sdrvg => sdrvg.toReversed());
+	    const matrix = mu.rotate(mu.mirror(this.tetromino.matrix),settings.game.hexMode);
 	    this.tryValidMove(matrix,this.tetromino.row,this.tetromino.col, 'flip');
 	  }
 	  

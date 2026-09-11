@@ -109,7 +109,7 @@ export function tetrominoFactoryFactory() {
 		return makeDrunkAnt(); 
 	}
 	if(settings.game.pieceType != "hardcoded") {
-		return makeAllPolyominoes();
+		return makeAllPolyominoes(settings.game.hexMode);
 	}
 	//return makeStandardTetris(); 
 	return makeFromMystery();
@@ -199,7 +199,7 @@ function makeDrunkAnt() {
 	return new TetrominoFactory(settings.game.nextPieces, blueprints, {distribution: 'bag'}); 
 }
 
-function allPolyominoes(n) {
+function allPolyominoes(n, hex=false) {
 	// You can generate any size polyomino. Who cares if it's laggy
 	if (n > 1) {
 		let matrices = allPolyominoes(n-1);
@@ -218,7 +218,7 @@ function allPolyominoes(n) {
 		}
 		// standardize each polyomino
 		toret = toret.map(matrix => mu.removeZeros(matrix));
-		toret = toret.map(matrix => mu.standardOrientation(matrix));
+		toret = toret.map(matrix => mu.standardOrientation(matrix, hex)); // hopefully the standard orientation works with hexagonals
 		// remove duplicates
 		toret.sort((a, b) => mu.isGreater(a, b) - mu.isGreater(b, a));
 		let ugh = [toret[0]]; // i'm tired of naming variables
@@ -231,12 +231,12 @@ function allPolyominoes(n) {
 	} else {return [[[1]]];}
 }
 
-function makeAllPolyominoes() {
+function makeAllPolyominoes(hex=false) {
 	let bagofbags = []; 
 	for (let j = 1; j < Math.log2(settings.game.mystery) + 2; j++) {
 		if (settings.game.mystery % 2 ** j >= 2 ** (j-1)) {
 			let blueprints = [];
-			let them = allPolyominoes(j);
+			let them = allPolyominoes(j, hex);
 			them.forEach(i => {
 				let bp = new TetrominoBlueprint(
 					{type: 'mutate', 

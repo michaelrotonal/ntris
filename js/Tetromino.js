@@ -93,14 +93,14 @@ export default class Tetromino {
 		else {
 			switch(this.colorStyle) {
 				case 'dynamic':
-					tetcolor = this.color = color.matrix2color(this.matrix); 
+					tetcolor = this.color = color.matrix2color(this.matrix, settings.game.hexMode); 
 					break;
 				case 'static':
 					tetcolor = this.color;
 					break;
 				case 'dynamicFallback':
 					if(! this.color ){
-						tetcolor = this.color = color.matrix2color(this.matrix); 
+						tetcolor = this.color = color.matrix2color(this.matrix, settings.game.hexMode); 
 					}
 					break;
 				case 'driftOnPaint':
@@ -154,14 +154,14 @@ export default class Tetromino {
 		for (let row = 0; row < this.matrix.length; row++) {
 		  for (let col = 0; col < this.matrix[row].length; col++) {
 		  	if(this.matrix[row][col]) {
-		  		// Handle gridwrap for wrap mode
+		  		// Handle gridwrap for wrap mode. Unless hex mode is also on, because we haven't figured that out yet
 		  		let dx = x + col*gridsize; 
 		  		if(gridWrap && gridRight && dx + gridsize > gridRight) {
 		  			dx -= gridWidth; 
 		  		}
 
-		  		// Handle flip for dual mode 
-		  		let dy = y + row*gridsize;
+		  		// Handle flip for dual mode and the slant for hex mode 
+		  		let dy = y + row*gridsize - (options.hex ? 0.5 * col * gridsize : 0);
 		  		if(flipForDual) { dy = y - row*gridsize; }
 
 		  		if(this.ghosty) {

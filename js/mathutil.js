@@ -28,13 +28,57 @@ function extremifiedaverage(array) {
   return X;
 }
 
-function rotate(matrix) {
-  const N = matrix.length - 1;
+function rotate(matrix, hex=false) {
+  if (hex) {return hexRotate(matrix)} else {
+    let result = [];
+    for (let i = 0; i < matrix[0].length; i++) {
+      result.push([]);
+      for (let j = 0; j < matrix.length; j++) {
+        result[i].push(matrix[matrix.length - 1 - j][i])
+      }
+    }
+    return result;
+  }
+}
+
+function isMatrixHex(matrix) { // I'm not dealing with non-square hexagonal matrices!
+  if (matrix.length != matrix[0].length) {return false;}
+  if (matrix.length % 2 == 0) {return false;}
+  for (let i = 0; i < matrix.length; i++) {
+    for (let j = 0; j < matrix.length; j++) {
+      if (Math.abs(i - j) > matrix.length / 2) {
+        if (matrix[i][j] != 0) {return false;}
+      }
+    }
+  }
+  return true;
+}
+
+function toHexified(array) {
+  let matrix = array.map(r => r.toSpliced());
+  while (matrix.length < matrix[0].length || matrix.length % 2 == 0) {
+    matrix.unshift(new Array(matrix[0].length).fill(0));
+  }
+  while (matrix[0].length < matrix.length) {
+    matrix.map(l => l.unshift(0)); // just another bit of javascript trickery. good luck porting this to a different language
+  }
+  while (!isMatrixHex(matrix)) {
+    matrix = addZeros(matrix);
+  }
+  return matrix;
+}
+
+function hexRotate(array) {
   let result = [];
-  for (let i = 0; i < matrix[0].length; i++) {
+  let matrix = toHexified(array);
+  for (let i = 0; i < matrix.length; i++) {
     result.push([]);
     for (let j = 0; j < matrix.length; j++) {
-      result[i].push(matrix[matrix.length - 1 - j][i])
+      if (Math.abs(i - j) > matrix.length / 2) {
+        result[i].push(0);
+      } else {
+        result[i].push(matrix[i - j + (matrix.length - 1)/2][i]);
+      }
     }
   }
   return result;
@@ -79,7 +123,7 @@ function cellTouchesEdge(matrix) {
 }
 
 function addZeros(matrix) {
-  let array = matrix.map(l => l.toSpliced()); // okay now it's effectless. why was it not effectless before?
+  let array = matrix.map(l => l.toSpliced());
   array.push(new Array(array[0].length).fill(0));
   array.unshift(new Array(array[0].length).fill(0));
   for (let i = 0; i < array.length; i++) {
@@ -89,20 +133,20 @@ function addZeros(matrix) {
   return array;
 }
 
-function perimeter(matrix) {
+function perimeter(matrix, hex=false) {
   let p = 0;
   let array = addZeros(matrix);
   for (let i = 0; i < array.length; i++) {
     for (let j = 0; j < array.length; j++) {
       if (array[i][j] == 1) {
-        p += 4 - (array[i][j+1] + array[i][j-1] + array[i-1][j] + array[i+1][j]);
+        p += 4 - (array[i][j+1] + array[i][j-1] + array[i-1][j] + array[i+1][j]) + (hex ? 2 - (array[i+1][j+1] + array[i-1][j-1]) : 0);
       }
     }
   }
   return p;
 }
 
-function toCentered(grid) {
+function toCentered(grid, hex = false) {
   if (countCells(grid) > 0) {
     let matrix = grid.map(h => h.toSpliced());
     let Isum = 0;
@@ -158,6 +202,9 @@ function toCentered(grid) {
       matrix = matrix.slice(1, -1);
       matrix = matrix.map(nswttt => nswttt.slice(1, -1));
     }
+    if (hex) {
+      matrix = hexify(matrix); // Hexagonal matrices may be biased to the upper left
+    }
   return matrix;
   } else {
     return [[1]]; // doesn't crash on empty array anymore!
@@ -195,10 +242,15 @@ function removeZeros(matrix) {
   return matrix;
 }
 
-function standardOrientation(matrix) {
-  let h = [matrix, rotate(matrix), rotate(rotate(matrix)), rotate(rotate(rotate(matrix)))];
+function standardOrientation(matrix, hex=false) {
+  let h;
+  if (hex) {
+    h = [toHexified(matrix), hexRotate(matrix), hexRotate(hexRotate(matrix)), hexRotate(hexRotate(hexRotate(matrix))), hexRotate(hexRotate(hexRotate(hexRotate(matrix)))), hexRotate(hexRotate(hexRotate(hexRotate(hexRotate(matrix)))))];
+  } else {
+    h = [matrix, rotate(matrix), rotate(rotate(matrix)), rotate(rotate(rotate(matrix)))];
+  }
   let J = h[0];
-  for(let i = 0; i < 4; i++) {
+  for(let i = 0; i < h.length; i++) {
     if (isGreater(J, h[i])) {J = h[i];}
   }
   return J;
@@ -243,12 +295,32 @@ function isAdjacent(matrix, a, b, adjacencies) {
   if (countNeighbors(matrix, a, b, adjacencies) > 0) {return true;} else {return false;}
 }
 
-function allorientations(matrix) {
-  return [matrix,rotate(matrix),rotate(rotate(matrix)),rotate(rotate(rotate(matrix))), matrix.toReversed(), rotate(matrix.toReversed()), rotate(rotate(matrix.toReversed())), rotate(rotate(rotate(matrix.toReversed())))];
+function mirror(matrix) {
+  let result = [];
+  for (let i = 0; i < matrix[0].length; i++) {
+    result.push([]);
+    for (let j = 0; j < matrix.length; j++) {
+      result[i].push(matrix[j][i])
+    }
+  }
+  return result;
+}
+
+function allchiralorientations(matrix, hex=false) {
+  if (hex) {
+    return [toHexified(matrix), hexRotate(matrix), hexRotate(hexRotate(matrix)), hexRotate(hexRotate(hexRotate(matrix))), hexRotate(hexRotate(hexRotate(hexRotate(matrix)))), hexRotate(hexRotate(hexRotate(hexRotate(hexRotate(matrix)))))];
+  } else {
+    return [matrix, rotate(matrix), rotate(rotate(matrix)), rotate(rotate(rotate(matrix)))];
+  }
+}
+
+function allorientations(matrix, hex=false) {
+  let result = allchiralorientations(matrix, hex);
+  return result.concat(result.map(l => mirror(l)));
 }
 
 export default {
 	getRandomInt, modulo, zeroifnan, minusonetoinf, extremifiedaverage, rotate, allorientations, toCentered, addZeros, clamp, isAdjacent, removeZeros, standardOrientation, isGreater,
-  countCells, cellTouchesEdge, countNeighbors, isConnected, perimeter
+  countCells, cellTouchesEdge, countNeighbors, isConnected, perimeter, allchiralorientations, mirror, hexRotate, toHexified
 }
 // isn't that like, all the functions in here?

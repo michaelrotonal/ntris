@@ -15,6 +15,7 @@ export default class TetrominoBlueprint {
 		this.colorDriftAmount = settings.colorDriftAmount || 5;
 		this.matrix = settings.matrix ? settings.matrix.map(r => r.slice()) : null; 
 		this.name = settings.name || ''; 
+		if (this.matrix && globalsettings.game.hexMode) {this.matrix = mu.toHexified(this.matrix)}
 
 		switch(this.type) {
 

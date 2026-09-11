@@ -26,8 +26,9 @@ let gameDefault = {
   ghostyChance: 0,
   chanceToMutate: 0,
   fillSmallHoles: false,
+  hexMode: false,
   diagonalAdjacencies: false,
-  adjacencies: [[1,0],[-1,0],[0,1],[0,-1]], // This setting is controlled by the setting above
+  adjacencies: [[1,0],[-1,0],[0,1],[0,-1]], // This setting is controlled by the settings above
   pfadjacencies: [[1,0],[-1,0],[0,1],[0,-1]] // This setting is controlled by the setting above, and another setting further above it
 };
 
@@ -79,6 +80,7 @@ export function showSettings() {
   document.getElementById("settingFillHoles").checked = game["fillSmallHoles"];
   document.getElementById("settingPieceType").value = game["pieceType"];
   document.getElementById("settingDiagonal").checked = game["diagonalAdjacencies"];
+  document.getElementById("settingHexagon").checked = game["hexMode"];
 
   document.getElementById("settingbLRDual").checked     = user["lrDual"];
   document.getElementById("settingbUDDual").checked     = user["udDual"];
@@ -128,7 +130,11 @@ export function saveSettings() {
   game["fillSmallHoles"] = document.getElementById("settingFillHoles").checked;
   game["pieceType"]    = document.getElementById("settingPieceType").value;
   game["diagonalAdjacencies"] = document.getElementById("settingDiagonal").checked;
-  game["adjacencies"] = (game["diagonalAdjacencies"] ? [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]] : [[1,0],[-1,0],[0,1],[0,-1]]);
+  game["hexMode"] = document.getElementById("settingHexagon").checked;
+  if (game["hexMode"] && game["diagonalAdjacencies"]) {
+    game["diagonalAdjacencies"] = false; // Sorry, no diagonal hexagons.
+  }
+  game["adjacencies"] = (game["diagonalAdjacencies"] ? [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]] : (game["hexMode"] ? [[1,0],[0,-1],[-1,-1],[-1,0],[0,1],[1,1]] : [[1,0],[0,-1],[-1,0],[0,1]]));
   game["pfadjacencies"] = (game["stairs"] ? game["adjacencies"].map(a => [a[0]-a[1], a[1]]) : game["adjacencies"]);
 
   user["lrDual"]     = document.getElementById("settingbLRDual").checked;
@@ -223,6 +229,10 @@ export function randomizeSettings() {
   game["stairs"] = (Math.random() > 5/6);
   game["floorIsLava"] = (game.stickyChance > 0 || game.gr > 0) && (Math.random() > 1/2);
   game["diagonalAdjacencies"] = (Math.random() > 4/5);
+  game["hexMode"] = (Math.random() > 4/5);
+  if (game["hexMode"] && game["diagonalAdjacencies"]) {
+    game["diagonalAdjacencies"] = false; // There can only be one alternative adjacency system. Or I'm too lazy to hardcode hexagonal diagonals. One of the two
+  }
   game["pieceType"] = (Math.random() > 2/3) ? (["polyomino", "drunkAnt"][mu.getRandomInt(0, 1)]) : "hardcoded";
   if (game["pieceType"] != "hardcoded") {
     game["mystery"] = 1 + Math.floor(-8*Math.log(Math.random()));

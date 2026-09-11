@@ -99,10 +99,10 @@ function bottom2numberD(bottom) {
 }
 
 
-export function matrix2color(matrix) {
-  let matrices = [matrix, mu.rotate(matrix), mu.rotate(mu.rotate(matrix)), mu.rotate(mu.rotate(mu.rotate(matrix)))];
+export function matrix2color(matrix, hex=false) {
+  let matrices = mu.allchiralorientations(matrix, hex);
   let bottoms = matrices.map(matrice => removeEdgeInf(matrice.map(row => mu.minusonetoinf(row.indexOf(1)))));
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < bottoms.length; i++) {
     let Q = Math.min(...bottoms[i])
     for (let j = 0; j < bottoms[i].length; j++) {
       bottoms[i][j] = bottoms[i][j]-Q;
@@ -112,7 +112,7 @@ export function matrix2color(matrix) {
   let B = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberB(bottom))));
   let C = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberC(bottom))));
   let D = mu.extremifiedaverage(bottoms.map(bottom => mu.zeroifnan(bottom2numberD(bottom))));
-  let E = 255 * ((16 * mu.countCells(matrix)) / (mu.perimeter(matrix) ** 2));
+  let E = 255 * ((16 * mu.countCells(matrix)) / (mu.perimeter(matrix, hex) ** 2));
   let channels = [A, B, C, D, E];
   return '#' + padwithzeros((
     Math.round(channels[mu.modulo(Math.round(settings.user['redColor']),5)]) * 65536 + 

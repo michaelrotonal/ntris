@@ -13,7 +13,8 @@ export class GridCell {
 	}
 
 	makeEmpty() {
-		this.type = EMPTY; 
+		this.type = EMPTY;
+		this.color = 'black'; 
 	}
 
 	isEmpty() {
@@ -22,6 +23,7 @@ export class GridCell {
 
 	makeGarbage() {
 		this.type = GARBAGE;
+		this.color = '#DCDCDC'
 	}
 
 	isGarbage() {
@@ -41,6 +43,7 @@ export class GridCell {
 
 	makeSD() {
 		this.type = SOCDIST;
+		this.color = '#1F1F1F'
 	}
 
 	isSD() {
@@ -52,6 +55,9 @@ export class GridCell {
 	}
 
 	getColor() {
+		if (this.color) {
+			return this.color;
+		}
 		if(this.isEmpty()) {
 			return 'black';
 		}
@@ -65,9 +71,6 @@ export class GridCell {
 		}
 
 		if(this.isPlaced()) {
-			if(this.color) {
-				return this.color; 
-			}
 			
 			return color.matrix2color(this.matrix); 
 			
