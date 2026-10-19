@@ -233,7 +233,7 @@ export function randomizeSettings() {
   if (game["hexMode"] && game["diagonalAdjacencies"]) {
     game["diagonalAdjacencies"] = false; // There can only be one alternative adjacency system. Or I'm too lazy to hardcode hexagonal diagonals. One of the two
   }
-  game["pieceType"] = (Math.random() > 2/3) ? (["polyomino", "drunkAnt"][mu.getRandomInt(0, 1)]) : "hardcoded";
+  game["pieceType"] = (Math.random() > 2/3) ? (["polyomino", "drunkAnt", "allofit"][mu.getRandomInt(0, 2)]) : "hardcoded";
   if (game["pieceType"] != "hardcoded") {
     game["mystery"] = 1 + Math.floor(-8*Math.log(Math.random()));
   }

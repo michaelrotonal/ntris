@@ -18,6 +18,12 @@ export class TetrominoFactory {
 			this.masterbags = tfsettings.bagofbags; 
 			this.bagbag = []; 
 		}
+		if(this.distribution == 'infinitebags') {
+			this.bagcount = 1;
+			this.masterbags = [this.tfsettings.newbagfunction(1)];
+			this.bagbag = [];
+			this.isFirstRefill = true;
+		}
 	}
 
 	getRandomBag() {
@@ -67,8 +73,8 @@ export class TetrominoFactory {
 					let bagcopy = thisBag.blueprints.slice(); 
 
 					while(bagcopy.length > 0) {						
-					    let rand = mu.getRandomInt(0, bagcopy.length - 1);
-					    thisBag.bag.push(bagcopy.splice(rand, 1)[0]);
+					    let rand2 = mu.getRandomInt(0, bagcopy.length - 1);
+					    thisBag.bag.push(bagcopy.splice(rand2, 1)[0]);
 					}
 				}
 
@@ -77,6 +83,44 @@ export class TetrominoFactory {
 			}
 
 			return this.tetrominoSequence.splice(0,1)[0]; 
+		}
+
+		if(this.distribution == 'infinitebags') {
+			while(this.tetrominoSequence.length <= this.nextPieces) {
+				if(this.bagbag.length == 0) {
+					// Refill bag of bags
+					let masterbagscopy = this.masterbags.slice(); 
+					while(masterbagscopy.length > 0) {						
+					    let rand = mu.getRandomInt(0, masterbagscopy.length - 1);
+					    this.bagbag.push(masterbagscopy.splice(rand, 1)[0]);
+					}
+				}
+
+				let rand = mu.getRandomInt(0, this.bagbag.length - 1);
+				let thisBag = this.bagbag.splice(rand, 1)[0]; 
+
+				if(thisBag.bag.length == 0) {
+					// Refill the bag
+					let bagcopy = thisBag.blueprints.slice();
+					if(thisBag == this.masterbags[this.masterbags.length - 1]) { // thank you shallow copy object comparison
+						if (this.isFirstRefill) {
+							this.isFirstRefill = false;
+						} else {
+							this.masterbags.push(this.tfsettings.newbagfunction(++this.bagcount)); // and preincrementing!
+							this.isFirstRefill = true; // this way, you get the new bag after you've seen all of the previous bag, rather than after you've seen one of the previous bag
+						}
+					} 
+
+					while(bagcopy.length > 0) {						
+					    let rand2 = mu.getRandomInt(0, bagcopy.length - 1);
+					    thisBag.bag.push(bagcopy.splice(rand2, 1)[0]);
+					}
+				}
+
+				this.tetrominoSequence.push(thisBag.bag[0].makeTetromino());
+				thisBag.bag.splice(0,1); 
+			}
+			return this.tetrominoSequence.splice(0, 1)[0];
 		}
 
 		if(this.distribution == 'random') {
@@ -107,6 +151,9 @@ export function tetrominoFactoryFactory() {
 
 	if(settings.game.pieceType == "drunkAnt") {
 		return makeDrunkAnt(); 
+	}
+	if(settings.game.pieceType == "allofit") {
+		return makeTrueAllPolyominoes(settings.game.hexMode); // This one doesn't care about the mystery setting
 	}
 	if(settings.game.pieceType != "hardcoded") {
 		return makeAllPolyominoes(settings.game.hexMode);
@@ -250,4 +297,20 @@ function makeAllPolyominoes(hex=false) {
 
 	return new TetrominoFactory(settings.game.nextPieces, null, 
 		{distribution: 'bagofbags', 'bagofbags': bagofbags}); 
+}
+
+function makeTrueAllPolyominoes(hex=false) {
+	return new TetrominoFactory(settings.game.nextPieces, null, {distribution: 'infinitebags', newbagfunction: ((n) => {
+		let blueprints = [];
+		let them = allPolyominoes(n, hex);
+		them.forEach(i => {
+			let bp = new TetrominoBlueprint(
+				{type: 'mutate', 
+				matrix: mu.toCentered(i), 
+				colorStyle: 'dynamic'});
+			blueprints.push(bp);
+		});
+		return ({blueprints: blueprints, bag: []});
+		})
+	});
 }
