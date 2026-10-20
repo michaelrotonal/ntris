@@ -141,6 +141,21 @@ export default class NtrisGame {
 	}
 
 	drawPlayfield(stairscolumnshift, yshift) {
+		for (let i = -4-settings.game.boardWidth; i < 4 + settings.game.boardWidth + settings.game.boardHeight; i++) {
+			// Just in case the board changes size for some reason. It's in this function because this function is where it'd crash otherwise
+			if (!this.playfield[i]) {
+				this.playfield[i] = new Array(settings.game.boardWidth);
+				for (let j = 0; j < settings.game.boardWidth; j++) {
+					this.playfield[i][j] = (i < settings.game.boardHeight ? new gc.GridCell(gc.EMPTY) : new gc.GridCell(gc.GARBAGE));
+				}
+			}
+			while (this.playfield[i].length < settings.game.boardWidth) {
+				this.playfield[i].push(new gc.GridCell(gc.EMPTY));
+			}
+			while (this.playfield[i].length > settings.game.boardWidth) {
+				this.playfield[i].pop();
+			}
+		}
 		let context = this.context; 
 		let playfield = this.playfield;
 		let grid = this.grid;
