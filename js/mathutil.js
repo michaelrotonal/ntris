@@ -242,13 +242,8 @@ function removeZeros(matrix) {
   return matrix;
 }
 
-function standardOrientation(matrix, hex=false) {
-  let h;
-  if (hex) {
-    h = [toHexified(matrix), hexRotate(matrix), hexRotate(hexRotate(matrix)), hexRotate(hexRotate(hexRotate(matrix))), hexRotate(hexRotate(hexRotate(hexRotate(matrix)))), hexRotate(hexRotate(hexRotate(hexRotate(hexRotate(matrix)))))];
-  } else {
-    h = [matrix, rotate(matrix), rotate(rotate(matrix)), rotate(rotate(rotate(matrix)))];
-  }
+function standardOrientation(matrix, hex) {
+  let h = allchiralorientations(matrix, hex);
   let J = h[0];
   for(let i = 0; i < h.length; i++) {
     if (isGreater(J, h[i])) {J = h[i];}
@@ -306,7 +301,7 @@ function mirror(matrix) {
   return result;
 }
 
-function allchiralorientations(matrix, hex=false) {
+function allchiralorientations(matrix, hex) {
   if (hex) {
     return [toHexified(matrix), hexRotate(matrix), hexRotate(hexRotate(matrix)), hexRotate(hexRotate(hexRotate(matrix))), hexRotate(hexRotate(hexRotate(hexRotate(matrix)))), hexRotate(hexRotate(hexRotate(hexRotate(hexRotate(matrix)))))];
   } else {
@@ -314,7 +309,7 @@ function allchiralorientations(matrix, hex=false) {
   }
 }
 
-function allorientations(matrix, hex=false) {
+function allorientations(matrix, hex) {
   let result = allchiralorientations(matrix, hex);
   return result.concat(result.map(l => mirror(l)));
 }

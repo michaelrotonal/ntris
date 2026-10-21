@@ -246,10 +246,10 @@ function makeDrunkAnt() {
 	return new TetrominoFactory(settings.game.nextPieces, blueprints, {distribution: 'bag'}); 
 }
 
-function allPolyominoes(n, hex=false) {
+function allPolyominoes(n, hex) {
 	// You can generate any size polyomino. Who cares if it's laggy
 	if (n > 1) {
-		let matrices = allPolyominoes(n-1);
+		let matrices = allPolyominoes(n-1, hex);
 		matrices = matrices.map(matrix => mu.addZeros(matrix));
 		let toret = [];
 		for (let i = 0; i < matrices.length; i++) {
@@ -278,7 +278,7 @@ function allPolyominoes(n, hex=false) {
 	} else {return [[[1]]];}
 }
 
-function makeAllPolyominoes(hex=false) {
+function makeAllPolyominoes(hex) {
 	let bagofbags = []; 
 	for (let j = 1; j < Math.log2(settings.game.mystery) + 2; j++) {
 		if (settings.game.mystery % 2 ** j >= 2 ** (j-1)) {
@@ -299,7 +299,7 @@ function makeAllPolyominoes(hex=false) {
 		{distribution: 'bagofbags', 'bagofbags': bagofbags}); 
 }
 
-function makeTrueAllPolyominoes(hex=false) {
+function makeTrueAllPolyominoes(hex) {
 	return new TetrominoFactory(settings.game.nextPieces, null, {distribution: 'infinitebags', newbagfunction: ((n) => {
 		let blueprints = [];
 		let them = allPolyominoes(n, hex);
