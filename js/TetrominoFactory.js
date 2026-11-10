@@ -159,7 +159,8 @@ export function tetrominoFactoryFactory() {
 		return makeAllPolyominoes(settings.game.hexMode);
 	}
 	//return makeStandardTetris(); 
-	return makeFromMystery();
+	// return makeFromMystery();
+	return makeFromSGPieces(); // This one also technically doesn't care about the mystery setting
 }
 
 // Example
@@ -200,13 +201,28 @@ function makeFromMystery() {
       		matrix: ts.tetrominos[name], 
       		color: ts.colors[name], 
       		name: name, 
-      		colorStyle: settings.user.useStaticColor ? 'static' : 'dynamic'});
+      		colorStyle: settings.user.colorType});
       }
 	  blueprints.push(bp); 
     }
   }
   
   return new TetrominoFactory(settings.game.nextPieces, blueprints, {distribution: 'bag'}); 
+}
+
+function makeFromSGPieces() {
+	let blueprints = [];
+	for(let i = 0;i < settings.game.pieces.length;i++) {
+		let bp = new TetrominoBlueprint({
+			type: 'mutate',
+			matrix: settings.game.pieces[i],
+			color: null,
+			colorStyle: settings.user.colorType,
+			name: null
+		})
+		blueprints.push(bp);
+	}
+	return new TetrominoFactory(settings.game.nextPieces, blueprints, {distribution: 'bag'});
 }
 
 function makeMorph() {
@@ -216,7 +232,7 @@ function makeMorph() {
 			type: 'mutate', 
 			matrix: ts.tetrominos[i], 
 			color: ts.colors[i],
-			colorStyle: settings.user.useStaticColor ? 'static' : 'dynamic'});
+			colorStyle: settings.user.colorType});
 		blueprints.push(bp); 
 	});
 

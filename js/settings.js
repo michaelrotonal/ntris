@@ -7,6 +7,7 @@ let gameDefault = {
 	boardWidth: 10, 
 	boardHeight: 20, 
 	mystery: 15584, 
+  pieces: [ts.tetrominos['I'], ts.tetrominos['J'], ts.tetrominos['L'], ts.tetrominos['O'], ts.tetrominos['S'], ts.tetrominos['T'], ts.tetrominos['Z']], // This setting should only be indexed when the piecebag type is set to Hardcoded
 	fallingSpeed: 35, 
 	fa: 1.01, 
 	nextPieces: 1, 
@@ -45,7 +46,7 @@ export let user = {
   redColor: 0,
   greenColor: 1,
   blueColor: 2,
-  useStaticColor: 0, // Yes UI -- just to demonstrate power of new interfaces
+  colorType: 'dynamic', // I feel like there should be more than two options for this
   lossBehaivor: "nothing"
 };
 
@@ -92,7 +93,7 @@ export function showSettings() {
   document.getElementById("settingbRedColor").value     = user["redColor"];
   document.getElementById("settingbGreenColor").value   = user["greenColor"];
   document.getElementById("settingbBlueColor").value    = user["blueColor"];
-  document.getElementById("settingbStaticColor").checked= user["useStaticColor"];
+  document.getElementById("settingbStaticColor").checked= (user["colorType"] == 'static');
   document.getElementById("settingbLoss").value         = user["lossBehavior"];
 
   document.getElementById("settingsDialog").showModal();
@@ -100,7 +101,23 @@ export function showSettings() {
 }
 
 export function hideSettings() {
+  saveUserSettings(); // This way you can open your settings, switch up some settings, and close it without restarting
   document.getElementById("settingsDialog").close();
+}
+
+export function saveUserSettings() {
+  user["lrDual"]     = document.getElementById("settingbLRDual").checked;
+  user["udDual"]     = document.getElementById("settingbUDDual").checked;
+  user["rotateDual"] = document.getElementById("settingbRotateDual").checked;
+  user["wadc"]       = document.getElementById("settingbWADC").checked;
+  user["prdb"]       = document.getElementById("settingbPRDB").value * 1;
+  user["prscb"]      = document.getElementById("settingbPRSCB").value * 1;
+  user["prsb"]       = document.getElementById("settingbPRSB").value * 1;
+  user["redColor"]   = document.getElementById("settingbRedColor").value * 1;
+  user["greenColor"] = document.getElementById("settingbGreenColor").value * 1;
+  user["blueColor"]  = document.getElementById("settingbBlueColor").value * 1;
+  user["colorType"]  =(document.getElementById("settingbStaticColor").checked ? 'static' : 'dynamic'); 
+  user["lossBehavior"] = document.getElementById("settingbLoss").value;
 }
 
 export function saveSettings() {
@@ -108,6 +125,17 @@ export function saveSettings() {
   game["boardWidth"]   = document.getElementById("settingBoardWidth").value * 1;
   game["boardHeight"]  = document.getElementById("settingBoardHeight").value * 1;
   game["mystery"]      = document.getElementById("settingMystery").value * 1;
+  game["pieceType"]    = document.getElementById("settingPieceType").value;
+  // Temporary mystery-to-piecebag algorithm while we're in the process of switching to the True Custom Piecebag System
+  if (game["pieceType"] == "hardcoded") {
+    game["pieces"] = [];
+    for (let i = 0;i < ts.allpieces.length-1;i++) {
+      if (game["mystery"] % 2**(i+1) >= 2**i) {
+        game["pieces"].push(ts.tetrominos[ts.allpieces[i]]);
+      }
+    }
+  }
+  // End temporary mystery-to-piecebag algorithm.
   game["fallingSpeed"] = document.getElementById("settingFallingSpeed").value * 1;
   game["fa"]           = document.getElementById("settingFA").value * 1;
   game["nextPieces"]   = document.getElementById("settingNextPieces").value * 1;
@@ -128,7 +156,6 @@ export function saveSettings() {
   // game["drunkAnt"]     = document.getElementById("settingDrunkAnt").checked;
   // game["polyominoes"]  = document.getElementById("settingPolyominoes").checked;
   game["fillSmallHoles"] = document.getElementById("settingFillHoles").checked;
-  game["pieceType"]    = document.getElementById("settingPieceType").value;
   game["diagonalAdjacencies"] = document.getElementById("settingDiagonal").checked;
   game["hexMode"] = document.getElementById("settingHexagon").checked;
   if (game["hexMode"] && game["diagonalAdjacencies"]) {
@@ -137,20 +164,7 @@ export function saveSettings() {
   game["adjacencies"] = (game["diagonalAdjacencies"] ? [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]] : (game["hexMode"] ? [[1,0],[0,-1],[-1,-1],[-1,0],[0,1],[1,1]] : [[1,0],[0,-1],[-1,0],[0,1]]));
   game["pfadjacencies"] = (game["stairs"] ? game["adjacencies"].map(a => [a[0]-a[1], a[1]]) : game["adjacencies"]);
 
-  user["lrDual"]     = document.getElementById("settingbLRDual").checked;
-  user["udDual"]     = document.getElementById("settingbUDDual").checked;
-  user["rotateDual"] = document.getElementById("settingbRotateDual").checked;
-  user["wadc"]       = document.getElementById("settingbWADC").checked;
-  user["prdb"]       = document.getElementById("settingbPRDB").value * 1;
-  user["prscb"]      = document.getElementById("settingbPRSCB").value * 1;
-  user["prsb"]       = document.getElementById("settingbPRSB").value * 1;
-  user["redColor"]   = document.getElementById("settingbRedColor").value * 1;
-  user["greenColor"] = document.getElementById("settingbGreenColor").value * 1;
-  user["blueColor"]  = document.getElementById("settingbBlueColor").value * 1;
-  user["useStaticColor"] = document.getElementById("settingbStaticColor").checked;
-  user["lossBehavior"] = document.getElementById("settingbLoss").value;
-
-  // There can only be one alternative piece generation algorithm. This comment is now redundant
+  saveUserSettings();
 
   // Drunkant and morph are incompatible
   if(game.pieceType == 'drunkAnt') {
@@ -164,6 +178,7 @@ export function saveSettings() {
 }
 
 export function randomizeSettings() {
+  saveUserSettings(); // This is here so you don't have to press Save to change the user settings
   game["boardHeight"] = mu.getRandomInt(10,30);
   game["boardWidth"] = mu.getRandomInt(Math.round(game["boardHeight"]/3), Math.round(game["boardHeight"]*2/3));
   game["gr"] = Math.min(mu.getRandomInt(0,game["boardHeight"]),mu.getRandomInt(0,game["boardHeight"]));
@@ -174,44 +189,27 @@ export function randomizeSettings() {
   let randomColor = '#' + color.padwithzeros(mu.getRandomInt(0, 16777215).toString(16));
   let j = Math.min(Math.ceil(Math.random()**Math.exp(- user.prdb / 3) * ts.allpieces.length),ts.allpieces.length-1); 
 
-  // Here there be dragons =====================
-  // I have attempted to make the dragons more readable below
-  // I do not claim to understand the dragons 
-  /*
-  for (let i = 1 + Math.floor(-6*Math.log(Math.random()));i>0;i--) {
-    let k = mu.getRandomInt(0,j);
-    while (((mu.allorientations(ts.tetrominos[allpieces[k]]).lastIndexOf(ts.tetrominos[allpieces[k]]) > 3 ^ (Math.random() < 1 / (Math.exp(-user.prsb) + 1))) ||
-      (color.colorDistance(color.matrix2color(ts.tetrominos[allpieces[k]]), randomColor) > 255 * 3 / Math.exp(user.prscb)) && Math.random() > 0.0003) || !(game["mystery"] % 2**(k+1) < 2**k) ) {
-
-      k = (Math.random() > 0.003) ? mu.getRandomInt(0,j) : mu.getRandomInt(0, allpieces.length - 1);
+  game["pieceType"] = (Math.random() > 2/3) ? (["polyomino", "drunkAnt", "allofit"][mu.getRandomInt(0, 2)]) : "hardcoded";
+  if (game["pieceType"] != "hardcoded") {
+    game["mystery"] = 1 + Math.floor(-8*Math.log(Math.random()));
+  } else {
+    for (let i = 1 + Math.floor(-6*Math.log(Math.random()));i>0;i--) {
+      let k = mu.getRandomInt(0,j);
+      let symmetrycond, colorcond, randcond, mystcond;
+      symmetrycond = true; 
+      while (symmetrycond || (colorcond && randcond) || mystcond) {
+        k = (Math.random() > 0.003) ? mu.getRandomInt(0,j) : mu.getRandomInt(0, ts.allpieces.length - 1);
+        let kname  = ts.allpieces[k];
+        let kmatrix = ts.tetrominos[kname];
+        let kcolor  = color.matrix2color(kmatrix); 
+        symmetrycond   = mu.allorientations(kmatrix, game.hexMode).lastIndexOf(kmatrix) > 3 ^ (Math.random() < 1 / (Math.exp(-user.prsb) + 1));
+        colorcond = color.colorDistance(kcolor, randomColor) > 255 * 3 / Math.exp(user.prscb);
+        randcond  = Math.random() > 0.0003;
+        mystcond  = !(game["mystery"] % 2**(k+1) < 2**k); 
+      }
+      game["mystery"] += 2**k;
     }
-    game["mystery"] += 2**k;
   }
-  */
-  // End dragons ===============================
-
-  for (let i = 1 + Math.floor(-6*Math.log(Math.random()));i>0;i--) {
-    let k = mu.getRandomInt(0,j);
-
-    let symmetrycond, colorcond, randcond, mystcond;
-    symmetrycond = true; 
-    while (symmetrycond || (colorcond && randcond) || mystcond) {
-
-      k = (Math.random() > 0.003) ? mu.getRandomInt(0,j) : mu.getRandomInt(0, ts.allpieces.length - 1);
-
-      let kname  = ts.allpieces[k];
-      let kmatrix = ts.tetrominos[kname];
-      let kcolor  = color.matrix2color(kmatrix); 
-
-      symmetrycond   = mu.allorientations(kmatrix, game.hexMode).lastIndexOf(kmatrix) > 3 ^ (Math.random() < 1 / (Math.exp(-user.prsb) + 1));
-      colorcond = color.colorDistance(kcolor, randomColor) > 255 * 3 / Math.exp(user.prscb);
-      randcond  = Math.random() > 0.0003;
-      mystcond  = !(game["mystery"] % 2**(k+1) < 2**k); 
-    }
-    game["mystery"] += 2**k;
-  }
-
-  // End readable(?) dragons =================
 
   game["nextPieces"] = Math.floor(-2*Math.log(Math.random()));
   game["closeEnough"] = Math.floor(-Math.log(Math.random()));
@@ -233,10 +231,7 @@ export function randomizeSettings() {
   if (game["hexMode"] && game["diagonalAdjacencies"]) {
     game["diagonalAdjacencies"] = false; // There can only be one alternative adjacency system. Or I'm too lazy to hardcode hexagonal diagonals. One of the two
   }
-  game["pieceType"] = (Math.random() > 2/3) ? (["polyomino", "drunkAnt", "allofit"][mu.getRandomInt(0, 2)]) : "hardcoded";
-  if (game["pieceType"] != "hardcoded") {
-    game["mystery"] = 1 + Math.floor(-8*Math.log(Math.random()));
-  }
+  
   game["fillSmallHoles"] = (Math.random() > 8/9);
 
   if(game.pieceType == "drunkAnt") { game.chanceToMutate = 0; }

@@ -98,17 +98,15 @@ export default class Tetromino {
 				case 'static':
 					tetcolor = this.color;
 					break;
-				case 'dynamicFallback':
-					if(! this.color ){
-						tetcolor = this.color = color.matrix2color(this.matrix, settings.game.hexMode); 
-					}
-					break;
 				case 'driftOnPaint':
 					if(this.blueprint) {
 						this.blueprint.doColorDrift();
 						this.color = this.blueprint.color; 
 					}
 					break; 
+			}
+			if(! this.color ){
+				tetcolor = this.color = color.matrix2color(this.matrix, settings.game.hexMode); 
 			}
 		}
 
