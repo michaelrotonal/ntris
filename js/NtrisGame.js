@@ -755,7 +755,7 @@ export default class NtrisGame {
 
 	pieceHold() {
 	  
-	  document.getElementById("settingsButton").blur(); // this one is necessary
+	  document.getElementById("newSettingsButton").blur(); // this one is necessary
 	  if (settings.game.heldPieces > 0 && this.holdcycleattempts < settings.game.heldPieces) {
 	    this.held.splice(0, 0, this.tetromino);
 	    this.holdcycleattempts++;
