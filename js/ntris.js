@@ -60,19 +60,35 @@ export var ntrisGame;
 document.addEventListener("DOMContentLoaded", function() {
   ntrisGame = new NtrisGame(); 
 
-  document.getElementById(       "settingsButton").addEventListener("click", function() { settings.showSettings(); ntrisGame.pause(); }); 
+  document.getElementById(    "newSettingsButton").addEventListener("click", function() { settings.showNewSettings(); ntrisGame.pause(); }); 
   document.getElementById(           "helpButton").addEventListener("click", function() { controls.showControls(); ntrisGame.pause(); });
   document.getElementById("settingsShuffleButton").addEventListener("click", function() { settings.randomizeSettings(); 
-                                                                                          settings.showSettings(); 
+                                                                                          settings.showNewSettings(); 
                                                                                         }); 
   document.getElementById(  "settingsResetButton").addEventListener("click", function() { settings.resetSettings(); 
-                                                                                           settings.showSettings();     });
+                                                                                           settings.showNewSettings();     });
   document.getElementById(   "settingsHideButton").addEventListener("click", function() { settings.hideSettings(); ntrisGame.unPause(); }); 
   document.getElementById(   "settingsSaveButton").addEventListener("click", function() { settings.saveSettings(); 
                                                                                            ntrisGame.restartGame(); 
                                                                                            ntrisGame.unPause(); });
+  document.getElementById("newSettingsSaveButton").addEventListener("click", function() { settings.saveNewSettings(); 
+                                                                                           ntrisGame.restartGame(); 
+                                                                                          ntrisGame.unPause(); 
+                                                                                         });
+  document.getElementById("newSettingsHideButton").addEventListener("click", function() {
+                                                                                          settings.hideNewSettings();
+                                                                                          ntrisGame.unPause(); 
+                                                                                        });
+  document.getElementById("PiecesTabButton").addEventListener("click", function()   { settings.showPiecesTab(); });
+  document.getElementById("BoardTabButton").addEventListener("click", function()    { settings.showBoardTab(); });
+  document.getElementById("GameplayTabButton").addEventListener("click", function() { settings.showGameplayTab(); });
+  document.getElementById("UITabButton").addEventListener("click", function()       { settings.showUITab(); });
+
   document.getElementById(   "controlsHideButton").addEventListener("click", function() { controls.hideControls(); ntrisGame.unPause(); }); 
 
+
+  settings.showPiecesTab();
+  settings.hideNewSettings();
   ntrisGame.restartGame();
 });
 

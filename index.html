@@ -22,11 +22,13 @@
     margin: 20px;
   }
 
-  #settingsDialog {
+
+  #newSettingsDialog {
     color: gray;
     background: black;
     border: 2px solid gray;
-    overscroll-behavior: contain;
+    padding: 0;
+    max-height: 650;
   }
 
   #settingsDialog td {
@@ -64,6 +66,67 @@
     display: block;
   }
 
+  .tabs {
+    background: #222222;
+    border: 1px solid #666666;
+  }
+
+  .tabButton {
+    background-color: black;
+    color: gray;
+    float: left;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+  }
+
+  .tabButton:hover {
+    background-color: #444444;
+  }
+
+  .tabButton:active {
+    background-color: #666666;
+  }
+
+  .dialogContents {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tabArea {
+    display: none;
+    /*padding: 6px 12px;
+    border: 1px solid #ccc;*/
+    padding: 0;
+    margin: 0;
+    overscroll-behavior: contain;
+  }
+
+  .settingsTable {
+    padding: 3px;
+    color: #cccccc;
+  }
+
+  .settingCell {
+    padding-top: 15px;
+    width: 50px;
+  }
+
+  .settingNameCell {
+    padding-top: 15px;
+    font-weight: 700;
+  }
+
+  .settingExpCell {
+    font-style: italic;
+    width: 450px;
+  }
+
+  #newSettingsButtonBar {
+    position: relative;
+    bottom: 0;
+  }
+
   </style>
 
   <script type="module" src="./js/ntris.js"></script>
@@ -78,65 +141,54 @@
         <div class="settingsColumns">
           <div class="settingsColumn">
           <table>
-            <tr><td>Garbage Rows</td>        <td><input id="settingGR" size="3"></td></tr>
-            <tr><td>Board Width</td>         <td><input id="settingBoardWidth" size="2"></td></tr>
-            <tr><td>Board Height</td>        <td><input id="settingBoardHeight" size="2"></td></tr>
-            <tr><td>Mystery</td>             <td><input id="settingMystery" size="6"></td></tr>
-            <tr><td>Falling Delay</td>       <td><input id="settingFallingSpeed" size="2"></td></tr>
-            <tr><td>Falling Acceleration</td><td><input id="settingFA" size="3"></td></tr>
-            <tr><td>Next Pieces</td>         <td><input id="settingNextPieces" size="1"></td></tr>
-            <tr><td>Allowed Holes</td>       <td><input id="settingCloseEnough" size="1"></td></tr>
-            <tr><td>Held Pieces</td>         <td><input id="settingHeldPieces" size="1"></td></tr>      
-            <tr><td>Garbage Percentage</td>  <td><input id="settingGarbagePercentage" size="1"></td></tr>
-            <tr><td>Score Acceleration</td>  <td><input id="settingScoreAcceleration" size="1"></td></tr>
-            <tr><td>Sticky Percentage</td>   <td><input id="settingStickyChance" size="2"></td></tr>
-            <tr><td>Ghosty Percentage</td>   <td><input id="settingGhostyChance" size="2"></td></tr>
-            <tr><td>Morph Percentage</td>    <td><input id="settingMutateChance" size="2"></td></tr>
-            <tr><td>Wrap Around</td>         <td><input type="checkbox" id="settingWrapAround"></td></tr>
-            <tr><td>Replenishing Garbage</td><td><input type="checkbox" id="settingRGR"></td></tr>
-            <tr><td>Social Distancing</td>   <td><input type="checkbox" id="settingSD"></td></tr>
-            <tr><td>Dual Mode</td>           <td><input type="checkbox" id="settingDual"></td></tr>
-            <tr><td>Flipping</td>            <td><input type="checkbox" id="settingFlipping"></td></tr>
-            <tr><td>Stairs Mode</td>         <td><input type="checkbox" id="settingStairs"></td></tr>
-            <tr><td>Deadly Floor</td>        <td><input type="checkbox" id="settingFloorIsLava"></td></tr>
-            <tr><td>Fill Small Holes</td>    <td><input type="checkbox" id="settingFillHoles"></td></tr>
-            <tr><td>Diagonal Adjacencies</td><td><input type="checkbox" id="settingDiagonal"></td></tr>
-            <tr><td>Hexagon Mode</td>        <td><input type="checkbox" id="settingHexagon"></td></tr>
-            <tr><td>Piece Type</td>          <td><select id="settingPieceType">
-              <option value="hardcoded" selected>Hardcoded</option>
-              <option value="polyomino">Non-Hardcoded</option>
-              <option value="drunkAnt">Drunk Ant</option>
-              <option value="allofit">Advanced Non-Hardcoded</option>
-            </select></td></tr>
+            <tr><td>Garbage Rows</td>        <td></td></tr>
+            <tr><td>Board Width</td>         <td></td></tr>
+            <tr><td>Board Height</td>        <td></td></tr>
+            
+            <tr><td>Falling Delay</td>       <td></td></tr>
+            <tr><td>Falling Acceleration</td><td></td></tr>
+            <tr><td></td>         <td></td></tr>
+            <tr><td>Allowed Holes</td>       <td></td></tr>
+            <tr><td>Held Pieces</td>         <td></td></tr>      
+            <tr><td>Garbage Percentage</td>  <td></td></tr>
+            <tr><td>Score Acceleration</td>  <td></td></tr>
+            <tr><td>Sticky Percentage</td>   <td></td></tr>
+            <tr><td>Ghosty Percentage</td>   <td></td></tr>
+            <tr><td>Morph Percentage</td>    <td></td></tr>
+            <tr><td>Wrap Around</td>         <td></td></tr>
+            <tr><td>Replenishing Garbage</td><td></td></tr>
+            <tr><td>Social Distancing</td>   <td></td></tr>
+            <tr><td>Dual Mode</td>           <td></td></tr>
+            <tr><td>Flipping</td>            <td></td></tr>
+            <tr><td>Stairs Mode</td>         <td></td></tr>
+            <tr><td>Deadly Floor</td>        <td></td></tr>
+            <tr><td>Fill Small Holes</td>    <td></td></tr>
+            <tr><td>Diagonal Adjacencies</td><td></td></tr>
+            <tr><td>Hexagon Mode</td>        <td></td></tr>
+            
           </table>
 
           </div>
 
           <div class="settingsColumn">
             <table>
-              <tr><td>Dual Inverts Left/Right</td>            <td><input type="checkbox" id="settingbLRDual"></td></tr>
-              <tr><td>Dual Inverts Up/Down</td>               <td><input type="checkbox" id="settingbUDDual"></td></tr>
-              <tr><td>Dual Inverts Rotation</td>              <td><input type="checkbox" id="settingbRotateDual"></td></tr>
-              <tr><td>Wrap Around Display Change</td>         <td><input type="checkbox" id="settingbWADC"></td></tr>
-              <tr><td>Piece Randomization Difficulty Bias</td><td><input id="settingbPRDB" size="3"></td></tr>
-              <tr><td>Piece Randomization Same Color Bias</td><td><input id="settingbPRSCB" size="3"></td></tr>
-              <tr><td>Piece Randomization Symmetry Bias</td>  <td><input id="settingbPRSB" size="3"></td></tr>
-              <tr><td>Piece Color Red Channel Mode</td>       <td><input id="settingbRedColor" size="1"></td></tr>
-              <tr><td>Piece Color Green Channel Mode</td>     <td><input id="settingbGreenColor" size="1"></td></tr>
-              <tr><td>Piece Color Blue Channel Mode</td>      <td><input id="settingbBlueColor" size="1"></td></tr>
-              <tr><td>Use Static Color</td>                   <td><input type="checkbox" id="settingbStaticColor"></td></tr>
-              <tr><td>Behavior on Loss</td>                   <td><select id="settingbLoss">
-                <option value="nothing" selected>Nothing</option>
-                <option value="restart">Restart</option>
-                <option value="shuffle">Shuffle</option>
-              </select></td>
+              <tr><td>Dual Inverts Left/Right</td>            <td></td></tr>
+              <tr><td>Dual Inverts Up/Down</td>               <td></td></tr>
+              <tr><td>Dual Inverts Rotation</td>              <td></td></tr>
+              <tr><td>Wrap Around Display Change</td>         <td></td></tr>
+              <tr><td>Piece Randomization Difficulty Bias</td><td></td></tr>
+              <tr><td>Piece Randomization Same Color Bias</td><td></td></tr>
+              <tr><td>Piece Randomization Symmetry Bias</td>  <td></td></tr>
+              <tr><td>Piece Color Red Channel Mode</td>       <td></td></tr>
+              <tr><td>Piece Color Green Channel Mode</td>     <td></td></tr>
+              <tr><td>Piece Color Blue Channel Mode</td>      <td></td></tr>
+              <tr><td>Use Static Color</td>                   <td></td></tr>
+              <tr><td>Behavior on Loss</td>                   <td></td>
             </table>
           </div>
         </div>
 
         <div style="display: block; margin-top: 20px;">
-          <button id="settingsShuffleButton">Shuffle</button>
-          <button id="settingsResetButton">Reset</button>
           <button id="settingsHideButton">Close</button>
           <button id="settingsSaveButton">Save</button>
         </div>
@@ -155,10 +207,292 @@
       <button id="controlsHideButton">Close</button>
     </div>
   </dialog>
+  <dialog id="newSettingsDialog">
+    <div class="dialogContents">
+      <div class="tabs">
+        <button class="tabButton" id="PiecesTabButton">Pieces</button>
+        <button class="tabButton" id="BoardTabButton">Board</button>
+        <button class="tabButton" id="GameplayTabButton">Gameplay</button>
+        <button class="tabButton" id="UITabButton">UI</button>
+      </div>
+    
+      <div class="tabArea" id="piecesTab">      
+
+        <table class="settingsTable">
+
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingMystery" size="6"></td>
+            <td class="settingNameCell">Mystery</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">Pieces are selected by binary flag.  Try 1.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><select id="settingPieceType">
+              <option value="hardcoded" selected>Hardcoded</option>
+              <option value="polyomino">Non-Hardcoded</option>
+              <option value="drunkAnt">Drunk Ant</option>
+              <option value="allofit">Advanced Non-Hardcoded</option>
+            </select></td>
+            <td class="settingNameCell">Piece Type</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">Selects which type of pieces to use: pieces selected by binary, polyomino sizes selected by binary, random-walk shapes, or all shapes</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingNextPieces" size="1"></td>
+            <td class="settingNameCell">Next Pieces</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">The number of upcoming pieces you get to see.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingHeldPieces" size="1"></td>
+            <td class="settingNameCell">Held Pieces</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">The number of pieces you get to hold.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingStickyChance" size="2"></td>
+            <td class="settingNameCell">Sticky Percentage</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">Each piece has this percentage chance to be Sticky, which means it'll land upon trying any invalid move.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingGhostyChance" size="2"></td>
+            <td class="settingNameCell">Ghosty Percentage</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">Each piece has this percentage chance to be Ghosty. Each cell of a Ghosty piece may enter and exit solid locations.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingMutateChance" size="2"></td>
+            <td class="settingNameCell">Morph Percentage</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">Every time a piece reappears, it has this percentage chance to have one cell added or removed.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingFlipping"></td>
+            <td class="settingNameCell">Flips</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">When this is on, you may mirror-reverse a piece by pressing E.</td>
+          </tr>
+        </table>
+
+      </div>
+      <div class="tabArea" id="boardTab">
+
+        <table class="settingsTable">
+
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingGR" size="3"></td>
+            <td class="settingNameCell">Garbage Rows</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">The number of rows at the bottom of the grid whose cells will have a chance to spawn already full. </td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingGarbagePercentage" size="1"></td>
+            <td class="settingNameCell">Garbage Percentage</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">The percentage of cells that will spawn already full.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingRGR"></td>
+            <td class="settingNameCell">Replenishing Garbage</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This decides whether or not a new garbage row appears when a line of garbage is cleared.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingBoardWidth" size="2"></td>
+            <td class="settingNameCell">Board Width</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">The number of columns that the board has.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingBoardHeight" size="2"></td>
+            <td class="settingNameCell">Board Height</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">The number of rows that the board has.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingWrapAround"></td>
+            <td class="settingNameCell">Wrap Around</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This decides whether the left wall connects to the right wall or just behaves as a wall.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingStairs"></td>
+            <td class="settingNameCell">Stairs Mode</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">In stairs mode, the floor is shaped like stairs instead of being flat. This does also mean that stair-shaped lines clear instead of horizontal lines.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingFloorIsLava"></td>
+            <td class="settingNameCell">Deadly Floor</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">When this setting is enabled, tetrominos colliding with the floor causes an automatic loss.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingHexagon"></td>
+            <td class="settingNameCell">Hexagon Mode</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">Normally the grid is made of squares. In Hexagon Mode, the grid is made of hexagons instead.</td>
+          </tr>
+
+        </table>
+      </div>
+
+      <div class="tabArea" id="gameplayTab">
+
+        <table class="settingsTable">
+
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingFallingSpeed" size="2"></td>
+            <td class="settingNameCell">Falling Delay</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This is the number of frames it takes for a piece to fall.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingFA" size="3"></td>
+            <td class="settingNameCell">Falling Acceleration</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This is the amount that the falling delay is divided by every time you gain a point.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingScoreAcceleration" size="1"></td>
+            <td class="settingNameCell">Score Acceleration</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">Clearing no lines scores 0 points, clearing one line scores 1 point. This is how many more points each additional line is worth.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingCloseEnough" size="1"></td>
+            <td class="settingNameCell">Allowed Holes</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This is how many holes are allowed before the game decides that a line will not be cleared.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><select id="settingbLoss">
+                <option value="nothing" selected>Nothing</option>
+                <option value="restart">Restart</option>
+                <option value="shuffle">Shuffle</option>
+              </select></td>
+            <td class="settingNameCell">Behavior on Loss</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This decides what happens when you lose the game: Nothing, the game restarts, or all non-UI settings other than this one get reshuffled. </td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingFillHoles"></td>
+            <td class="settingNameCell">Fill Small Holes</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">If this is on, after a piece lands, any empty space that is only adjacent to full spaces will be filled as well.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingSD"></td>
+            <td class="settingNameCell">Social Distancing</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">If this is on, after a piece lands, any empty space that is adjacent to at least one full space will be filled as well.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingDual"></td>
+            <td class="settingNameCell">Dual Mode</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">In Dual Mode, the board generates half-full, and every other piece consists of empty spaces going upward instead.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingDiagonal"></td>
+            <td class="settingNameCell">Diagonal Adjacencies</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This decides if cells that touch only at a corner are considered adjacent or not.</td>
+          </tr>
+
+        </table>
+      </div>
+      <div class="tabArea" id="UITab">
+        <table class="settingsTable">
+
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingbLRDual"></td>
+            <td class="settingNameCell">Dual Inverts Left-Right</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This decides if the left and right arrows move the piece in the opposite direction when said piece is inverted.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingbUDDual"></td>
+            <td class="settingNameCell">Dual Inverts Up-Down</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">When this is on, the up controls move inverted pieces up rather than still rotating.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingbRotateDual"></td>
+            <td class="settingNameCell">Dual Inverts Rotation</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This decides if rotation of inverted pieces is clockwise or counterclockwise.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingbWADC"></td>
+            <td class="settingNameCell">Wrap Around Display Change</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">Normally, when Wrap Around is on, the camera moves to follow the piece. When this setting is on, the camera will instead show two copies of the playfield.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingbPRDB" size="3"></td>
+            <td class="settingNameCell">Piece Randomization Difficulty Bias</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This decides how biased the Shuffle button is toward difficult pieces.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingbPRSCB" size="3"></td>
+            <td class="settingNameCell">Piece Randomization Same Color Bias</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This decides how biased the Shuffle button is toward pieces of similar color.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingbPRSB" size="3"></td>
+            <td class="settingNameCell">Piece Randomization Symmetry Bias</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This decides how biased the Shuffle button is toward symmetric pieces.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingbRedColor" size="1"></td>
+            <td class="settingNameCell">Piece Color Red Channel Mode</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">There are five implemented methods of assigning brightness to a piece, this setting decides which one is used for the red channel.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingbGreenColor" size="1"></td>
+            <td class="settingNameCell">Piece Color Green Channel Mode</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This decides which piece-coloring method is used for the green channel of a piece.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input id="settingbBlueColor" size="1"></td>
+            <td class="settingNameCell">Piece Color Blue Channel Mode</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">This decides which piece-coloring method is used for the blue channel of a piece.</td>
+          </tr>
+          <tr class="settingsTableRow">
+            <td class="settingCell"><input type="checkbox" id="settingbStaticColor"></td>
+            <td class="settingNameCell">Use Static Color</td></tr>
+          <tr>
+            <td class="settingExpCell" colspan="2">When this is on, it overrides the above described procedure and just uses hand-assigned colors for pieces that have them. (Except that doesn't currently work right now.)</td>
+          </tr>
+
+        </table>
+
+      </div>
+
+
+
+    </div>
+
+    <div id="newSettingsButtonBar">
+      <button id="settingsShuffleButton">Shuffle</button>
+      <button id="settingsResetButton">Reset</button>
+      <button id="newSettingsHideButton">Close</button>
+      <button id="newSettingsSaveButton">Save</button>
+    </div>
+
+  </dialog>
 <canvas width="540" height="640" id="game"></canvas>
  <div class="buttonRow">
    <button class="settingsbutton" id="helpButton">Controls</button>
-   <button class="settingsbutton" id="settingsButton">Settings</button>
+   <button class="settingsbutton" id="newSettingsButton">Settings</button>
   </div>
 </body>
 </html>

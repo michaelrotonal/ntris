@@ -54,7 +54,7 @@ export function resetSettings() {
   game = {...gameDefault};
 }
 
-export function showSettings() {
+export function setSettings() {
   document.getElementById("settingGR").value = game["gr"];
   document.getElementById("settingBoardWidth").value = game["boardWidth"];
   document.getElementById("settingBoardHeight").value = game["boardHeight"];
@@ -94,15 +94,72 @@ export function showSettings() {
   document.getElementById("settingbGreenColor").value   = user["greenColor"];
   document.getElementById("settingbBlueColor").value    = user["blueColor"];
   document.getElementById("settingbStaticColor").checked= (user["colorType"] == 'static');
-  document.getElementById("settingbLoss").value         = user["lossBehavior"];
+  document.getElementById("settingbLoss").value         = user["lossBehavior"];  
+}
+
+export function showSettings() {
+  setSettings();
 
   document.getElementById("settingsDialog").showModal();
-  document.getElementById("settingsButton").blur();
 }
 
 export function hideSettings() {
   saveUserSettings(); // This way you can open your settings, switch up some settings, and close it without restarting
   document.getElementById("settingsDialog").close();
+}
+
+export function showNewSettings() {
+  setSettings(); 
+
+  document.getElementById("newSettingsDialog").showModal();
+  document.getElementById("newSettingsButton").blur();
+}
+
+export function saveNewSettings() {
+  saveSettings(); // This way you can open your settings, switch up some settings, and close it without restarting
+  document.getElementById("newSettingsDialog").close();
+}
+
+export function hideNewSettings() {
+  //saveUserSettings(); // This way you can open your settings, switch up some settings, and close it without restarting
+  document.getElementById("newSettingsDialog").close();
+}
+
+function clearTabs() {
+  let tabAreas = document.getElementsByClassName("tabArea");
+  for(let i = 0; i < tabAreas.length; i++) {
+    tabAreas[i].style.display = "none";
+  }
+
+  let tabs = document.getElementsByClassName("tabButton");
+  for(let i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove("active");
+  }
+}
+
+function showTab(areaName, buttonName) {
+  document.getElementById(areaName).style.display = "block";
+  document.getElementById(buttonName).classList.add("active");  
+}
+
+export function showPiecesTab() {
+  clearTabs();
+  showTab("piecesTab", "PiecesTabButton");
+}
+
+export function showBoardTab() {
+  clearTabs();
+  showTab("boardTab", "BoardTabButton");  
+}
+
+export function showGameplayTab() {
+  clearTabs();
+  showTab("gameplayTab", "GameplayTabButton");  
+}
+
+export function showUITab() {
+  clearTabs();
+  showTab("UITab", "UITabButton");  
 }
 
 export function saveUserSettings() {
